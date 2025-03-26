@@ -1,0 +1,23 @@
+# Dependências do Node.js
+node_modules/
+package-lock.json
+
+# Dependências do Python
+venv/
+__pycache__/
+*.pyc
+
+# Configuração do ambiente
+.env
+
+# Banco de dados local (SQLite)
+db.sqlite3
+
+# Arquivos gerados pelo editor
+.vscode/
+.idea/
+.DS_Store
+
+# Build do React
+build/
+dist/
