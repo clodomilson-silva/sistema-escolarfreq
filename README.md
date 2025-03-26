@@ -121,5 +121,5 @@ Este projeto está sob a licença MIT.
 
 📞 Contato
 Caso tenha dúvidas ou sugestões, entre em contato:
-✉️ Email: seuemail@email.com
-🐙 GitHub: seu-usuario
+✉️ Email: profclodomilson@gmail.com
+🐙 GitHub: clodomilson
