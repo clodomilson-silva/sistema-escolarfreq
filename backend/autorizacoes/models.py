@@ -1,4 +1,7 @@
 from django.db import models
+from alunos.models import Aluno
+from django.utils import timezone
+
 
 class Autorizacao(models.Model):
     TIPO_CHOICES = [
@@ -6,10 +9,12 @@ class Autorizacao(models.Model):
         ('saida', 'Saída'),
     ]
 
-    aluno = models.ForeignKey("alunos.Aluno", on_delete=models.CASCADE)
+    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE)
     motivo = models.TextField()
-    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES, default='entrada')  # Valor padrão adicionado
-    data_hora = models.DateTimeField(auto_now_add=True)
-    
+    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES, default='entrada')
+    data = models.DateField(default=timezone.now)
+    hora = models.TimeField(default=timezone.now)
+    criado_em = models.DateTimeField(default=timezone.now)
+
     def __str__(self):
-        return f"Autorização ({self.tipo}) para {self.aluno.nome}"
+        return f"{self.aluno.nome} - {self.tipo.title()} - {self.data} {self.hora}"
