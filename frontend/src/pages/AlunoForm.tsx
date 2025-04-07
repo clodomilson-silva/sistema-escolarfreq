@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
+import "./AlunoForm.css"; // Importando o novo arquivo CSS
 
 function AlunoForm() {
   const [nome, setNome] = useState("");
@@ -16,7 +17,7 @@ function AlunoForm() {
         nome,
         matricula,
         data_nascimento: dataNascimento,
-        email
+        email,
       });
       alert("Aluno cadastrado com sucesso!");
       navigate("/alunos"); // Redireciona para a lista de alunos
@@ -27,28 +28,49 @@ function AlunoForm() {
   };
 
   return (
-    <div>
-      <h1>Cadastrar Novo Aluno</h1>
-      
-      {/* Botão para voltar para a página Home */}
-      <Link to="/">
-        <button style={{ marginBottom: "10px" }}>🏠 Voltar para Home</button>
-      </Link>
+    <div className="form-container">
+      <h1 className="form-title">Cadastrar Novo Aluno</h1>
+      <nav className="form-nav">
+        <Link to="/" className="form-nav-link">🏠 Voltar para Home</Link>
+      </nav>
+      <form onSubmit={handleSubmit} className="form">
+        <label className="form-label">Nome:</label>
+        <input
+          type="text"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          required
+          className="form-input"
+        />
 
-      <form onSubmit={handleSubmit}>
-        <label>Nome:</label>
-        <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} required />
+        <label className="form-label">Matrícula:</label>
+        <input
+          type="text"
+          value={matricula}
+          onChange={(e) => setMatricula(e.target.value)}
+          required
+          className="form-input"
+        />
 
-        <label>Matrícula:</label>
-        <input type="text" value={matricula} onChange={(e) => setMatricula(e.target.value)} required />
+        <label className="form-label">Data de Nascimento:</label>
+        <input
+          type="date"
+          value={dataNascimento}
+          onChange={(e) => setDataNascimento(e.target.value)}
+          required
+          className="form-input"
+        />
 
-        <label>Data de Nascimento:</label>
-        <input type="date" value={dataNascimento} onChange={(e) => setDataNascimento(e.target.value)} required />
+        <label className="form-label">Email:</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="form-input"
+        />
 
-        <label>Email:</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-
-        <button type="submit">Cadastrar</button>
+        <button type="submit" className="form-button">Cadastrar</button>
       </form>
     </div>
   );

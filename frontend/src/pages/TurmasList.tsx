@@ -1,57 +1,56 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
-import "./AlunosList.css"; // Importando o novo arquivo CSS
+import "./AlunosList.css"; // Reutilizando o CSS de AlunosList
 
-interface Aluno {
+interface Turma {
   id: number;
   nome: string;
-  matricula: string;
-  data_nascimento: string;
-  email: string;
+  ano: number;
+  turno: string;
 }
 
-function AlunosList() {
-  const [alunos, setAlunos] = useState<Aluno[]>([]);
+function TurmasList() {
+  const [turmas, setTurmas] = useState<Turma[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    carregarAlunos();
+    carregarTurmas();
   }, []);
 
-  const carregarAlunos = () => {
-    api.get("/alunos/")
+  const carregarTurmas = () => {
+    api.get("/turmas/")
       .then((response) => {
-        setAlunos(response.data);
+        setTurmas(response.data);
       })
       .catch((error) => {
-        console.error("Erro ao buscar alunos:", error);
+        console.error("Erro ao buscar turmas:", error);
       });
   };
 
-  const excluirAluno = async (id: number) => {
-    if (window.confirm("Tem certeza que deseja excluir este aluno?")) {
+  const excluirTurma = async (id: number) => {
+    if (window.confirm("Tem certeza que deseja excluir esta turma?")) {
       try {
-        await api.delete(`/alunos/${id}/`);
-        alert("Aluno excluído com sucesso!");
-        carregarAlunos(); // Atualiza a lista após exclusão
+        await api.delete(`/turmas/${id}/`);
+        alert("Turma excluída com sucesso!");
+        carregarTurmas(); // Atualiza a lista após exclusão
       } catch (error) {
-        console.error("Erro ao excluir aluno:", error);
-        alert("Erro ao excluir aluno!");
+        console.error("Erro ao excluir turma:", error);
+        alert("Erro ao excluir turma!");
       }
     }
   };
 
   return (
     <div className="alunos-container">
-      <h1 className="alunos-title">Lista de Alunos</h1>
+      <h1 className="alunos-title">Lista de Turmas</h1>
       <nav className="alunos-nav">
         <ul className="alunos-nav-list">
           <li className="alunos-nav-item">
             <Link to="/" className="alunos-nav-link">🏠 Voltar para Home</Link>
           </li>
           <li className="alunos-nav-item">
-            <Link to="/alunos/novo" className="alunos-nav-link">➕ Cadastrar Novo Aluno</Link>
+            <Link to="/turmas/nova" className="alunos-nav-link">➕ Cadastrar Nova Turma</Link>
           </li>
         </ul>
       </nav>
@@ -59,24 +58,26 @@ function AlunosList() {
         <thead>
           <tr>
             <th>Nome</th>
-            <th>Email</th>
+            <th>Ano</th>
+            <th>Turno</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody>
-          {alunos.map((aluno) => (
-            <tr key={aluno.id}>
-              <td>{aluno.nome}</td>
-              <td>{aluno.email}</td>
+          {turmas.map((turma) => (
+            <tr key={turma.id}>
+              <td>{turma.nome}</td>
+              <td>{turma.ano}</td>
+              <td>{turma.turno}</td>
               <td>
                 <button
-                  onClick={() => navigate(`/alunos/editar/${aluno.id}`)}
+                  onClick={() => navigate(`/turmas/editar/${turma.id}`)}
                   className="alunos-action-button"
                 >
                   ✏️ Editar
                 </button>
                 <button
-                  onClick={() => excluirAluno(aluno.id)}
+                  onClick={() => excluirTurma(turma.id)}
                   className="alunos-action-button delete"
                 >
                   🗑 Excluir
@@ -90,4 +91,4 @@ function AlunosList() {
   );
 }
 
-export default AlunosList;
+export default TurmasList;
