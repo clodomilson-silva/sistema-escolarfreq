@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
+import "./AlunoForm.css"; // Reutilizando o CSS de AlunoForm
 
 function AlunoEdit() {
   const { id } = useParams<{ id: string }>();
@@ -30,7 +31,7 @@ function AlunoEdit() {
         nome,
         matricula,
         data_nascimento: dataNascimento,
-        email
+        email,
       });
       alert("Aluno atualizado com sucesso!");
       navigate("/alunos"); // Redireciona para a lista de alunos
@@ -41,28 +42,49 @@ function AlunoEdit() {
   };
 
   return (
-    <div>
-      <h1>Editar Aluno</h1>
+    <div className="form-container">
+      <h1 className="form-title">Editar Aluno</h1>
+      <nav className="form-nav">
+        <Link to="/alunos" className="form-nav-link">🔙 Voltar para Lista</Link>
+      </nav>
+      <form onSubmit={handleSubmit} className="form">
+        <label className="form-label">Nome:</label>
+        <input
+          type="text"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          required
+          className="form-input"
+        />
 
-      {/* Botão para voltar para a lista de alunos */}
-      <Link to="/alunos">
-        <button style={{ marginBottom: "10px" }}>🔙 Voltar para Lista</button>
-      </Link>
+        <label className="form-label">Matrícula:</label>
+        <input
+          type="text"
+          value={matricula}
+          onChange={(e) => setMatricula(e.target.value)}
+          required
+          className="form-input"
+        />
 
-      <form onSubmit={handleSubmit}>
-        <label>Nome:</label>
-        <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} required />
+        <label className="form-label">Data de Nascimento:</label>
+        <input
+          type="date"
+          value={dataNascimento}
+          onChange={(e) => setDataNascimento(e.target.value)}
+          required
+          className="form-input"
+        />
 
-        <label>Matrícula:</label>
-        <input type="text" value={matricula} onChange={(e) => setMatricula(e.target.value)} required />
+        <label className="form-label">Email:</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="form-input"
+        />
 
-        <label>Data de Nascimento:</label>
-        <input type="date" value={dataNascimento} onChange={(e) => setDataNascimento(e.target.value)} required />
-
-        <label>Email:</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-
-        <button type="submit">Salvar Alterações</button>
+        <button type="submit" className="form-button">Salvar Alterações</button>
       </form>
     </div>
   );
