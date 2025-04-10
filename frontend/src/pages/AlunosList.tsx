@@ -48,7 +48,7 @@ function AlunosList() {
       <nav className="alunos-nav">
         <ul className="alunos-nav-list">
           <li className="alunos-nav-item">
-            <Link to="/" className="alunos-nav-link">🏠 Voltar para Home</Link>
+            <Link to="/home" className="alunos-nav-link">🏠 Voltar para Home</Link>
           </li>
           <li className="alunos-nav-item">
             <Link to="/alunos/novo" className="alunos-nav-link">➕ Cadastrar Novo Aluno</Link>
