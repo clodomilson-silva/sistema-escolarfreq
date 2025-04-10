@@ -33,7 +33,6 @@ function Login() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          required
           className="form-input"
         />
 
@@ -42,7 +41,6 @@ function Login() {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          required
           className="form-input"
         />
 
