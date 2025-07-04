@@ -4,7 +4,7 @@ import api from "../services/api";
 import "./AlunosList.css"; // Importando o novo arquivo CSS
 
 interface Aluno {
-  id: number;
+  id: string;
   nome: string;
   matricula: string;
   data_nascimento: string;
@@ -20,19 +20,21 @@ function AlunosList() {
   }, []);
 
   const carregarAlunos = () => {
-    api.get("/alunos/")
+    api.get("/alunos")
       .then((response) => {
-        setAlunos(response.data);
+        // A API retorna { success: true, data: [...], total: number }
+        const alunos = response.data.data || response.data;
+        setAlunos(alunos);
       })
       .catch((error) => {
         console.error("Erro ao buscar alunos:", error);
       });
   };
 
-  const excluirAluno = async (id: number) => {
+  const excluirAluno = async (id: string) => {
     if (window.confirm("Tem certeza que deseja excluir este aluno?")) {
       try {
-        await api.delete(`/alunos/${id}/`);
+        await api.delete(`/alunos/${id}`);
         alert("Aluno excluído com sucesso!");
         carregarAlunos(); // Atualiza a lista após exclusão
       } catch (error) {

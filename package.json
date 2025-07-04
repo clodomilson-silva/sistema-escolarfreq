@@ -1,0 +1,42 @@
+{
+  "name": "sistema-escolarfreq",
+  "version": "1.0.0",
+  "description": "📚 Sistema de Gerenciamento Escolar - Backend Node.js + Frontend React + Firebase",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently --kill-others-on-fail \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "start": "concurrently \"npm run backend:start\" \"npm run frontend:start\"",
+    "backend:dev": "cd backend && npm run dev",
+    "backend:start": "cd backend && npm start",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:start": "cd frontend && npm run build && npm run preview",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "cd backend && npm install",
+    "build:frontend": "cd frontend && npm install && npm run build",
+    "test": "concurrently \"npm run test:backend\" \"npm run test:frontend\"",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test",
+    "clean": "rimraf backend/node_modules frontend/node_modules node_modules",
+    "setup": "node setup.js",
+    "postinstall": "echo 📋 Use npm run setup para configurar o projeto completo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Clodomilson/sistema-escolarfreq.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Clodomilson/sistema-escolarfreq/issues"
+  },
+  "homepage": "https://github.com/Clodomilson/sistema-escolarfreq#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "wait-on": "^8.0.3",
+    "rimraf": "^6.0.1"
+  }
+}

@@ -13,17 +13,39 @@ function AlunoForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post("/alunos/", {
+      console.log('Dados enviados:', {
         nome,
         matricula,
         data_nascimento: dataNascimento,
         email,
       });
+      
+      const response = await api.post("/alunos", {
+        nome,
+        matricula,
+        data_nascimento: dataNascimento,
+        email,
+      });
+      
+      console.log('Resposta da API:', response.data);
       alert("Aluno cadastrado com sucesso!");
       navigate("/alunos"); // Redireciona para a lista de alunos
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Erro ao cadastrar aluno:", error);
-      alert("Erro ao cadastrar aluno!");
+      
+      // Type guard para verificar se é um erro da API
+      if (error && typeof error === 'object' && 'response' in error) {
+        const apiError = error as { response?: { data?: { message?: string; details?: string } } };
+        if (apiError.response?.data?.message) {
+          alert(`Erro: ${apiError.response.data.message}`);
+        } else if (apiError.response?.data?.details) {
+          alert(`Erro de validação: ${apiError.response.data.details}`);
+        } else {
+          alert("Erro ao cadastrar aluno!");
+        }
+      } else {
+        alert("Erro ao cadastrar aluno!");
+      }
     }
   };
 
