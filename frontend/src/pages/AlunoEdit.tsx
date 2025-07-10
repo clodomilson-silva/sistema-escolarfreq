@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
-import "./AlunoForm.css"; // Reutilizando o CSS de AlunoForm
 
 function AlunoEdit() {
   const { id } = useParams<{ id: string }>();

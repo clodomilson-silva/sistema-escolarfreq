@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
-import "./AlunoForm.css"; // Importando o novo arquivo CSS
+import Navbar from "../components/Navbar";
 
 function AlunoForm() {
   const [nome, setNome] = useState("");
@@ -12,6 +12,13 @@ function AlunoForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validação básica no frontend
+    if (!nome || !matricula || !dataNascimento || !email) {
+      alert("Por favor, preencha todos os campos obrigatórios!");
+      return;
+    }
+    
     try {
       console.log('Dados enviados:', {
         nome,
@@ -29,71 +36,141 @@ function AlunoForm() {
       
       console.log('Resposta da API:', response.data);
       alert("Aluno cadastrado com sucesso!");
+      
+      // Limpar formulário
+      setNome("");
+      setMatricula("");
+      setDataNascimento("");
+      setEmail("");
+      
       navigate("/alunos"); // Redireciona para a lista de alunos
     } catch (error: unknown) {
       console.error("Erro ao cadastrar aluno:", error);
       
-      // Type guard para verificar se é um erro da API
+      let mensagemErro = "Erro ao cadastrar aluno!";
+      
+      // Type guard para verificar se é um erro do Axios
       if (error && typeof error === 'object' && 'response' in error) {
-        const apiError = error as { response?: { data?: { message?: string; details?: string } } };
-        if (apiError.response?.data?.message) {
-          alert(`Erro: ${apiError.response.data.message}`);
-        } else if (apiError.response?.data?.details) {
-          alert(`Erro de validação: ${apiError.response.data.details}`);
-        } else {
-          alert("Erro ao cadastrar aluno!");
+        const axiosError = error as {
+          response?: {
+            data?: { message?: string; details?: string };
+            status?: number;
+          };
+          request?: unknown;
+        };
+        
+        if (axiosError.response) {
+          // Erro da API
+          if (axiosError.response.data?.message) {
+            mensagemErro = axiosError.response.data.message;
+          } else if (axiosError.response.data?.details) {
+            mensagemErro = axiosError.response.data.details;
+          } else if (axiosError.response.status === 400) {
+            mensagemErro = "Dados inválidos ou já existentes!";
+          } else if (axiosError.response.status === 500) {
+            mensagemErro = "Erro interno do servidor!";
+          }
+        } else if (axiosError.request) {
+          // Erro de conexão
+          mensagemErro = "Erro de conexão com o servidor!";
         }
-      } else {
-        alert("Erro ao cadastrar aluno!");
       }
+      
+      alert(mensagemErro);
     }
   };
 
   return (
-    <div className="form-container">
-      <h1 className="form-title">Cadastrar Novo Aluno</h1>
-      <nav className="form-nav">
-        <Link to="/" className="form-nav-link">🏠 Voltar para Home</Link>
-      </nav>
-      <form onSubmit={handleSubmit} className="form">
-        <label className="form-label">Nome:</label>
-        <input
-          type="text"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-          required
-          className="form-input"
-        />
+    <div className="min-vh-100 bg-light">
+      <Navbar />
+      <div className="container py-4">
+        <div className="row justify-content-center">
+          <div className="col-md-8 col-lg-6">
+            <div className="card shadow-sm">
+              <div className="card-header bg-primary text-white">
+                <h1 className="h4 mb-0">📝 Cadastrar Novo Aluno</h1>
+              </div>
+              <div className="card-body">
+                <div className="mb-3">
+                  <Link to="/home" className="btn btn-outline-secondary btn-sm">
+                    🏠 Voltar para Home
+                  </Link>
+                  <Link to="/alunos" className="btn btn-outline-info btn-sm ms-2">
+                    👥 Ver Lista de Alunos
+                  </Link>
+                </div>
 
-        <label className="form-label">Matrícula:</label>
-        <input
-          type="text"
-          value={matricula}
-          onChange={(e) => setMatricula(e.target.value)}
-          required
-          className="form-input"
-        />
+                <form onSubmit={handleSubmit}>
+                  <div className="mb-3">
+                    <label htmlFor="nome" className="form-label">
+                      Nome Completo: <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="nome"
+                      value={nome}
+                      onChange={(e) => setNome(e.target.value)}
+                      required
+                      placeholder="Digite o nome completo do aluno"
+                    />
+                  </div>
 
-        <label className="form-label">Data de Nascimento:</label>
-        <input
-          type="date"
-          value={dataNascimento}
-          onChange={(e) => setDataNascimento(e.target.value)}
-          required
-          className="form-input"
-        />
+                  <div className="mb-3">
+                    <label htmlFor="matricula" className="form-label">
+                      Matrícula: <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="matricula"
+                      value={matricula}
+                      onChange={(e) => setMatricula(e.target.value)}
+                      required
+                      placeholder="Ex: 2024001"
+                    />
+                  </div>
 
-        <label className="form-label">Email:</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="form-input"
-        />
+                  <div className="mb-3">
+                    <label htmlFor="dataNascimento" className="form-label">
+                      Data de Nascimento: <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      id="dataNascimento"
+                      value={dataNascimento}
+                      onChange={(e) => setDataNascimento(e.target.value)}
+                      required
+                    />
+                  </div>
 
-        <button type="submit" className="form-button">Cadastrar</button>
-      </form>
+                  <div className="mb-4">
+                    <label htmlFor="email" className="form-label">
+                      Email: <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      id="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      placeholder="exemplo@email.com"
+                    />
+                  </div>
+
+                  <div className="d-grid">
+                    <button type="submit" className="btn btn-primary btn-lg">
+                      ✅ Cadastrar Aluno
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

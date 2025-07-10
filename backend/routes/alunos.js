@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const alunoService = require('../services/alunoService');
 const { alunoSchema, alunoUpdateSchema } = require('../validators/alunoValidator');
+const { authenticateToken, requireAdmin } = require('../middleware/auth');
 
 // Middleware de validação
 const validarAluno = (schema) => {
@@ -15,8 +16,8 @@ const validarAluno = (schema) => {
   };
 };
 
-// GET /api/alunos - Listar todos os alunos
-router.get('/', async (req, res, next) => {
+// GET /api/alunos - Listar todos os alunos (protegido)
+router.get('/', authenticateToken, requireAdmin, async (req, res, next) => {
   try {
     const { nome, matricula } = req.query;
     const filtros = {};
@@ -37,8 +38,8 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// GET /api/alunos/count - Contar alunos
-router.get('/count', async (req, res, next) => {
+// GET /api/alunos/count - Contar alunos (protegido)
+router.get('/count', authenticateToken, requireAdmin, async (req, res, next) => {
   try {
     const total = await alunoService.contarAlunos();
     
@@ -98,8 +99,8 @@ router.get('/matricula/:matricula', async (req, res, next) => {
   }
 });
 
-// POST /api/alunos - Criar novo aluno
-router.post('/', validarAluno(alunoSchema), async (req, res, next) => {
+// POST /api/alunos - Criar novo aluno (protegido)
+router.post('/', authenticateToken, requireAdmin, validarAluno(alunoSchema), async (req, res, next) => {
   try {
     const aluno = await alunoService.criarAluno(req.body);
     
@@ -116,8 +117,8 @@ router.post('/', validarAluno(alunoSchema), async (req, res, next) => {
   }
 });
 
-// PUT /api/alunos/:id - Atualizar aluno
-router.put('/:id', validarAluno(alunoUpdateSchema), async (req, res, next) => {
+// PUT /api/alunos/:id - Atualizar aluno (protegido)
+router.put('/:id', authenticateToken, requireAdmin, validarAluno(alunoUpdateSchema), async (req, res, next) => {
   try {
     const { id } = req.params;
     const aluno = await alunoService.atualizarAluno(id, req.body);
@@ -137,8 +138,8 @@ router.put('/:id', validarAluno(alunoUpdateSchema), async (req, res, next) => {
   }
 });
 
-// DELETE /api/alunos/:id - Excluir aluno
-router.delete('/:id', async (req, res, next) => {
+// DELETE /api/alunos/:id - Excluir aluno (protegido)
+router.delete('/:id', authenticateToken, requireAdmin, async (req, res, next) => {
   try {
     const { id } = req.params;
     await alunoService.excluirAluno(id);

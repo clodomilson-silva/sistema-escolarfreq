@@ -1,18 +1,20 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3001/api", // Backend Node.js
+  baseURL: (import.meta.env.VITE_API_BASE_URL || "http://localhost:3000") + "/api", // Backend Node.js
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 10000, // 10 segundos de timeout
+  timeout: parseInt(import.meta.env.VITE_API_TIMEOUT) || 10000, // Timeout configurável
 });
 
 // Interceptor para tratar erros globalmente
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API Error:', error.response?.data || error.message);
+    if (import.meta.env.VITE_LOG_LEVEL === 'debug') {
+      console.error('API Error:', error.response?.data || error.message);
+    }
     return Promise.reject(error);
   }
 );

@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const turmaService = require('../services/turmaService');
 const { turmaSchema, turmaUpdateSchema } = require('../validators/turmaValidator');
+const { authenticateToken, requireAdmin } = require('../middleware/auth');
+
+// Aplicar middleware de autenticação para todas as rotas
+router.use(authenticateToken);
+router.use(requireAdmin);
 
 const validarTurma = (schema) => {
   return (req, res, next) => {

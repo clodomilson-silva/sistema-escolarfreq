@@ -15,6 +15,7 @@ const alunosRoutes = require('./routes/alunos');
 const turmasRoutes = require('./routes/turmas');
 const autorizacoesRoutes = require('./routes/autorizacoes');
 const frequenciaRoutes = require('./routes/frequencia');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -28,7 +29,7 @@ app.use(compression());
 
 // CORS
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true
 }));
 
@@ -60,6 +61,7 @@ app.get('/health', (req, res) => {
 });
 
 // Rotas da API
+app.use('/api/auth', authRoutes);
 app.use('/api/alunos', alunosRoutes);
 app.use('/api/turmas', turmasRoutes);
 app.use('/api/autorizacoes', autorizacoesRoutes);

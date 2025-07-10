@@ -21,3 +21,19 @@ db.sqlite3
 # Build do React
 build/
 dist/
+
+# Arquivos de documentação temporária e desenvolvimento
+STATUS_CORRECOES.md
+TESTE_API.md
+CONFIGURACAO.md
+COMANDOS.md
+SISTEMA_PRONTO.md
+
+# Logs e arquivos temporários
+*.log
+*.tmp
+temp/
+
+# Credenciais do Firebase (backup)
+*firebase-credentials*.json
+!firebase-credentials.example.json

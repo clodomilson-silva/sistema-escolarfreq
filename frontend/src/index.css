@@ -86,3 +86,97 @@ button:focus-visible {
     padding: 1em;
   }
 }
+
+/* ===== MELHORIAS RESPONSIVAS PARA LOGIN ===== */
+
+/* Breakpoints customizados para melhor responsividade */
+@media (min-width: 1200px) {
+  /* Telas grandes - Desktop */
+  .login-form-container {
+    max-width: 500px;
+  }
+  
+  .login-title {
+    font-size: 2.5rem !important;
+  }
+  
+  .login-subtitle {
+    font-size: 1.3rem !important;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  /* Telas médias - Laptop */
+  .login-form-container {
+    max-width: 450px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  /* Tablets */
+  .login-form-container {
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 767px) {
+  /* Mobile */
+  .login-info-section {
+    display: none !important;
+  }
+  
+  .login-form-container {
+    max-width: 90%;
+    margin: 0 auto;
+  }
+  
+  .login-card-body {
+    padding: 2rem !important;
+  }
+}
+
+/* Animações suaves para melhor UX */
+.login-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+.login-button {
+  transition: all 0.3s ease;
+}
+
+.login-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4) !important;
+}
+
+/* Melhoria para inputs */
+.login-input:focus {
+  border-color: #007bff !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+  transform: scale(1.02);
+  transition: all 0.3s ease;
+}
+
+/* Responsividade para informações laterais */
+@media (min-width: 1400px) {
+  .login-info-items {
+    font-size: 1.1rem;
+  }
+  
+  .login-info-title {
+    font-size: 4rem !important;
+  }
+}
+
+/* Ajustes para ultra-wide screens */
+@media (min-width: 1920px) {
+  .login-container {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+}
