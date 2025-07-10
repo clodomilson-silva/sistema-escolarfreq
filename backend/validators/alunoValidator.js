@@ -20,22 +20,7 @@ const alunoSchema = Joi.object({
     'string.email': 'Email deve ter um formato válido',
     'string.max': 'Email deve ter no máximo 100 caracteres',
     'any.required': 'Email é obrigatório'
-  }),
-  telefone: Joi.string().pattern(/^[\d\s\-\(\)\+]+$/).min(10).max(20).optional().messages({
-    'string.pattern.base': 'Telefone deve conter apenas números, espaços, parênteses, hífen ou sinal de mais',
-    'string.min': 'Telefone deve ter pelo menos 10 caracteres',
-    'string.max': 'Telefone deve ter no máximo 20 caracteres'
-  }),
-  endereco: Joi.object({
-    rua: Joi.string().max(200).optional(),
-    numero: Joi.string().max(10).optional(),
-    bairro: Joi.string().max(100).optional(),
-    cidade: Joi.string().max(100).optional(),
-    cep: Joi.string().pattern(/^\d{5}-?\d{3}$/).optional().messages({
-      'string.pattern.base': 'CEP deve estar no formato 00000-000'
-    }),
-    estado: Joi.string().length(2).uppercase().optional()
-  }).optional()
+  })
 });
 
 const alunoUpdateSchema = alunoSchema.fork(['matricula'], (schema) => schema.optional());
