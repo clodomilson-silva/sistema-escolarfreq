@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import "./ListPages.css";
 
 interface Aluno {
   id: string;
@@ -69,39 +70,42 @@ function AlunosList() {
   };
 
   return (
-    <div className="min-vh-100 bg-light">
+    <div className="list-page-container">
       <Navbar />
-      <div className="container py-4">
-        <div className="row mb-4">
-          <div className="col-12">
-            <h1 className="h2 text-primary mb-3">👥 Lista de Alunos</h1>
-            <div className="d-flex flex-wrap gap-2">
-              <Link to="/home" className="btn btn-outline-secondary">
-                🏠 Voltar para Home
-              </Link>
-              <Link to="/alunos/novo" className="btn btn-primary">
-                ➕ Cadastrar Novo Aluno
-              </Link>
+      <div className="container">
+        <div className="list-page-header">
+          <div className="row">
+            <div className="col-12">
+              <h1 className="list-page-title text-primary">👥 Lista de Alunos</h1>
+              <p className="list-page-subtitle">Gerencie todos os alunos matriculados no sistema</p>
+              <div className="list-page-actions">
+                <Link to="/home" className="list-page-btn btn btn-outline-secondary">
+                  🏠 Voltar para Home
+                </Link>
+                <Link to="/alunos/novo" className="list-page-btn btn btn-primary">
+                  ➕ Cadastrar Novo Aluno
+                </Link>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="row">
           <div className="col-12">
-            <div className="card shadow-sm">
+            <div className="list-page-card">
               <div className="card-body">
                 {alunos.length === 0 ? (
-                  <div className="text-center py-5">
-                    <div className="display-1 text-muted mb-3">📚</div>
-                    <h4 className="text-muted">Nenhum aluno cadastrado</h4>
-                    <p className="text-muted">Comece cadastrando o primeiro aluno!</p>
-                    <Link to="/alunos/novo" className="btn btn-primary">
+                  <div className="list-page-empty">
+                    <div className="list-page-empty-icon text-muted">📚</div>
+                    <h4 className="list-page-empty-title">Nenhum aluno cadastrado</h4>
+                    <p className="list-page-empty-text">Comece cadastrando o primeiro aluno!</p>
+                    <Link to="/alunos/novo" className="list-page-btn btn btn-primary">
                       Cadastrar Primeiro Aluno
                     </Link>
                   </div>
                 ) : (
                   <div className="table-responsive">
-                    <table className="table table-hover">
+                    <table className="list-page-table table table-hover">
                       <thead className="table-primary">
                         <tr>
                           <th>Nome</th>
@@ -116,29 +120,29 @@ function AlunosList() {
                           <tr key={aluno.id}>
                             <td className="fw-semibold">{aluno.nome}</td>
                             <td>
-                              <span className="badge bg-info">{aluno.matricula}</span>
+                              <span className="list-page-badge badge bg-info">{aluno.matricula}</span>
                             </td>
                             <td>{aluno.email}</td>
                             <td>{new Date(aluno.data_nascimento).toLocaleDateString('pt-BR')}</td>
                             <td className="text-center">
-                              <div className="btn-group" role="group">
+                              <div className="list-page-table-actions">
                                 <button
                                   onClick={() => navigate(`/alunos/${aluno.id}`)}
-                                  className="btn btn-outline-info btn-sm"
+                                  className="list-page-table-btn btn btn-outline-info btn-sm"
                                   title="Ver detalhes"
                                 >
                                   👁️
                                 </button>
                                 <button
                                   onClick={() => navigate(`/alunos/editar/${aluno.id}`)}
-                                  className="btn btn-outline-warning btn-sm"
+                                  className="list-page-table-btn btn btn-outline-warning btn-sm"
                                   title="Editar"
                                 >
                                   ✏️
                                 </button>
                                 <button
                                   onClick={() => excluirAluno(aluno.id)}
-                                  className="btn btn-outline-danger btn-sm"
+                                  className="list-page-table-btn btn btn-outline-danger btn-sm"
                                   title="Excluir"
                                 >
                                   🗑️

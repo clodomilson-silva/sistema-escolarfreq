@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import "./FormPages.css";
 
 function TurmaForm() {
   const [nome, setNome] = useState("");
@@ -73,33 +74,39 @@ function TurmaForm() {
   };
 
   return (
-    <div className="min-vh-100 bg-light">
+    <div className="form-page-container">
       <Navbar />
-      <div className="container py-4">
+      <div className="container">
+        <div className="form-page-header">
+          <div className="row">
+            <div className="col-12">
+              <h1 className="form-page-title text-success">🏫 Cadastrar Nova Turma</h1>
+              <p className="form-page-subtitle">Preencha os dados da nova turma</p>
+              <div className="form-page-actions">
+                <Link to="/home" className="form-page-btn btn btn-outline-secondary">
+                  🏠 Voltar para Home
+                </Link>
+                <Link to="/turmas" className="form-page-btn btn btn-outline-success">
+                  🏫 Ver Lista de Turmas
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <div className="row justify-content-center">
           <div className="col-md-8 col-lg-6">
-            <div className="card shadow-sm">
-              <div className="card-header bg-success text-white">
-                <h1 className="h4 mb-0">🏫 Cadastrar Nova Turma</h1>
-              </div>
-              <div className="card-body">
-                <div className="mb-3">
-                  <Link to="/home" className="btn btn-outline-secondary btn-sm">
-                    🏠 Voltar para Home
-                  </Link>
-                  <Link to="/turmas" className="btn btn-outline-success btn-sm ms-2">
-                    🏫 Ver Lista de Turmas
-                  </Link>
-                </div>
+            <div className="form-page-card">
+              <div className="form-page-form">
 
                 <form onSubmit={handleSubmit}>
-                  <div className="mb-3">
-                    <label htmlFor="nome" className="form-label">
+                  <div className="form-page-form-group">
+                    <label htmlFor="nome" className="form-page-label">
                       Nome da Turma: <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className="form-page-input"
                       id="nome"
                       value={nome}
                       onChange={(e) => setNome(e.target.value)}
@@ -109,12 +116,12 @@ function TurmaForm() {
                     />
                   </div>
 
-                  <div className="mb-3">
-                    <label htmlFor="ano" className="form-label">
+                  <div className="form-page-form-group">
+                    <label htmlFor="ano" className="form-page-label">
                       Ano Escolar: <span className="text-danger">*</span>
                     </label>
                     <select
-                      className="form-select"
+                      className="form-page-select"
                       id="ano"
                       value={ano}
                       onChange={(e) => setAno(e.target.value === "" ? "" : Number(e.target.value))}
@@ -134,12 +141,12 @@ function TurmaForm() {
                     </select>
                   </div>
 
-                  <div className="mb-4">
-                    <label htmlFor="turno" className="form-label">
+                  <div className="form-page-form-group">
+                    <label htmlFor="turno" className="form-page-label">
                       Turno: <span className="text-danger">*</span>
                     </label>
                     <select
-                      className="form-select"
+                      className="form-page-select"
                       id="turno"
                       value={turno}
                       onChange={(e) => setTurno(e.target.value)}
@@ -153,10 +160,13 @@ function TurmaForm() {
                     </select>
                   </div>
 
-                  <div className="d-grid">
+                  <div className="form-page-form-actions">
+                    <Link to="/turmas" className="form-page-cancel-btn">
+                      ❌ Cancelar
+                    </Link>
                     <button 
                       type="submit" 
-                      className="btn btn-success btn-lg"
+                      className="form-page-submit-btn btn btn-success"
                       disabled={loading}
                     >
                       {loading ? (

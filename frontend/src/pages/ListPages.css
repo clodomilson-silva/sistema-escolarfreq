@@ -1,0 +1,391 @@
+/* ===== ESTILOS RESPONSIVOS PARA PÁGINAS DE LISTAGEM ===== */
+
+/* Container principal para páginas de listagem */
+.list-page-container {
+  background-color: #f8f9fa;
+  width: 100%;
+  padding: 2rem 0;
+  box-sizing: border-box;
+}
+
+/* Em telas menores, usar altura mínima */
+@media (max-width: 991px) {
+  .list-page-container {
+    min-height: 100vh;
+  }
+}
+
+/* Em desktop, altura automática baseada no conteúdo */
+@media (min-width: 992px) {
+  .list-page-container {
+    min-height: auto;
+    height: auto;
+    padding: 3rem 0;
+  }
+}
+
+/* Cabeçalho da página */
+.list-page-header {
+  background-color: #fff;
+  border-bottom: 1px solid #e9ecef;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+}
+
+.list-page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.list-page-subtitle {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+}
+
+/* Botões de ação */
+.list-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.list-page-btn {
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.list-page-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Card principal */
+.list-page-card {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.list-page-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Estado vazio */
+.list-page-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.list-page-empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.6;
+}
+
+.list-page-empty-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #6c757d;
+  margin-bottom: 1rem;
+}
+
+.list-page-empty-text {
+  color: #6c757d;
+  margin-bottom: 2rem;
+}
+
+/* Tabela responsiva */
+.list-page-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.list-page-table th {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 2px solid #e9ecef;
+  color: #495057;
+}
+
+.list-page-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
+}
+
+.list-page-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Badges */
+.list-page-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Botões de ação na tabela */
+.list-page-table-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.list-page-table-btn {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+}
+
+.list-page-table-btn:hover {
+  transform: scale(1.1);
+}
+
+/* ===== RESPONSIVIDADE ===== */
+
+/* Desktop grande (1400px+) */
+@media (min-width: 1400px) {
+  .list-page-header {
+    padding: 3rem 0;
+  }
+  
+  .list-page-title {
+    font-size: 3rem;
+  }
+  
+  .list-page-subtitle {
+    font-size: 1.2rem;
+  }
+  
+  .list-page-actions {
+    gap: 1.5rem;
+  }
+  
+  .list-page-btn {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+  }
+}
+
+/* Desktop médio (1200px - 1399px) */
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .list-page-header {
+    padding: 2.5rem 0;
+  }
+  
+  .list-page-title {
+    font-size: 2.75rem;
+  }
+  
+  .list-page-btn {
+    padding: 0.875rem 1.75rem;
+  }
+}
+
+/* Desktop pequeno (992px - 1199px) */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .list-page-header {
+    padding: 2rem 0;
+  }
+  
+  .list-page-title {
+    font-size: 2.5rem;
+  }
+}
+
+/* Tablet (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+  .list-page-header {
+    padding: 1.5rem 0;
+  }
+  
+  .list-page-title {
+    font-size: 2.25rem;
+  }
+  
+  .list-page-subtitle {
+    font-size: 1rem;
+  }
+  
+  .list-page-actions {
+    gap: 0.75rem;
+  }
+  
+  .list-page-btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.95rem;
+  }
+  
+  .list-page-table th,
+  .list-page-table td {
+    padding: 0.75rem;
+  }
+}
+
+/* Mobile grande (576px - 767px) */
+@media (min-width: 576px) and (max-width: 767px) {
+  .list-page-header {
+    padding: 1.25rem 0;
+  }
+  
+  .list-page-title {
+    font-size: 2rem;
+  }
+  
+  .list-page-subtitle {
+    font-size: 0.95rem;
+  }
+  
+  .list-page-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .list-page-btn {
+    padding: 0.75rem 1.5rem;
+    justify-content: center;
+  }
+  
+  .list-page-table th,
+  .list-page-table td {
+    padding: 0.625rem;
+    font-size: 0.9rem;
+  }
+  
+  .list-page-table-actions {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .list-page-table-btn {
+    padding: 0.375rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile pequeno (até 575px) */
+@media (max-width: 575px) {
+  .list-page-header {
+    padding: 1rem 0;
+  }
+  
+  .list-page-title {
+    font-size: 1.75rem;
+  }
+  
+  .list-page-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .list-page-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .list-page-btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.9rem;
+    justify-content: center;
+  }
+  
+  .list-page-empty {
+    padding: 3rem 1rem;
+  }
+  
+  .list-page-empty-icon {
+    font-size: 3rem;
+  }
+  
+  .list-page-empty-title {
+    font-size: 1.25rem;
+  }
+  
+  .list-page-table {
+    font-size: 0.85rem;
+  }
+  
+  .list-page-table th,
+  .list-page-table td {
+    padding: 0.5rem;
+  }
+  
+  .list-page-table-actions {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .list-page-table-btn {
+    padding: 0.25rem;
+    font-size: 0.85rem;
+  }
+  
+  .list-page-badge {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Mobile muito pequeno (até 480px) */
+@media (max-width: 480px) {
+  .list-page-header {
+    padding: 0.75rem 0;
+  }
+  
+  .list-page-title {
+    font-size: 1.5rem;
+  }
+  
+  .list-page-subtitle {
+    font-size: 0.85rem;
+  }
+  
+  .list-page-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .list-page-empty {
+    padding: 2rem 0.75rem;
+  }
+  
+  .list-page-empty-icon {
+    font-size: 2.5rem;
+  }
+  
+  .list-page-empty-title {
+    font-size: 1.1rem;
+  }
+  
+  .list-page-table {
+    font-size: 0.8rem;
+  }
+  
+  .list-page-table th,
+  .list-page-table td {
+    padding: 0.375rem;
+  }
+  
+  .list-page-badge {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+} 

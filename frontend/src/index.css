@@ -1,3 +1,4 @@
+/* ===== CONFIGURAÇÕES GLOBAIS ===== */
 a {
   font-weight: 500;
   color: #646cff;
@@ -7,20 +8,21 @@ a:hover {
   color: #535bf2;
 }
 
+body, html {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   padding: 0;
-  display: flex;
-  place-items: center;
   min-height: 100vh;
-  width: 100%;
-  flex-direction: column;
-  text-align: center;
-  background-color: var(--background-color); /* Garante que o fundo seja aplicado */
+  width: 100vw;
+  background-color: var(--background-color);
 }
 
 html {
-  height: 100%; /* Garante que o html ocupe toda a altura */
+  height: 100%;
+  box-sizing: border-box;
 }
 
 h1 {
@@ -60,7 +62,7 @@ button:focus-visible {
   }
 }
 
-/* Responsiveness */
+/* ===== RESPONSIVIDADE GLOBAL ===== */
 @media (max-width: 768px) {
   h1 {
     font-size: 2.5em;
@@ -87,19 +89,42 @@ button:focus-visible {
   }
 }
 
-/* ===== MELHORIAS RESPONSIVAS PARA LOGIN ===== */
+/* ===== CONFIGURAÇÕES ESPECÍFICAS PARA LOGIN ===== */
 
-/* Breakpoints customizados para melhor responsividade */
+/* Container da página de login - altura ajustável */
+.login-page-container {
+  min-height: 100vh;
+  padding: 2rem 0;
+  box-sizing: border-box;
+}
+
+/* Em telas menores, usar altura mínima */
+@media (max-width: 991px) {
+  .login-page-container {
+    min-height: 100vh;
+  }
+}
+
+/* Em desktop, altura automática baseada no conteúdo */
+@media (min-width: 992px) {
+  .login-page-container {
+    min-height: auto;
+    height: auto;
+    padding: 3rem 0;
+  }
+}
+
+/* Breakpoints customizados para melhor responsividade do login */
 @media (min-width: 1200px) {
   /* Telas grandes - Desktop */
   .login-form-container {
     max-width: 500px;
   }
-  
+
   .login-title {
     font-size: 2.5rem !important;
   }
-  
+
   .login-subtitle {
     font-size: 1.3rem !important;
   }
@@ -124,18 +149,18 @@ button:focus-visible {
   .login-info-section {
     display: none !important;
   }
-  
+
   .login-form-container {
     max-width: 90%;
     margin: 0 auto;
   }
-  
+
   .login-card-body {
     padding: 2rem !important;
   }
 }
 
-/* Animações suaves para melhor UX */
+/* Animações suaves para melhor UX do login */
 .login-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -154,7 +179,7 @@ button:focus-visible {
   box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4) !important;
 }
 
-/* Melhoria para inputs */
+/* Melhoria para inputs do login */
 .login-input:focus {
   border-color: #007bff !important;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
@@ -162,18 +187,18 @@ button:focus-visible {
   transition: all 0.3s ease;
 }
 
-/* Responsividade para informações laterais */
+/* Responsividade para informações laterais do login */
 @media (min-width: 1400px) {
   .login-info-items {
     font-size: 1.1rem;
   }
-  
+
   .login-info-title {
     font-size: 4rem !important;
   }
 }
 
-/* Ajustes para ultra-wide screens */
+/* Ajustes para ultra-wide screens no login */
 @media (min-width: 1920px) {
   .login-container {
     max-width: 1600px;

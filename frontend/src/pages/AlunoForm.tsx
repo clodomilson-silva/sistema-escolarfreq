@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import "./FormPages.css";
 
 function AlunoForm() {
   const [nome, setNome] = useState("");
@@ -81,33 +82,39 @@ function AlunoForm() {
   };
 
   return (
-    <div className="min-vh-100 bg-light">
+    <div className="form-page-container">
       <Navbar />
-      <div className="container py-4">
+      <div className="container">
+        <div className="form-page-header">
+          <div className="row">
+            <div className="col-12">
+              <h1 className="form-page-title text-primary">📝 Cadastrar Novo Aluno</h1>
+              <p className="form-page-subtitle">Preencha os dados do novo aluno</p>
+              <div className="form-page-actions">
+                <Link to="/home" className="form-page-btn btn btn-outline-secondary">
+                  🏠 Voltar para Home
+                </Link>
+                <Link to="/alunos" className="form-page-btn btn btn-outline-info">
+                  👥 Ver Lista de Alunos
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <div className="row justify-content-center">
           <div className="col-md-8 col-lg-6">
-            <div className="card shadow-sm">
-              <div className="card-header bg-primary text-white">
-                <h1 className="h4 mb-0">📝 Cadastrar Novo Aluno</h1>
-              </div>
-              <div className="card-body">
-                <div className="mb-3">
-                  <Link to="/home" className="btn btn-outline-secondary btn-sm">
-                    🏠 Voltar para Home
-                  </Link>
-                  <Link to="/alunos" className="btn btn-outline-info btn-sm ms-2">
-                    👥 Ver Lista de Alunos
-                  </Link>
-                </div>
+            <div className="form-page-card">
+              <div className="form-page-form">
 
                 <form onSubmit={handleSubmit}>
-                  <div className="mb-3">
-                    <label htmlFor="nome" className="form-label">
+                  <div className="form-page-form-group">
+                    <label htmlFor="nome" className="form-page-label">
                       Nome Completo: <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className="form-page-input"
                       id="nome"
                       value={nome}
                       onChange={(e) => setNome(e.target.value)}
@@ -116,13 +123,13 @@ function AlunoForm() {
                     />
                   </div>
 
-                  <div className="mb-3">
-                    <label htmlFor="matricula" className="form-label">
+                  <div className="form-page-form-group">
+                    <label htmlFor="matricula" className="form-page-label">
                       Matrícula: <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className="form-page-input"
                       id="matricula"
                       value={matricula}
                       onChange={(e) => setMatricula(e.target.value)}
@@ -131,13 +138,13 @@ function AlunoForm() {
                     />
                   </div>
 
-                  <div className="mb-3">
-                    <label htmlFor="dataNascimento" className="form-label">
+                  <div className="form-page-form-group">
+                    <label htmlFor="dataNascimento" className="form-page-label">
                       Data de Nascimento: <span className="text-danger">*</span>
                     </label>
                     <input
                       type="date"
-                      className="form-control"
+                      className="form-page-input"
                       id="dataNascimento"
                       value={dataNascimento}
                       onChange={(e) => setDataNascimento(e.target.value)}
@@ -145,13 +152,13 @@ function AlunoForm() {
                     />
                   </div>
 
-                  <div className="mb-4">
-                    <label htmlFor="email" className="form-label">
+                  <div className="form-page-form-group">
+                    <label htmlFor="email" className="form-page-label">
                       Email: <span className="text-danger">*</span>
                     </label>
                     <input
                       type="email"
-                      className="form-control"
+                      className="form-page-input"
                       id="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -160,8 +167,11 @@ function AlunoForm() {
                     />
                   </div>
 
-                  <div className="d-grid">
-                    <button type="submit" className="btn btn-primary btn-lg">
+                  <div className="form-page-form-actions">
+                    <Link to="/alunos" className="form-page-cancel-btn">
+                      ❌ Cancelar
+                    </Link>
+                    <button type="submit" className="form-page-submit-btn btn btn-primary">
                       ✅ Cadastrar Aluno
                     </button>
                   </div>

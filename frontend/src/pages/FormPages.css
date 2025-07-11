@@ -1,0 +1,465 @@
+/* ===== ESTILOS RESPONSIVOS PARA PÁGINAS DE FORMULÁRIO ===== */
+
+/* Container principal para páginas de formulário */
+.form-page-container {
+  background-color: #f8f9fa;
+  width: 100%;
+  padding: 2rem 0;
+  box-sizing: border-box;
+}
+
+/* Em telas menores, usar altura mínima */
+@media (max-width: 991px) {
+  .form-page-container {
+    min-height: 100vh;
+  }
+}
+
+/* Em desktop, altura automática baseada no conteúdo */
+@media (min-width: 992px) {
+  .form-page-container {
+    min-height: auto;
+    height: auto;
+    padding: 3rem 0;
+  }
+}
+
+/* Cabeçalho da página */
+.form-page-header {
+  background-color: #fff;
+  border-bottom: 1px solid #e9ecef;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+}
+
+.form-page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.form-page-subtitle {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+}
+
+/* Botões de ação */
+.form-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.form-page-btn {
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-page-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Card principal do formulário */
+.form-page-card {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-page-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Formulário */
+.form-page-form {
+  padding: 2rem;
+}
+
+.form-page-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-page-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.form-page-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #fff;
+}
+
+.form-page-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-page-select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.form-page-select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-page-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-page-textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Botões do formulário */
+.form-page-form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.form-page-submit-btn {
+  padding: 0.875rem 2rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.form-page-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.form-page-cancel-btn {
+  padding: 0.875rem 2rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 2px solid #6c757d;
+  background-color: transparent;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.form-page-cancel-btn:hover {
+  background-color: #6c757d;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Alertas */
+.form-page-alert {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 1px solid transparent;
+}
+
+.form-page-alert-danger {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+}
+
+.form-page-alert-success {
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+  color: #155724;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+
+/* Desktop grande (1400px+) */
+@media (min-width: 1400px) {
+  .form-page-header {
+    padding: 3rem 0;
+  }
+  
+  .form-page-title {
+    font-size: 3rem;
+  }
+  
+  .form-page-subtitle {
+    font-size: 1.2rem;
+  }
+  
+  .form-page-actions {
+    gap: 1.5rem;
+  }
+  
+  .form-page-btn {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+  }
+  
+  .form-page-card {
+    max-width: 900px;
+  }
+  
+  .form-page-form {
+    padding: 3rem;
+  }
+}
+
+/* Desktop médio (1200px - 1399px) */
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .form-page-header {
+    padding: 2.5rem 0;
+  }
+  
+  .form-page-title {
+    font-size: 2.75rem;
+  }
+  
+  .form-page-btn {
+    padding: 0.875rem 1.75rem;
+  }
+  
+  .form-page-card {
+    max-width: 850px;
+  }
+  
+  .form-page-form {
+    padding: 2.5rem;
+  }
+}
+
+/* Desktop pequeno (992px - 1199px) */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .form-page-header {
+    padding: 2rem 0;
+  }
+  
+  .form-page-title {
+    font-size: 2.5rem;
+  }
+  
+  .form-page-card {
+    max-width: 800px;
+  }
+  
+  .form-page-form {
+    padding: 2rem;
+  }
+}
+
+/* Tablet (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+  .form-page-header {
+    padding: 1.5rem 0;
+  }
+  
+  .form-page-title {
+    font-size: 2.25rem;
+  }
+  
+  .form-page-subtitle {
+    font-size: 1rem;
+  }
+  
+  .form-page-actions {
+    gap: 0.75rem;
+  }
+  
+  .form-page-btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.95rem;
+  }
+  
+  .form-page-card {
+    max-width: 100%;
+    margin: 0 1rem;
+  }
+  
+  .form-page-form {
+    padding: 1.5rem;
+  }
+}
+
+/* Mobile grande (576px - 767px) */
+@media (min-width: 576px) and (max-width: 767px) {
+  .form-page-header {
+    padding: 1.25rem 0;
+  }
+  
+  .form-page-title {
+    font-size: 2rem;
+  }
+  
+  .form-page-subtitle {
+    font-size: 0.95rem;
+  }
+  
+  .form-page-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .form-page-btn {
+    padding: 0.75rem 1.5rem;
+    justify-content: center;
+  }
+  
+  .form-page-card {
+    max-width: 100%;
+    margin: 0 0.5rem;
+  }
+  
+  .form-page-form {
+    padding: 1.25rem;
+  }
+  
+  .form-page-form-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .form-page-submit-btn,
+  .form-page-cancel-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Mobile pequeno (até 575px) */
+@media (max-width: 575px) {
+  .form-page-header {
+    padding: 1rem 0;
+  }
+  
+  .form-page-title {
+    font-size: 1.75rem;
+  }
+  
+  .form-page-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .form-page-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .form-page-btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.9rem;
+    justify-content: center;
+  }
+  
+  .form-page-card {
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
+  
+  .form-page-form {
+    padding: 1rem;
+  }
+  
+  .form-page-input,
+  .form-page-select,
+  .form-page-textarea {
+    font-size: 0.95rem;
+    padding: 0.625rem 0.875rem;
+  }
+  
+  .form-page-form-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .form-page-submit-btn,
+  .form-page-cancel-btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.95rem;
+    padding: 0.75rem 1.5rem;
+  }
+}
+
+/* Mobile muito pequeno (até 480px) */
+@media (max-width: 480px) {
+  .form-page-header {
+    padding: 0.75rem 0;
+  }
+  
+  .form-page-title {
+    font-size: 1.5rem;
+  }
+  
+  .form-page-subtitle {
+    font-size: 0.85rem;
+  }
+  
+  .form-page-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .form-page-form {
+    padding: 0.75rem;
+  }
+  
+  .form-page-input,
+  .form-page-select,
+  .form-page-textarea {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .form-page-submit-btn,
+  .form-page-cancel-btn {
+    font-size: 0.9rem;
+    padding: 0.625rem 1.25rem;
+  }
+} 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import "./FormPages.css";
 
 function TurmaForm() {
   const [nome, setNome] = useState("");
@@ -73,7 +74,7 @@ function TurmaForm() {
   };
 
   return (
-    <div className="min-vh-100 bg-light">
+    <div className="form-page-container">
       <Navbar />
       <div className="container py-4">
         <div className="row justify-content-center">
