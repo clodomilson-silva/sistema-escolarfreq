@@ -74,7 +74,7 @@ function TurmaForm() {
   };
 
   return (
-    <div className="form-page-container">
+    <div className="min-vh-100 bg-light">
       <Navbar />
       <div className="container py-4">
         <div className="row justify-content-center">

@@ -77,9 +77,9 @@ function TurmasList() {
 
   if (loading) {
     return (
-      <div className="list-page-container">
+      <div className="min-vh-100 bg-light">
         <Navbar />
-        <div className="container">
+        <div className="container py-4">
           <div className="text-center py-5">
             <div className="spinner-border text-primary" role="status">
               <span className="visually-hidden">Carregando...</span>
@@ -92,9 +92,9 @@ function TurmasList() {
   }
 
   return (
-    <div className="list-page-container">
+    <div className="min-vh-100 bg-light">
       <Navbar />
-      <div className="container">
+      <div className="container py-4">
         <div className="list-page-header">
           <div className="row">
             <div className="col-12">

@@ -8,7 +8,7 @@ function Home() {
   const { admin } = useAuth();
 
   return (
-    <div className="home-viewport">
+    <div className="min-vh-100 bg-light">
       <Navbar />
       <div className="container py-5">
         <div className="row">
