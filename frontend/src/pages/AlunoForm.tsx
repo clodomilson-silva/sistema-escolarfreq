@@ -82,9 +82,9 @@ function AlunoForm() {
   };
 
   return (
-    <div className="form-page-container">
+    <div className="min-vh-100 bg-light">
       <Navbar />
-      <div className="container">
+      <div className="container py-4">
         <div className="form-page-header">
           <div className="row">
             <div className="col-12">

@@ -1,43 +1,35 @@
-/* Centraliza todo o conteúdo da Home vertical e horizontalmente */
+/* Centraliza todo o conteúdo da Home horizontalmente, mas não verticalmente */
 .home-viewport {
   width: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: flex-start;
   background: linear-gradient(135deg, #6a82fb 0%, #a084ee 100%);
   overflow-x: hidden;
   box-sizing: border-box;
-  padding: 2rem 0;
+  padding: 0;
 }
 
-/* Em telas menores, usar altura mínima */
-@media (max-width: 991px) {
-  .home-viewport {
-    min-height: 100vh;
-  }
-}
-
-/* Em desktop, altura automática baseada no conteúdo */
-@media (min-width: 992px) {
-  .home-viewport {
-    min-height: auto;
-    height: auto;
-    padding: 3rem 0;
-  }
-}
-
-.container {
+/* Remover qualquer sobrescrita de .container para garantir padrão Bootstrap */
+/* .container {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 2rem 1rem 1rem 1rem;
   min-height: 80vh;
   box-sizing: border-box;
+} */
+
+/* Se quiser, pode deixar só um leve padding lateral: */
+.container {
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 /* Adiciona box-sizing global para todos os elementos */
@@ -52,6 +44,7 @@
   justify-content: center;
   width: 100%;
   max-width: 1200px;
+  margin: 0 auto;
 }
 
 .col-md-6 {
@@ -70,6 +63,18 @@
   max-width: 500px;
   min-width: 0;
   box-sizing: border-box;
+}
+
+/* Remove espaço extra acima do conteúdo principal */
+.col-12.text-center.mb-5 {
+  margin-top: 1.5rem !important;
+  margin-bottom: 2rem !important;
+}
+
+/* Navbar sempre colada no topo */
+nav.navbar {
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
 }
 
 /* ===== RESPONSIVIDADE MELHORADA ===== */

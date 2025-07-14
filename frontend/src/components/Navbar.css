@@ -1,14 +1,26 @@
+/* ===== PADRÃO BOOTSTRAP NAVBAR ===== */
+/* Remover sobrescritas que interferem no layout Bootstrap */
+/* .navbar,
+.navbar .container,
+.navbar-collapse {
+  width: auto !important;
+  max-width: none !important;
+  display: block !important;
+  flex: none !important;
+} */
+
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background-color: #fff;
   border-bottom: 2px solid #e1e5e9;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  box-sizing: border-box;
+  background-color: #fff;
 }
+
+/* Não sobrescrever .container! */
+/* .container { } */
+/* .navbar .container{
+  padding: 0;
+} */
+
 
 .navbar-brand h2 {
   margin: 0;

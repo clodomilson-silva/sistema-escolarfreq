@@ -101,9 +101,9 @@ function AlunoEdit() {
   }
 
   return (
-    <>
+    <div className="min-vh-100 bg-light">
       <Navbar />
-      <div className="container-fluid py-4">
+      <div className="container py-4">
         <div className="row justify-content-center">
           <div className="col-lg-8 col-xl-6">
             {/* Header */}
@@ -269,7 +269,7 @@ function AlunoEdit() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

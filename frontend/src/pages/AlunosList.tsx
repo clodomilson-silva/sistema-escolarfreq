@@ -70,9 +70,9 @@ function AlunosList() {
   };
 
   return (
-    <div className="list-page-container">
+    <div className="min-vh-100 bg-light">
       <Navbar />
-      <div className="container">
+      <div className="container py-4">
         <div className="list-page-header">
           <div className="row">
             <div className="col-12">
