@@ -31,3 +31,22 @@ Thumbs.db
 .cache/
 dist/
 build/
+
+# ========================================
+# ARQUIVOS DE TESTE E DESENVOLVIMENTO
+# ========================================
+
+# Scripts de teste específicos do backend
+test-*.js
+debug-*.js
+teste-*.js
+
+# Arquivos JSON de teste
+test-*.json
+debug-*.json
+exemplo-*.json
+
+# Documentação temporária
+*_TEMP.md
+*_DRAFT.md
+IMPLEMENTACAO_*.md

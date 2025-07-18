@@ -6,7 +6,7 @@ import "./FormPages.css";
 
 function TurmaForm() {
   const [nome, setNome] = useState("");
-  const [ano, setAno] = useState<number | "">("");
+  const [ano, setAno] = useState("");
   const [turno, setTurno] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ function TurmaForm() {
     try {
       const response = await api.post("/turmas", {
         nome,
-        ano: Number(ano),
+        ano: ano,
         turno,
       });
       
@@ -118,27 +118,18 @@ function TurmaForm() {
 
                   <div className="form-page-form-group">
                     <label htmlFor="ano" className="form-page-label">
-                      Ano Escolar: <span className="text-danger">*</span>
+                      Número da Turma: <span className="text-danger">*</span>
                     </label>
-                    <select
-                      className="form-page-select"
+                    <input
+                      type="text"
+                      className="form-page-input"
                       id="ano"
                       value={ano}
-                      onChange={(e) => setAno(e.target.value === "" ? "" : Number(e.target.value))}
+                      onChange={(e) => setAno(e.target.value)}
                       required
                       disabled={loading}
-                    >
-                      <option value="">Selecione o ano</option>
-                      <option value={1}>1º Ano</option>
-                      <option value={2}>2º Ano</option>
-                      <option value={3}>3º Ano</option>
-                      <option value={4}>4º Ano</option>
-                      <option value={5}>5º Ano</option>
-                      <option value={6}>6º Ano</option>
-                      <option value={7}>7º Ano</option>
-                      <option value={8}>8º Ano</option>
-                      <option value={9}>9º Ano</option>
-                    </select>
+                      placeholder="Ex: 101, 201.1, 301.A, 1º ano..."
+                    />
                   </div>
 
                   <div className="form-page-form-group">
@@ -154,9 +145,10 @@ function TurmaForm() {
                       disabled={loading}
                     >
                       <option value="">Selecione o turno</option>
-                      <option value="Manhã">🌅 Manhã</option>
-                      <option value="Tarde">☀️ Tarde</option>
-                      <option value="Noite">🌙 Noite</option>
+                      <option value="matutino">🌅 Manhã (Matutino)</option>
+                      <option value="vespertino">☀️ Tarde (Vespertino)</option>
+                      <option value="noturno">🌙 Noite (Noturno)</option>
+                      <option value="integral">🌞 Integral</option>
                     </select>
                   </div>
 

@@ -29,3 +29,28 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ========================================
+# ARQUIVOS DE TESTE E DESENVOLVIMENTO
+# ========================================
+
+# Componentes e páginas de teste
+src/test/
+src/debug/
+src/**/*Test.tsx
+src/**/*Debug.tsx
+src/**/*Temp.tsx
+
+# Arquivos CSS de teste
+*.test.css
+*.debug.css
+
+# Storybook
+.storybook/
+storybook-static/
+
+# Coverage
+coverage/
+
+# Vite cache
+.vite/

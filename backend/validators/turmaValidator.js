@@ -6,12 +6,11 @@ const turmaSchema = Joi.object({
     'string.min': 'Nome da turma deve ter pelo menos 2 caracteres',
     'string.max': 'Nome da turma deve ter no máximo 100 caracteres'
   }),
-  ano: Joi.number().integer().min(1).max(12).required().messages({
-    'number.base': 'Ano deve ser um número',
-    'number.integer': 'Ano deve ser um número inteiro',
-    'number.min': 'Ano deve ser pelo menos 1',
-    'number.max': 'Ano deve ser no máximo 12',
-    'any.required': 'Ano é obrigatório'
+  ano: Joi.string().min(1).max(20).required().messages({
+    'string.empty': 'Número da turma é obrigatório',
+    'string.min': 'Número da turma deve ter pelo menos 1 caractere',
+    'string.max': 'Número da turma deve ter no máximo 20 caracteres',
+    'any.required': 'Número da turma é obrigatório'
   }),
   turno: Joi.string().valid('matutino', 'vespertino', 'noturno', 'integral').required().messages({
     'any.only': 'Turno deve ser: matutino, vespertino, noturno ou integral',

@@ -6,7 +6,7 @@ import Navbar from "../components/Navbar";
 interface Turma {
   id: string;
   nome: string;
-  ano: number;
+  ano: string;
   turno: string;
   criado_em?: string;
   atualizado_em?: string;
@@ -16,6 +16,18 @@ function TurmasList() {
   const [turmas, setTurmas] = useState<Turma[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // Função para mapear turnos do backend para exibição
+  const formatarTurno = (turno: string) => {
+    const turnoMap: { [key: string]: { label: string; emoji: string; color: string } } = {
+      'matutino': { label: 'Manhã', emoji: '🌅', color: 'bg-warning' },
+      'vespertino': { label: 'Tarde', emoji: '☀️', color: 'bg-info' },
+      'noturno': { label: 'Noite', emoji: '🌙', color: 'bg-dark' },
+      'integral': { label: 'Integral', emoji: '🌞', color: 'bg-success' }
+    };
+    
+    return turnoMap[turno] || { label: turno, emoji: '⏰', color: 'bg-secondary' };
+  };
 
   useEffect(() => {
     carregarTurmas();
@@ -127,7 +139,7 @@ function TurmasList() {
                       <thead className="table-success">
                         <tr>
                           <th>Nome da Turma</th>
-                          <th>Ano</th>
+                          <th>Número</th>
                           <th>Turno</th>
                           <th>Data Criação</th>
                           <th className="text-center">Ações</th>
@@ -138,19 +150,24 @@ function TurmasList() {
                           <tr key={turma.id}>
                             <td className="fw-semibold">{turma.nome}</td>
                             <td>
-                              <span className="badge bg-primary">{turma.ano}º Ano</span>
+                              <span className="badge bg-primary">{turma.ano}</span>
                             </td>
                             <td>
-                              <span className={`badge ${
-                                turma.turno === 'Manhã' ? 'bg-warning' : 
-                                turma.turno === 'Tarde' ? 'bg-info' : 'bg-dark'
-                              }`}>
-                                {turma.turno}
+                              <span className={`badge ${formatarTurno(turma.turno).color}`}>
+                                {formatarTurno(turma.turno).emoji} {formatarTurno(turma.turno).label}
                               </span>
                             </td>
                             <td>
                               {turma.criado_em ? 
-                                new Date(turma.criado_em).toLocaleDateString('pt-BR') : 
+                                (() => {
+                                  try {
+                                    const data = new Date(turma.criado_em);
+                                    return data.toLocaleDateString('pt-BR');
+                                  } catch {
+                                    console.error('Erro ao formatar data:', turma.criado_em);
+                                    return 'Data inválida';
+                                  }
+                                })() : 
                                 '-'
                               }
                             </td>
@@ -159,9 +176,9 @@ function TurmasList() {
                                 <button
                                   onClick={() => navigate(`/turmas/${turma.id}`)}
                                   className="btn btn-outline-info btn-sm"
-                                  title="Ver detalhes"
+                                  title="Ver detalhes e gerenciar alunos"
                                 >
-                                  👁️
+                                  �
                                 </button>
                                 <button
                                   onClick={() => navigate(`/turmas/editar/${turma.id}`)}

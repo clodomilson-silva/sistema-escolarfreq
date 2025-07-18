@@ -22,18 +22,94 @@ db.sqlite3
 build/
 dist/
 
+# ========================================
+# ARQUIVOS DE DESENVOLVIMENTO E TESTE
+# ========================================
+
+# Arquivos de teste do backend
+backend/test-*.js
+backend/debug-*.js
+
 # Arquivos de documentação temporária e desenvolvimento
 STATUS_CORRECOES.md
 TESTE_API.md
 CONFIGURACAO.md
 COMANDOS.md
 SISTEMA_PRONTO.md
+ALTERACOES_REALIZADAS.md
+README_OLD.md
+GITIGNORE_CONFIG.md
+
+# Arquivos JSON de teste
+test-*.json
+debug-*.json
 
 # Logs e arquivos temporários
 *.log
 *.tmp
 temp/
+logs/
+
+# ========================================
+# CREDENCIAIS E CONFIGURAÇÕES SENSÍVEIS
+# ========================================
 
 # Credenciais do Firebase (backup)
 *firebase-credentials*.json
 !firebase-credentials.example.json
+
+# Chaves de API e tokens
+*.key
+*.pem
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ========================================
+# ARQUIVOS DO SISTEMA OPERACIONAL
+# ========================================
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Linux
+*~
+.nfs*
+
+# ========================================
+# ARQUIVOS DE BACKUP E TEMPORÁRIOS
+# ========================================
+
+# Backups
+*.bak
+*.backup
+*.old
+*backup*
+
+# Arquivos temporários de desenvolvimento
+scratch/
+temp/
+tmp/
+devnotes/
+notes/
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock

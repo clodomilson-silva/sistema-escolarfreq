@@ -6,6 +6,8 @@ import AlunoDetalhes from "./pages/AlunoDetalhes";
 import AlunoEdit from "./pages/AlunoEdit";
 import TurmasList from "./pages/TurmasList";
 import TurmaForm from "./pages/TurmaForm";
+import TurmaDetalhes from "./pages/TurmaDetalhes";
+import TurmaEdit from "./pages/TurmaEdit";
 import LoginAuth from "./pages/LoginAuth";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -59,6 +61,18 @@ export default function AppRoutes() {
         <Route path="/turmas/nova" element={
           <ProtectedRoute>
             <TurmaForm />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/turmas/:id" element={
+          <ProtectedRoute>
+            <TurmaDetalhes />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/turmas/editar/:id" element={
+          <ProtectedRoute>
+            <TurmaEdit />
           </ProtectedRoute>
         } />
       </Routes>

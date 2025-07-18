@@ -5,6 +5,22 @@ class TurmaService {
     this.collection = 'turmas';
   }
 
+  // Função auxiliar para converter timestamps do Firestore
+  formatarTurmaParaResposta(turmaData) {
+    const turma = { ...turmaData };
+    
+    // Converter timestamps do Firestore para strings ISO
+    if (turma.criado_em && turma.criado_em._seconds) {
+      turma.criado_em = new Date(turma.criado_em._seconds * 1000).toISOString();
+    }
+    
+    if (turma.atualizado_em && turma.atualizado_em._seconds) {
+      turma.atualizado_em = new Date(turma.atualizado_em._seconds * 1000).toISOString();
+    }
+    
+    return turma;
+  }
+
   async criarTurma(dadosTurma) {
     try {
       const db = getFirestore();
@@ -18,7 +34,7 @@ class TurmaService {
         throw new Error('Já existe uma turma com este nome');
       }
 
-      const agora = new Date();
+      const agora = new Date().toISOString();
       const turma = {
         ...dadosTurma,
         alunos: dadosTurma.alunos || [],
@@ -52,10 +68,12 @@ class TurmaService {
 
       const snapshot = await query.orderBy('nome').get();
       
-      return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      return snapshot.docs.map(doc => 
+        this.formatarTurmaParaResposta({
+          id: doc.id,
+          ...doc.data()
+        })
+      );
     } catch (error) {
       throw new Error(`Erro ao listar turmas: ${error.message}`);
     }
@@ -70,10 +88,10 @@ class TurmaService {
         return null;
       }
 
-      return {
+      return this.formatarTurmaParaResposta({
         id: doc.id,
         ...doc.data()
-      };
+      });
     } catch (error) {
       throw new Error(`Erro ao obter turma: ${error.message}`);
     }
@@ -101,7 +119,7 @@ class TurmaService {
 
       const dadosAtualizacao = {
         ...dadosTurma,
-        atualizado_em: new Date()
+        atualizado_em: new Date().toISOString()
       };
 
       await db.collection(this.collection).doc(id).update(dadosAtualizacao);
@@ -147,7 +165,7 @@ class TurmaService {
       alunos.push(alunoId);
       await db.collection(this.collection).doc(turmaId).update({
         alunos,
-        atualizado_em: new Date()
+        atualizado_em: new Date().toISOString()
       });
 
       return await this.obterTurmaPorId(turmaId);
@@ -172,7 +190,7 @@ class TurmaService {
       
       await db.collection(this.collection).doc(turmaId).update({
         alunos: novoAlunos,
-        atualizado_em: new Date()
+        atualizado_em: new Date().toISOString()
       });
 
       return await this.obterTurmaPorId(turmaId);
