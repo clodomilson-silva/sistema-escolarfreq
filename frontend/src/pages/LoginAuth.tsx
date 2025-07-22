@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import "./LoginAuth.css";
 
@@ -10,6 +10,7 @@ function LoginAuth() {
   const [erro, setErro] = useState("");
   
   const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   // Redirecionar se já estiver logado
   if (isAuthenticated) {
@@ -29,7 +30,8 @@ function LoginAuth() {
 
     try {
       await login(email, senha);
-      // Redirecionamento será automático devido ao Navigate acima
+      // Redirecionar programaticamente após o login
+      navigate("/home", { replace: true });
     } catch (error: unknown) {
       if (error instanceof Error) {
         setErro(error.message);

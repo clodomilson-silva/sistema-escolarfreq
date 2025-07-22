@@ -57,6 +57,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     const verificarToken = async (tokenToVerify: string) => {
       try {
+        console.log('Verificando token...', tokenToVerify.substring(0, 20) + '...');
         const response = await api.get('/auth/verify', {
           headers: {
             Authorization: `Bearer ${tokenToVerify}`
@@ -64,25 +65,30 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         });
         
         if (response.data.success) {
+          console.log('Token válido, definindo usuário:', response.data.data.admin);
           setAdmin(response.data.data.admin);
           setToken(tokenToVerify);
         } else {
+          console.log('Token inválido, fazendo logout');
           logout();
         }
       } catch (error) {
         console.error('Erro ao verificar token:', error);
         logout();
       } finally {
+        console.log('Finalizando verificação de token');
         setLoading(false);
       }
     };
 
     const verificarTokenSalvo = async () => {
       const savedToken = Cookies.get('auth_token');
+      console.log('Token salvo encontrado:', !!savedToken);
       if (savedToken) {
         setToken(savedToken);
         await verificarToken(savedToken);
       } else {
+        console.log('Nenhum token salvo, definindo loading como false');
         setLoading(false);
       }
     };
@@ -101,18 +107,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const login = async (email: string, senha: string) => {
     try {
+      console.log('Tentando fazer login...');
       const response = await api.post('/auth/login', { email, senha });
       
       if (response.data.success) {
         const { admin: adminData, token: authToken } = response.data.data;
         
-        setAdmin(adminData);
-        setToken(authToken);
+        console.log('Login bem-sucedido, definindo estado:', adminData);
         
         // Salvar token no cookie por 24h
         Cookies.set('auth_token', authToken, { expires: 1 });
         
-        console.log('Login realizado com sucesso!');
+        // Definir estado
+        setAdmin(adminData);
+        setToken(authToken);
+        
+        console.log('Estado de login atualizado com sucesso!');
       }
     } catch (error: unknown) {
       console.error('Erro no login:', error);
