@@ -39,6 +39,13 @@ SISTEMA_PRONTO.md
 ALTERACOES_REALIZADAS.md
 README_OLD.md
 GITIGNORE_CONFIG.md
+CORRECAO_LOGIN.md
+IMPLEMENTACAO_*.md
+**/IMPLEMENTACAO_*.md
+
+# READMEs de subpastas (manter apenas o principal)
+backend/README.md
+frontend/README.md
 
 # Arquivos JSON de teste
 test-*.json

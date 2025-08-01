@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import "./LoginAuth.css";
 
@@ -12,9 +12,10 @@ function LoginAuth() {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  // Redirecionar se já estiver logado
+  // Se já está autenticado, redirecionar imediatamente
   if (isAuthenticated) {
-    return <Navigate to="/home" replace />;
+    navigate("/home", { replace: true });
+    return null;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,15 +31,14 @@ function LoginAuth() {
 
     try {
       await login(email, senha);
-      // Redirecionar programaticamente após o login
-      navigate("/home", { replace: true });
+      // Forçar redirecionamento após login
+      window.location.href = "/home";
     } catch (error: unknown) {
       if (error instanceof Error) {
         setErro(error.message);
       } else {
         setErro("Erro ao fazer login");
       }
-    } finally {
       setLoading(false);
     }
   };

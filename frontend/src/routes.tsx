@@ -8,6 +8,7 @@ import TurmasList from "./pages/TurmasList";
 import TurmaForm from "./pages/TurmaForm";
 import TurmaDetalhes from "./pages/TurmaDetalhes";
 import TurmaEdit from "./pages/TurmaEdit";
+import FrequenciaDashboard from "./pages/FrequenciaDashboard";
 import LoginAuth from "./pages/LoginAuth";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -73,6 +74,12 @@ export default function AppRoutes() {
         <Route path="/turmas/editar/:id" element={
           <ProtectedRoute>
             <TurmaEdit />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/turmas/:turmaId/frequencia" element={
+          <ProtectedRoute>
+            <FrequenciaDashboard />
           </ProtectedRoute>
         } />
       </Routes>

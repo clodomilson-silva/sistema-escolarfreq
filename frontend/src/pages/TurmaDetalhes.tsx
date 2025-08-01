@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import FrequenciaForm from "./FrequenciaForm";
 
 interface Turma {
   id: string;
@@ -28,6 +29,7 @@ function TurmaDetalhes() {
   const [alunosDisponiveis, setAlunosDisponiveis] = useState<Aluno[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingAlunos, setLoadingAlunos] = useState(false);
+  const [showFrequenciaForm, setShowFrequenciaForm] = useState(false);
 
   // Função para mapear turnos do backend para exibição
   const formatarTurno = (turno: string) => {
@@ -313,7 +315,20 @@ function TurmaDetalhes() {
         {/* Ações */}
         <div className="row">
           <div className="col-12">
-            <div className="d-flex gap-3 justify-content-center">
+            <div className="d-flex gap-3 justify-content-center flex-wrap">
+              <button 
+                className="btn btn-success"
+                onClick={() => setShowFrequenciaForm(true)}
+                disabled={alunosDaTurma.length === 0}
+              >
+                📊 Registrar Frequência
+              </button>
+              <Link 
+                to={`/turmas/${id}/frequencia`} 
+                className="btn btn-info"
+              >
+                📈 Dashboard de Frequência
+              </Link>
               <Link 
                 to={`/turmas/${id}/edit`} 
                 className="btn btn-warning"
@@ -336,6 +351,19 @@ function TurmaDetalhes() {
           </div>
         </div>
       </div>
+
+      {/* Modal de Frequência */}
+      {showFrequenciaForm && (
+        <FrequenciaForm
+          turmaId={id!}
+          alunos={alunosDaTurma.map(aluno => ({
+            id: aluno.id,
+            nome: aluno.nome,
+            ra: aluno.matricula
+          }))}
+          onClose={() => setShowFrequenciaForm(false)}
+        />
+      )}
     </div>
   );
 }

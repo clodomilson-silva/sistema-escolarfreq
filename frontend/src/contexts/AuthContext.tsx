@@ -85,7 +85,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const savedToken = Cookies.get('auth_token');
       console.log('Token salvo encontrado:', !!savedToken);
       if (savedToken) {
-        setToken(savedToken);
         await verificarToken(savedToken);
       } else {
         console.log('Nenhum token salvo, definindo loading como false');
@@ -121,6 +120,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         // Definir estado
         setAdmin(adminData);
         setToken(authToken);
+        
+        // Aguardar um pouco para garantir que o estado foi atualizado
+        await new Promise(resolve => setTimeout(resolve, 100));
         
         console.log('Estado de login atualizado com sucesso!');
       }
@@ -160,7 +162,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     token,
     login,
     logout,
-    isAuthenticated: !!admin && !!token,
+    isAuthenticated: !loading && !!admin && !!token,
     loading
   };
 
