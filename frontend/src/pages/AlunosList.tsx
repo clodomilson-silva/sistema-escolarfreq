@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import { useAuth } from "../hooks/useAuth";
 import "./ListPages.css";
 
 interface Aluno {
@@ -16,10 +17,13 @@ function AlunosList() {
   const [alunos, setAlunos] = useState<Aluno[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { isReady } = useAuth();
 
   useEffect(() => {
-    carregarAlunos();
-  }, []);
+    if (isReady) {
+      carregarAlunos();
+    }
+  }, [isReady]);
 
   const carregarAlunos = async () => {
     try {

@@ -19,6 +19,7 @@ interface AuthContextType {
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;
+  isReady: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -34,15 +35,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Interceptor para lidar com tokens expirados
+  // Interceptor para lidar com tokens expirados e implementar retry
   useEffect(() => {
     const interceptor = api.interceptors.response.use(
       (response) => response,
-      (error) => {
-        if (error.response?.status === 401 && token) {
-          console.log('Token expirado, fazendo logout...');
-          logout();
-          window.location.href = '/login';
+      async (error) => {
+        if (error.response?.status === 401) {
+          if (token) {
+            console.log('Token expirado, fazendo logout...');
+            logout();
+            window.location.href = '/login';
+          } else if (loading) {
+            console.log('Token ainda sendo verificado, aguardando...');
+            // Aguardar um pouco e rejeitar o erro para o componente tentar novamente
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
         }
         return Promise.reject(error);
       }
@@ -51,7 +58,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => {
       api.interceptors.response.eject(interceptor);
     };
-  }, [token]);
+  }, [token, loading]);
 
   // Verificar se há token salvo ao inicializar
   useEffect(() => {
@@ -68,6 +75,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           console.log('Token válido, definindo usuário:', response.data.data.admin);
           setAdmin(response.data.data.admin);
           setToken(tokenToVerify);
+          
+          // Configurar token no interceptor ANTES de marcar como não carregando
+          api.defaults.headers.common['Authorization'] = `Bearer ${tokenToVerify}`;
+          console.log('Token configurado no interceptor da API');
         } else {
           console.log('Token inválido, fazendo logout');
           logout();
@@ -163,7 +174,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     login,
     logout,
     isAuthenticated: !loading && !!admin && !!token,
-    loading
+    loading,
+    isReady: !loading && (!!admin || !token) // true quando não está carregando e tem admin OU não tem token
   };
 
   return (
