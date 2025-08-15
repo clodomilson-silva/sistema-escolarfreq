@@ -168,7 +168,7 @@ function TurmaDetalhes() {
         {/* Informações da Turma */}
         <div className="row mb-4">
           <div className="col-12">
-            <div className="card shadow-sm border-0">
+            <div className="card shadow-sm border-0" style={{ width: '100%', maxWidth: '100%' }}>
               <div className="card-header bg-success text-white">
                 <div className="d-flex align-items-center">
                   <div className="me-3">
@@ -184,25 +184,25 @@ function TurmaDetalhes() {
                 </div>
               </div>
               <div className="card-body">
-                <div className="row">
-                  <div className="col-md-3">
-                    <strong>� Número da Turma:</strong>
+                <div className="row justify-content-center">
+                  <div className="col-md-3 text-center">
+                    <strong>🔢 Número da Turma:</strong>
                     <br />
                     <span className="badge bg-primary fs-6">{turma.ano}</span>
                   </div>
-                  <div className="col-md-3">
+                  <div className="col-md-3 text-center">
                     <strong>⏰ Turno:</strong>
                     <br />
                     <span className={`badge ${turnoInfo.color} fs-6`}>
                       {turnoInfo.emoji} {turnoInfo.label}
                     </span>
                   </div>
-                  <div className="col-md-3">
+                  <div className="col-md-3 text-center">
                     <strong>👥 Total de Alunos:</strong>
                     <br />
                     <span className="badge bg-info fs-6">{alunosDaTurma.length} aluno(s)</span>
                   </div>
-                  <div className="col-md-3">
+                  <div className="col-md-3 text-center">
                     <strong>📅 Criada em:</strong>
                     <br />
                     <span className="text-muted">
@@ -228,8 +228,8 @@ function TurmaDetalhes() {
 
         <div className="row">
           {/* Alunos da Turma */}
-          <div className="col-lg-6 mb-4">
-            <div className="card shadow-sm border-0 h-100">
+          <div className="col mb-4">
+            <div className="card shadow-sm border-0 h-100" style={{ width: '100%', maxWidth: '100%' }}>
               <div className="card-header bg-primary text-white">
                 <h5 className="mb-0">👥 Alunos Matriculados ({alunosDaTurma.length})</h5>
               </div>
@@ -270,8 +270,8 @@ function TurmaDetalhes() {
           </div>
 
           {/* Alunos Disponíveis */}
-          <div className="col-lg-6 mb-4">
-            <div className="card shadow-sm border-0 h-100">
+          <div className="col mb-4">
+            <div className="card shadow-sm border-0 h-100" style={{ width: '100%', maxWidth: '100%' }}>
               <div className="card-header bg-info text-white">
                 <h5 className="mb-0">➕ Adicionar Alunos ({alunosDisponiveis.length})</h5>
               </div>

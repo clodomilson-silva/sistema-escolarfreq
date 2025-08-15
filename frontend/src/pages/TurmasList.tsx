@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import "./ListPages.css";
 
 interface Turma {
   id: string;
@@ -106,36 +107,39 @@ function TurmasList() {
     <div className="min-vh-100 bg-light">
       <Navbar />
       <div className="container py-4">
-        <div className="row mb-4">
-          <div className="col-12">
-            <h1 className="h2 text-success mb-3">🏫 Lista de Turmas</h1>
-            <div className="d-flex flex-wrap gap-2">
-              <Link to="/home" className="btn btn-outline-secondary">
-                🏠 Voltar para Home
-              </Link>
-              <Link to="/turmas/nova" className="btn btn-success">
-                ➕ Cadastrar Nova Turma
-              </Link>
+        <div className="list-page-header">
+          <div className="row">
+            <div className="col-12">
+              <h1 className="list-page-title text-success">🏫 Lista de Turmas</h1>
+              <p className="list-page-subtitle">Gerencie todas as turmas do sistema escolar</p>
+              <div className="list-page-actions">
+                <Link to="/home" className="list-page-btn btn btn-outline-secondary">
+                  🏠 Voltar para Home
+                </Link>
+                <Link to="/turmas/nova" className="list-page-btn btn btn-success">
+                  ➕ Cadastrar Nova Turma
+                </Link>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="row">
           <div className="col-12">
-            <div className="card shadow-sm">
+            <div className="list-page-card">
               <div className="card-body">
                 {turmas.length === 0 ? (
-                  <div className="text-center py-5">
-                    <div className="display-1 text-muted mb-3">🏫</div>
-                    <h4 className="text-muted">Nenhuma turma cadastrada</h4>
-                    <p className="text-muted">Comece criando a primeira turma para organizar os alunos!</p>
-                    <Link to="/turmas/nova" className="btn btn-success">
+                  <div className="list-page-empty">
+                    <div className="list-page-empty-icon text-muted">🏫</div>
+                    <h4 className="list-page-empty-title">Nenhuma turma cadastrada</h4>
+                    <p className="list-page-empty-text">Comece criando a primeira turma para organizar os alunos!</p>
+                    <Link to="/turmas/nova" className="list-page-btn btn btn-success">
                       Cadastrar Primeira Turma
                     </Link>
                   </div>
                 ) : (
                   <div className="table-responsive">
-                    <table className="table table-hover">
+                    <table className="list-page-table table table-hover">
                       <thead className="table-success">
                         <tr>
                           <th>Nome da Turma</th>
@@ -150,10 +154,10 @@ function TurmasList() {
                           <tr key={turma.id}>
                             <td className="fw-semibold">{turma.nome}</td>
                             <td>
-                              <span className="badge bg-primary">{turma.ano}</span>
+                              <span className="list-page-badge badge bg-primary">{turma.ano}</span>
                             </td>
                             <td>
-                              <span className={`badge ${formatarTurno(turma.turno).color}`}>
+                              <span className={`list-page-badge badge ${formatarTurno(turma.turno).color}`}>
                                 {formatarTurno(turma.turno).emoji} {formatarTurno(turma.turno).label}
                               </span>
                             </td>
@@ -172,24 +176,24 @@ function TurmasList() {
                               }
                             </td>
                             <td className="text-center">
-                              <div className="btn-group" role="group">
+                              <div className="list-page-table-actions">
                                 <button
                                   onClick={() => navigate(`/turmas/${turma.id}`)}
-                                  className="btn btn-outline-info btn-sm"
+                                  className="list-page-table-btn btn btn-outline-info btn-sm"
                                   title="Ver detalhes e gerenciar alunos"
                                 >
-                                  �
+                                  👁️
                                 </button>
                                 <button
                                   onClick={() => navigate(`/turmas/editar/${turma.id}`)}
-                                  className="btn btn-outline-warning btn-sm"
+                                  className="list-page-table-btn btn btn-outline-warning btn-sm"
                                   title="Editar"
                                 >
                                   ✏️
                                 </button>
                                 <button
                                   onClick={() => excluirTurma(turma.id)}
-                                  className="btn btn-outline-danger btn-sm"
+                                  className="list-page-table-btn btn btn-outline-danger btn-sm"
                                   title="Excluir"
                                 >
                                   🗑️
