@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import { useAuth } from "../hooks/useAuth";
 import "./ListPages.css";
 
 interface Turma {
@@ -17,6 +18,7 @@ function TurmasList() {
   const [turmas, setTurmas] = useState<Turma[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { isReady } = useAuth();
 
   // Função para mapear turnos do backend para exibição
   const formatarTurno = (turno: string) => {
@@ -31,8 +33,10 @@ function TurmasList() {
   };
 
   useEffect(() => {
-    carregarTurmas();
-  }, []);
+    if (isReady) {
+      carregarTurmas();
+    }
+  }, [isReady]);
 
   const carregarTurmas = async () => {
     try {

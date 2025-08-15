@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import { useAuth } from "../hooks/useAuth";
 
 function AlunoEdit() {
   const { id } = useParams<{ id: string }>();
@@ -15,37 +16,38 @@ function AlunoEdit() {
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
   const navigate = useNavigate();
+  const { isReady } = useAuth();
 
   useEffect(() => {
-    const carregarAluno = async () => {
-      try {
-        setLoading(true);
-        const response = await api.get(`/alunos/${id}`);
-        
-        if (response.data.success) {
-          const aluno = response.data.data;
-          setNome(aluno.nome || "");
-          setMatricula(aluno.matricula || "");
-          setDataNascimento(aluno.data_nascimento || "");
-          setEmail(aluno.email || "");
-        } else {
-          setErro("Aluno não encontrado");
+    if (isReady && id) {
+      const carregarAluno = async () => {
+        try {
+          setLoading(true);
+          const response = await api.get(`/alunos/${id}`);
+          
+          if (response.data.success) {
+            const aluno = response.data.data;
+            setNome(aluno.nome || "");
+            setMatricula(aluno.matricula || "");
+            setDataNascimento(aluno.data_nascimento || "");
+            setEmail(aluno.email || "");
+          } else {
+            setErro("Aluno não encontrado");
+          }
+        } catch (error: unknown) {
+          console.error("Erro ao carregar aluno:", error);
+          const errorMessage = error && typeof error === 'object' && 'response' in error 
+            ? (error as { response?: { data?: { message?: string } } }).response?.data?.message 
+            : "Erro ao carregar dados do aluno";
+          setErro(errorMessage || "Erro ao carregar dados do aluno");
+        } finally {
+          setLoading(false);
         }
-      } catch (error: unknown) {
-        console.error("Erro ao carregar aluno:", error);
-        const errorMessage = error && typeof error === 'object' && 'response' in error 
-          ? (error as { response?: { data?: { message?: string } } }).response?.data?.message 
-          : "Erro ao carregar dados do aluno";
-        setErro(errorMessage || "Erro ao carregar dados do aluno");
-      } finally {
-        setLoading(false);
-      }
-    };
+      };
 
-    if (id) {
       carregarAluno();
     }
-  }, [id]);
+  }, [isReady, id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import { useAuth } from "../hooks/useAuth";
 
 interface Turma {
   id: string;
@@ -22,6 +23,7 @@ function TurmaEdit() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const { isReady } = useAuth();
 
   useEffect(() => {
     const carregarTurmaData = async () => {
@@ -61,10 +63,10 @@ function TurmaEdit() {
       }
     };
 
-    if (id) {
+    if (isReady && id) {
       carregarTurmaData();
     }
-  }, [id, navigate]);
+  }, [isReady, id, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

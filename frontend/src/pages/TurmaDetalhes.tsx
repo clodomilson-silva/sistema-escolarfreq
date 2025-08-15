@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import { useAuth } from "../hooks/useAuth";
 import FrequenciaForm from "./FrequenciaForm";
 
 interface Turma {
@@ -30,6 +31,7 @@ function TurmaDetalhes() {
   const [loading, setLoading] = useState(true);
   const [loadingAlunos, setLoadingAlunos] = useState(false);
   const [showFrequenciaForm, setShowFrequenciaForm] = useState(false);
+  const { isReady } = useAuth();
 
   // Função para mapear turnos do backend para exibição
   const formatarTurno = (turno: string) => {
@@ -44,10 +46,10 @@ function TurmaDetalhes() {
   };
 
   useEffect(() => {
-    if (id) {
+    if (isReady && id) {
       carregarDados();
     }
-  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isReady, id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const carregarDados = async () => {
     try {

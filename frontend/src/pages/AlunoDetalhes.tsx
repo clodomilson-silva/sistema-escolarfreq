@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import { useAuth } from "../hooks/useAuth";
 
 interface Aluno {
   id: string;
@@ -21,6 +22,7 @@ function AlunoDetalhes() {
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
   const navigate = useNavigate();
+  const { isReady } = useAuth();
 
   useEffect(() => {
     const buscarAluno = async () => {
@@ -44,10 +46,10 @@ function AlunoDetalhes() {
       }
     };
 
-    if (id) {
+    if (isReady && id) {
       buscarAluno();
     }
-  }, [id]);
+  }, [isReady, id]);
 
   const formatarData = (data: { _seconds: number; _nanoseconds: number } | string | undefined) => {
     if (!data) return "Não informado";

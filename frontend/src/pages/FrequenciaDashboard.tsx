@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { frequenciaAPI, FrequenciaData, EstatisticasFrequencia } from '../services/api';
 import api from '../services/api';
 import Navbar from '../components/Navbar';
+import { useAuth } from '../hooks/useAuth';
 import './FrequenciaDashboard.css';
 
 interface Turma {
@@ -31,6 +32,7 @@ const FrequenciaDashboard: React.FC = () => {
   const [datasDisponiveis, setDatasDisponiveis] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
+  const { isReady } = useAuth();
 
   useEffect(() => {
     const carregarDados = async () => {
@@ -77,10 +79,10 @@ const FrequenciaDashboard: React.FC = () => {
       }
     };
 
-    if (turmaId) {
+    if (isReady && turmaId) {
       carregarDados();
     }
-  }, [turmaId]);
+  }, [isReady, turmaId]);
 
   useEffect(() => {
     const carregarFrequencias = async () => {
@@ -93,10 +95,10 @@ const FrequenciaDashboard: React.FC = () => {
       }
     };
 
-    if (turmaId && dataSelecionada) {
+    if (isReady && turmaId && dataSelecionada) {
       carregarFrequencias();
     }
-  }, [turmaId, dataSelecionada]);
+  }, [isReady, turmaId, dataSelecionada]);
 
   const getFrequenciaAluno = (alunoId: string): FrequenciaData | null => {
     return frequencias.find(f => f.aluno_id === alunoId) || null;
