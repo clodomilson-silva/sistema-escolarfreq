@@ -14,6 +14,7 @@ interface Aluno {
 
 function AlunosList() {
   const [alunos, setAlunos] = useState<Aluno[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,6 +23,7 @@ function AlunosList() {
 
   const carregarAlunos = async () => {
     try {
+      setLoading(true);
       console.log('Carregando alunos...');
       const response = await api.get("/alunos");
       console.log('Resposta da API:', response.data);
@@ -53,6 +55,8 @@ function AlunosList() {
       }
       
       alert(mensagem);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -94,7 +98,14 @@ function AlunosList() {
           <div className="col-12">
             <div className="list-page-card">
               <div className="card-body">
-                {alunos.length === 0 ? (
+                {loading ? (
+                  <div className="d-flex flex-column align-items-center justify-content-center py-5">
+                    <div className="spinner-border text-primary" style={{ width: '3rem', height: '3rem' }} role="status">
+                      <span className="visually-hidden">Carregando...</span>
+                    </div>
+                    <p className="mt-3 text-muted fs-5">Carregando alunos...</p>
+                  </div>
+                ) : alunos.length === 0 ? (
                   <div className="list-page-empty">
                     <div className="list-page-empty-icon text-muted">📚</div>
                     <h4 className="list-page-empty-title">Nenhum aluno cadastrado</h4>
