@@ -110,11 +110,11 @@ function AlunoDetalhes() {
   return (
     <>
       <Navbar />
-      <div className="container-fluid py-4">
-        <div className="row justify-content-center">
-          <div className="col-lg-8 col-xl-6">
+      <div className="container-fluid p-4">
+        <div className="row">
+          <div className="col-12">
             {/* Header */}
-            <div className="d-flex justify-content-between align-items-center mb-4">
+            <div className="d-flex align-items-center mb-4 justify-content-between">
               <h1 className="h2 mb-0">
                 <span className="text-primary">👤</span> Detalhes do Aluno
               </h1>
@@ -127,7 +127,7 @@ function AlunoDetalhes() {
             </div>
 
             {/* Card Principal */}
-            <div className="card shadow-lg border-0" style={{ borderRadius: '20px' }}>
+            <div className="card shadow-lg border-0 w-100 mx-auto" style={{ borderRadius: '20px', maxWidth: '100%' }}>
               <div className="card-header bg-primary text-white text-center py-4" style={{ borderRadius: '20px 20px 0 0' }}>
                 <div className="d-inline-flex align-items-center justify-content-center bg-white text-primary rounded-circle mb-3" 
                      style={{ width: '80px', height: '80px', fontSize: '2rem' }}>
@@ -138,9 +138,9 @@ function AlunoDetalhes() {
               </div>
 
               <div className="card-body p-5">
-                <div className="row g-4">
+                <div className="col g-4">
                   {/* Informações Pessoais */}
-                  <div className="col-md-6">
+                  <div className="row-md-6">
                     <h5 className="text-primary mb-3">📋 Informações Pessoais</h5>
                     
                     <div className="mb-3">
@@ -168,7 +168,7 @@ function AlunoDetalhes() {
                   </div>
 
                   {/* Informações Adicionais */}
-                  <div className="col-md-6">
+                  <div className="row-md-6">
                     <h5 className="text-primary mb-3">🏠 Informações Adicionais</h5>
                     
                     {aluno.endereco && (
