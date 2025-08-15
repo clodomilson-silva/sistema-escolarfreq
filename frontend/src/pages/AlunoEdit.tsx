@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../hooks/useAuth";
+import "./FormPages.css";
 
 function AlunoEdit() {
   const { id } = useParams<{ id: string }>();
@@ -105,165 +106,121 @@ function AlunoEdit() {
   return (
     <div className="min-vh-100 bg-light">
       <Navbar />
-      <div className="container-fluid py-4 px-4">
-        <div className="row justify-content-center">
-          <div className="col-12">
-            {/* Header */}
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h1 className="h2 mb-0">
-                <span className="text-primary">✏️</span> Editar Aluno
-              </h1>
-              <Link 
-                to="/alunos"
-                className="btn btn-outline-secondary"
-              >
-                🔙 Voltar para Lista
-              </Link>
+      <div className="container py-4">
+        <div className="form-page-header">
+          <div className="row">
+            <div className="col-12">
+              <h1 className="form-page-title text-primary">✏️ Editar Aluno</h1>
+              <p className="form-page-subtitle">Edite os dados do aluno selecionado</p>
+              <div className="form-page-actions">
+                <Link to="/home" className="form-page-btn btn btn-outline-secondary">
+                  🏠 Voltar para Home
+                </Link>
+                <Link to="/alunos" className="form-page-btn btn btn-outline-info">
+                  👥 Ver Lista de Alunos
+                </Link>
+              </div>
             </div>
+          </div>
+        </div>
 
-            {/* Alertas */}
-            {erro && (
-              <div className="alert alert-danger border-0 rounded-3 mb-4" role="alert">
-                <strong>❌ Erro:</strong> {erro}
-              </div>
-            )}
+        {/* Alertas */}
+        {erro && (
+          <div className="alert alert-danger border-0 rounded-3 mb-4" role="alert">
+            <strong>❌ Erro:</strong> {erro}
+          </div>
+        )}
 
-            {sucesso && (
-              <div className="alert alert-success border-0 rounded-3 mb-4" role="alert">
-                <strong>✅ Sucesso:</strong> {sucesso}
-              </div>
-            )}
+        {sucesso && (
+          <div className="alert alert-success border-0 rounded-3 mb-4" role="alert">
+            <strong>✅ Sucesso:</strong> {sucesso}
+          </div>
+        )}
+        
+        <div className="row justify-content-center">
+          <div className="col-md-8 col-lg-6">
+            <div className="form-page-card">
+              <div className="form-page-form">
 
-            {/* Formulário */}
-            <div className="card shadow-lg border-0" style={{ borderRadius: '20px', width: '100%', maxWidth: '100%' }}>
-              <div className="card-header bg-primary text-white text-center py-4" style={{ borderRadius: '20px 20px 0 0' }}>
-                <div className="d-inline-flex align-items-center justify-content-center bg-white text-primary rounded-circle mb-3" 
-                     style={{ width: '80px', height: '80px', fontSize: '2rem' }}>
-                  👨‍🎓
-                </div>
-                <h3 className="mb-1">Atualizar Informações</h3>
-                <p className="mb-0">Edite os dados do aluno abaixo</p>
-              </div>
-
-              <div className="card-body p-5">
                 <form onSubmit={handleSubmit}>
-                  <div className="row g-4">
-                    {/* Informações Básicas */}
-                    <div className="col-12">
-                      <h5 className="text-primary mb-3">📋 Informações Básicas</h5>
-                    </div>
+                  <div className="form-page-form-group">
+                    <label htmlFor="nome" className="form-page-label">
+                      Nome Completo: <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="form-page-input"
+                      id="nome"
+                      value={nome}
+                      onChange={(e) => setNome(e.target.value)}
+                      required
+                      disabled={loadingSubmit}
+                      placeholder="Digite o nome completo do aluno"
+                    />
+                  </div>
 
-                    <div className="col-12">
-                      <label htmlFor="nome" className="form-label fw-semibold">
-                        👤 Nome Completo: <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control form-control-lg"
-                        id="nome"
-                        value={nome}
-                        onChange={(e) => setNome(e.target.value)}
-                        required
-                        disabled={loadingSubmit}
-                        placeholder="Digite o nome completo"
-                        style={{ borderRadius: '12px' }}
-                      />
-                    </div>
+                  <div className="form-page-form-group">
+                    <label htmlFor="matricula" className="form-page-label">
+                      Matrícula: <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="form-page-input"
+                      id="matricula"
+                      value={matricula}
+                      onChange={(e) => setMatricula(e.target.value)}
+                      required
+                      disabled={loadingSubmit}
+                      placeholder="Ex: 2024001"
+                    />
+                  </div>
 
-                    <div className="col-12">
-                      <label htmlFor="matricula" className="form-label fw-semibold">
-                        🎫 Matrícula: <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control form-control-lg"
-                        id="matricula"
-                        value={matricula}
-                        onChange={(e) => setMatricula(e.target.value)}
-                        required
-                        disabled={loadingSubmit}
-                        placeholder="Ex: 2024001"
-                        style={{ borderRadius: '12px' }}
-                      />
-                    </div>
+                  <div className="form-page-form-group">
+                    <label htmlFor="dataNascimento" className="form-page-label">
+                      Data de Nascimento:
+                    </label>
+                    <input
+                      type="date"
+                      className="form-page-input"
+                      id="dataNascimento"
+                      value={dataNascimento}
+                      onChange={(e) => setDataNascimento(e.target.value)}
+                      disabled={loadingSubmit}
+                    />
+                  </div>
 
-                    <div className="col-12">
-                      <label htmlFor="email" className="form-label fw-semibold">
-                        📧 Email: <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control form-control-lg"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        disabled={loadingSubmit}
-                        placeholder="exemplo@email.com"
-                        style={{ borderRadius: '12px' }}
-                      />
-                    </div>
+                  <div className="form-page-form-group">
+                    <label htmlFor="email" className="form-page-label">
+                      Email: <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      className="form-page-input"
+                      id="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      disabled={loadingSubmit}
+                      placeholder="exemplo@email.com"
+                    />
+                  </div>
 
-                    <div className="col-12">
-                      <label htmlFor="dataNascimento" className="form-label fw-semibold">
-                        🎂 Data de Nascimento:
-                      </label>
-                      <input
-                        type="date"
-                        className="form-control form-control-lg"
-                        id="dataNascimento"
-                        value={dataNascimento}
-                        onChange={(e) => setDataNascimento(e.target.value)}
-                        disabled={loadingSubmit}
-                        style={{ borderRadius: '12px' }}
-                      />
-                    </div>
-
-                    {/* Observação sobre campos obrigatórios */}
-                    <div className="col-12">
-                      <small className="text-muted">
-                        <span className="text-danger">*</span> Campos obrigatórios
-                      </small>
-                    </div>
-
-                    {/* Botões de Ação */}
-                    <div className="col-12 mt-5">
-                      <div className="d-flex gap-3 justify-content-center">
-                        <button 
-                          type="submit" 
-                          className="btn btn-primary btn-lg px-5"
-                          disabled={loadingSubmit}
-                          style={{ borderRadius: '12px' }}
-                        >
-                          {loadingSubmit ? (
-                            <>
-                              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                              Salvando...
-                            </>
-                          ) : (
-                            <>
-                              💾 Salvar Alterações
-                            </>
-                          )}
-                        </button>
-                        
-                        <Link
-                          to={`/alunos/${id}`}
-                          className="btn btn-outline-info btn-lg px-5"
-                          style={{ borderRadius: '12px' }}
-                        >
-                          👁️ Visualizar Aluno
-                        </Link>
-                        
-                        <Link
-                          to="/alunos"
-                          className="btn btn-outline-secondary btn-lg px-5"
-                          style={{ borderRadius: '12px' }}
-                        >
-                          ❌ Cancelar
-                        </Link>
-                      </div>
-                    </div>
+                  <div className="form-page-form-actions">
+                    <Link to="/alunos" className="form-page-cancel-btn">
+                      ❌ Cancelar
+                    </Link>
+                    <button type="submit" className="form-page-submit-btn btn btn-primary" disabled={loadingSubmit}>
+                      {loadingSubmit ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Salvando...
+                        </>
+                      ) : (
+                        <>
+                          💾 Salvar Alterações
+                        </>
+                      )}
+                    </button>
                   </div>
                 </form>
               </div>
