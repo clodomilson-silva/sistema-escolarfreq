@@ -177,37 +177,71 @@ function TurmaEdit() {
     );
   }
 
-  return (
-    <>
+    return (
+    <div className="min-vh-100 bg-light">
       <Navbar />
-      <div className="container-fluid mt-4">
-        <div className="row">
-          <div className="col-md-8 offset-md-2">
-            <div className="card shadow">
-              <div className="card-header bg-warning text-dark">
-                <h5 className="card-title mb-0">
-                  <i className="bi bi-pencil-square me-2"></i>
-                  Editar Turma
-                </h5>
+      <div className="container-fluid py-4 px-4">
+        <div className="row justify-content-center">
+          <div className="col-12">
+            {/* Header */}
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h1 className="h2 mb-0">
+                <span className="text-warning">✏️</span> Editar Turma
+              </h1>
+              <button 
+                className="btn btn-outline-secondary"
+                onClick={() => navigate('/turmas')}
+              >
+                🔙 Voltar para Lista
+              </button>
+            </div>
+
+            {/* Alertas de erro */}
+            {Object.keys(errors).length > 0 && (
+              <div className="alert alert-danger border-0 rounded-3 mb-4" role="alert">
+                <strong>❌ Erros encontrados:</strong>
+                <ul className="mb-0 mt-2">
+                  {Object.values(errors).map((error, index) => (
+                    <li key={index}>{error}</li>
+                  ))}
+                </ul>
               </div>
-              
-              <div className="card-body">
+            )}
+
+            {/* Formulário */}
+            <div className="card shadow-lg border-0" style={{ borderRadius: '20px', width: '100%', maxWidth: '100%' }}>
+              <div className="card-header bg-warning text-dark text-center py-4" style={{ borderRadius: '20px 20px 0 0' }}>
+                <div className="d-inline-flex align-items-center justify-content-center bg-white text-warning rounded-circle mb-3" 
+                     style={{ width: '80px', height: '80px', fontSize: '2rem' }}>
+                  🏫
+                </div>
+                <h3 className="mb-1">Atualizar Informações da Turma</h3>
+                <p className="mb-0">Edite os dados da turma abaixo</p>
+              </div>
+
+              <div className="card-body p-5">
                 <form onSubmit={handleSubmit}>
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="nome" className="form-label">
-                        <i className="bi bi-tag me-1"></i>
-                        Nome da Turma *
+                  <div className="row g-4">
+                    {/* Informações Básicas */}
+                    <div className="col-12">
+                      <h5 className="text-warning mb-3">📋 Informações Básicas</h5>
+                    </div>
+
+                    <div className="col-12">
+                      <label htmlFor="nome" className="form-label fw-semibold">
+                        🏷️ Nome da Turma: <span className="text-danger">*</span>
                       </label>
                       <input
                         type="text"
-                        className={`form-control ${errors.nome ? 'is-invalid' : ''}`}
+                        className={`form-control form-control-lg ${errors.nome ? 'is-invalid' : ''}`}
                         id="nome"
                         name="nome"
                         value={turma.nome}
                         onChange={handleChange}
-                        placeholder="Digite o nome da turma"
+                        required
                         disabled={saving}
+                        placeholder="Digite o nome da turma"
+                        style={{ borderRadius: '12px' }}
                       />
                       {errors.nome && (
                         <div className="invalid-feedback">
@@ -216,20 +250,21 @@ function TurmaEdit() {
                       )}
                     </div>
 
-                    <div className="col-md-3 mb-3">
-                      <label htmlFor="ano" className="form-label">
-                        <i className="bi bi-hash me-1"></i>
-                        Número da Turma *
+                    <div className="col-12">
+                      <label htmlFor="ano" className="form-label fw-semibold">
+                        🔢 Número da Turma: <span className="text-danger">*</span>
                       </label>
                       <input
                         type="text"
-                        className={`form-control ${errors.ano ? 'is-invalid' : ''}`}
+                        className={`form-control form-control-lg ${errors.ano ? 'is-invalid' : ''}`}
                         id="ano"
                         name="ano"
                         value={turma.ano}
                         onChange={handleChange}
-                        placeholder="Ex: 101, 201.1, 1º ano..."
+                        required
                         disabled={saving}
+                        placeholder="Ex: 101, 201.1, 1º ano..."
+                        style={{ borderRadius: '12px' }}
                       />
                       {errors.ano && (
                         <div className="invalid-feedback">
@@ -238,18 +273,19 @@ function TurmaEdit() {
                       )}
                     </div>
 
-                    <div className="col-md-3 mb-3">
-                      <label htmlFor="turno" className="form-label">
-                        <i className="bi bi-clock me-1"></i>
-                        Turno *
+                    <div className="col-12">
+                      <label htmlFor="turno" className="form-label fw-semibold">
+                        ⏰ Turno: <span className="text-danger">*</span>
                       </label>
                       <select
-                        className={`form-select ${errors.turno ? 'is-invalid' : ''}`}
+                        className={`form-select form-select-lg ${errors.turno ? 'is-invalid' : ''}`}
                         id="turno"
                         name="turno"
                         value={turma.turno}
                         onChange={handleChange}
+                        required
                         disabled={saving}
+                        style={{ borderRadius: '12px' }}
                       >
                         <option value="">Selecione o turno</option>
                         <option value="matutino">🌅 Manhã</option>
@@ -263,57 +299,63 @@ function TurmaEdit() {
                         </div>
                       )}
                     </div>
-                  </div>
 
-                  <div className="row">
+                    {/* Observação sobre campos obrigatórios */}
                     <div className="col-12">
-                      <div className="alert alert-info">
-                        <i className="bi bi-info-circle me-2"></i>
-                        <strong>Dica:</strong> Você pode alterar o nome, número e turno da turma. 
+                      <small className="text-muted">
+                        <span className="text-danger">*</span> Campos obrigatórios
+                      </small>
+                    </div>
+
+                    {/* Dica informativa */}
+                    <div className="col-12">
+                      <div className="alert alert-info border-0 rounded-3" role="alert">
+                        <strong>💡 Dica:</strong> Você pode alterar o nome, número e turno da turma. 
                         Os alunos já associados à turma serão mantidos.
                       </div>
                     </div>
-                  </div>
 
-                  <div className="d-flex gap-2 justify-content-between">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={() => navigate('/turmas')}
-                      disabled={saving}
-                    >
-                      <i className="bi bi-arrow-left me-1"></i>
-                      Voltar
-                    </button>
-                    
-                    <div className="d-flex gap-2">
-                      <button
-                        type="button"
-                        className="btn btn-outline-primary"
-                        onClick={() => navigate(`/turmas/${id}`)}
-                        disabled={saving}
-                      >
-                        <i className="bi bi-eye me-1"></i>
-                        Ver Detalhes
-                      </button>
-                      
-                      <button
-                        type="submit"
-                        className="btn btn-warning"
-                        disabled={saving}
-                      >
-                        {saving ? (
-                          <>
-                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            Salvando...
-                          </>
-                        ) : (
-                          <>
-                            <i className="bi bi-check-lg me-1"></i>
-                            Salvar Alterações
-                          </>
-                        )}
-                      </button>
+                    {/* Botões de Ação */}
+                    <div className="col-12 mt-5">
+                      <div className="d-flex gap-3 justify-content-center">
+                        <button 
+                          type="submit" 
+                          className="btn btn-warning btn-lg px-5"
+                          disabled={saving}
+                          style={{ borderRadius: '12px' }}
+                        >
+                          {saving ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                              Salvando...
+                            </>
+                          ) : (
+                            <>
+                              💾 Salvar Alterações
+                            </>
+                          )}
+                        </button>
+                        
+                        <button
+                          type="button"
+                          className="btn btn-outline-info btn-lg px-5"
+                          onClick={() => navigate(`/turmas/${id}`)}
+                          disabled={saving}
+                          style={{ borderRadius: '12px' }}
+                        >
+                          👁️ Ver Detalhes
+                        </button>
+                        
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary btn-lg px-5"
+                          onClick={() => navigate('/turmas')}
+                          disabled={saving}
+                          style={{ borderRadius: '12px' }}
+                        >
+                          ❌ Cancelar
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </form>
@@ -322,7 +364,7 @@ function TurmaEdit() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

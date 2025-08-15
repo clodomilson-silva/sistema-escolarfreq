@@ -105,9 +105,9 @@ function AlunoEdit() {
   return (
     <div className="min-vh-100 bg-light">
       <Navbar />
-      <div className="container py-4">
+      <div className="container-fluid py-4 px-4">
         <div className="row justify-content-center">
-          <div className="col-lg-8 col-xl-6">
+          <div className="col-12">
             {/* Header */}
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h1 className="h2 mb-0">
@@ -135,7 +135,7 @@ function AlunoEdit() {
             )}
 
             {/* Formulário */}
-            <div className="card shadow-lg border-0" style={{ borderRadius: '20px' }}>
+            <div className="card shadow-lg border-0" style={{ borderRadius: '20px', width: '100%', maxWidth: '100%' }}>
               <div className="card-header bg-primary text-white text-center py-4" style={{ borderRadius: '20px 20px 0 0' }}>
                 <div className="d-inline-flex align-items-center justify-content-center bg-white text-primary rounded-circle mb-3" 
                      style={{ width: '80px', height: '80px', fontSize: '2rem' }}>
@@ -153,7 +153,7 @@ function AlunoEdit() {
                       <h5 className="text-primary mb-3">📋 Informações Básicas</h5>
                     </div>
 
-                    <div className="col-md-6">
+                    <div className="col-12">
                       <label htmlFor="nome" className="form-label fw-semibold">
                         👤 Nome Completo: <span className="text-danger">*</span>
                       </label>
@@ -170,7 +170,7 @@ function AlunoEdit() {
                       />
                     </div>
 
-                    <div className="col-md-6">
+                    <div className="col-12">
                       <label htmlFor="matricula" className="form-label fw-semibold">
                         🎫 Matrícula: <span className="text-danger">*</span>
                       </label>
@@ -187,7 +187,7 @@ function AlunoEdit() {
                       />
                     </div>
 
-                    <div className="col-md-6">
+                    <div className="col-12">
                       <label htmlFor="email" className="form-label fw-semibold">
                         📧 Email: <span className="text-danger">*</span>
                       </label>
@@ -204,7 +204,7 @@ function AlunoEdit() {
                       />
                     </div>
 
-                    <div className="col-md-6">
+                    <div className="col-12">
                       <label htmlFor="dataNascimento" className="form-label fw-semibold">
                         🎂 Data de Nascimento:
                       </label>
