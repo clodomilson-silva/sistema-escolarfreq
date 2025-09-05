@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
-import { useAuth } from "../hooks/useAuth";
 import "./FormPages.css";
 
 function AlunoForm() {
@@ -11,7 +10,6 @@ function AlunoForm() {
   const [dataNascimento, setDataNascimento] = useState("");
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
-  const { isReady } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

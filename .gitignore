@@ -9,6 +9,15 @@ __pycache__/
 
 # Configuração do ambiente
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Arquivos de configuração específicos do backend
+backend/.env
+backend/.env.*
+!backend/.env.example
 
 # Banco de dados local (SQLite)
 db.sqlite3
@@ -29,6 +38,14 @@ dist/
 # Arquivos de teste do backend
 backend/test-*.js
 backend/debug-*.js
+backend/verify-config.js
+backend/test-firebase-connection.js
+
+# Scripts de teste temporários
+test-*.js
+debug-*.js
+verify-*.js
+check-gitignore.js
 
 # Arquivos de documentação temporária e desenvolvimento
 STATUS_CORRECOES.md
@@ -42,10 +59,58 @@ GITIGNORE_CONFIG.md
 CORRECAO_LOGIN.md
 IMPLEMENTACAO_*.md
 **/IMPLEMENTACAO_*.md
+SECURITY.md
+
+# Todos os markdowns exceto o README.md principal
+*.md
+!README.md
+**/README_*.md
+README_*.md
+CHANGELOG*.md
+HISTORY*.md
+NOTES*.md
+TODO*.md
+DOCS*.md
+DOC*.md
+
+# Arquivos de documentação específicos
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+DEVELOPMENT.md
+SETUP*.md
+INSTALL*.md
+CONFIG*.md
+DEPLOY*.md
+BUILD*.md
+TEST*.md
+DEBUG*.md
+TROUBLESHOOTING*.md
+FAQ*.md
+GUIDE*.md
+TUTORIAL*.md
+MANUAL*.md
+REFERENCE*.md
+
+# Documentação de desenvolvimento
+dev-notes.md
+development-notes.md
+project-notes.md
+meeting-notes.md
+design-notes.md
+architecture.md
+technical-notes.md
 
 # READMEs de subpastas (manter apenas o principal)
 backend/README.md
 frontend/README.md
+docs/README.md
+src/README.md
+public/README.md
+assets/README.md
+components/README.md
+pages/README.md
+services/README.md
+utils/README.md
 
 # Arquivos JSON de teste
 test-*.json
@@ -61,17 +126,22 @@ logs/
 # CREDENCIAIS E CONFIGURAÇÕES SENSÍVEIS
 # ========================================
 
-# Credenciais do Firebase (backup)
+# Credenciais do Firebase
+firebase-credentials.json
+backend/firebase-credentials.json
 *firebase-credentials*.json
 !firebase-credentials.example.json
+
+# Arquivos de teste com dados sensíveis
+backend/test-aluno.json
+backend/test-turma.json
+backend/test-*.json
 
 # Chaves de API e tokens
 *.key
 *.pem
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+api-keys.json
+credentials.json
 
 # ========================================
 # ARQUIVOS DO SISTEMA OPERACIONAL
