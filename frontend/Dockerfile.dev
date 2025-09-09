@@ -1,0 +1,34 @@
+# Frontend Development Dockerfile
+FROM node:18-alpine
+
+# Instalar ferramentas de desenvolvimento
+RUN apk add --no-cache git
+
+# Definir diretório de trabalho
+WORKDIR /app
+
+# Copiar package.json e package-lock.json
+COPY package*.json ./
+
+# Instalar todas as dependências
+RUN npm install
+
+# Copiar código fonte
+COPY . .
+
+# Criar usuário não-root para segurança
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S frontend -u 1001
+
+# Mudar ownership dos arquivos
+RUN chown -R frontend:nodejs /app
+USER frontend
+
+# Expor porta do Vite
+EXPOSE 5173
+
+# Variáveis de ambiente padrão
+ENV NODE_ENV=development
+
+# Comando padrão (pode ser sobrescrito no docker-compose)
+CMD ["npm", "run", "dev", "--", "--host"]

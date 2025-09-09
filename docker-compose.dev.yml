@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # Backend Development Service
+  backend-dev:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: sistema-escolar-backend-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - FRONTEND_URL=http://localhost:5173
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - ./backend/firebase-credentials.json:/app/firebase-credentials.json:ro
+    networks:
+      - sistema-escolar-dev-network
+    command: npm run dev
+
+  # Frontend Development Service
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: sistema-escolar-frontend-dev
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:3000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - sistema-escolar-dev-network
+    command: npm run dev -- --host
+    depends_on:
+      - backend-dev
+
+networks:
+  sistema-escolar-dev-network:
+    driver: bridge
+    name: sistema-escolar-dev-network

@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sistema-escolar-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - FRONTEND_URL=http://localhost
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend/firebase-credentials.json:/app/firebase-credentials.json:ro
+    networks:
+      - sistema-escolar-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "const http = require('http'); const req = http.request('http://localhost:3000/health', res => process.exit(res.statusCode === 200 ? 0 : 1)); req.on('error', () => process.exit(1)); req.end();"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sistema-escolar-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - sistema-escolar-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  sistema-escolar-network:
+    driver: bridge
+    name: sistema-escolar-network
+
+volumes:
+  # Volumes para logs se necessário
+  backend-logs:
+    driver: local
+  frontend-logs:
+    driver: local
