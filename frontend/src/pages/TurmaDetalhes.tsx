@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../hooks/useAuth";
-import FrequenciaForm from "./FrequenciaForm";
+import { FrequenciaForm } from "./FrequenciaForm";
 
 interface Turma {
   id: string;

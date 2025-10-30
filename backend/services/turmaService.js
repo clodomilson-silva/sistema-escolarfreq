@@ -38,14 +38,35 @@ class TurmaService {
       const turma = {
         ...dadosTurma,
         alunos: dadosTurma.alunos || [],
+        horarios: dadosTurma.horarios || {},
+        diasLetivos: dadosTurma.diasLetivos || [],
+        frequencias: [],
+        autorizacoes: [],
+        status: 'ativa',
         criado_em: agora,
         atualizado_em: agora
       };
 
+      // Criar documento da turma
       const docRef = await db.collection(this.collection).add(turma);
+      const turmaId = docRef.id;
+
+      // Criar coleção de frequências para a turma
+      await db.collection('frequencias').doc(turmaId).set({
+        turma_id: turmaId,
+        registros: [],
+        ultima_atualizacao: agora
+      });
+
+      // Criar coleção de autorizações para a turma
+      await db.collection('autorizacoes').doc(turmaId).set({
+        turma_id: turmaId,
+        registros: [],
+        ultima_atualizacao: agora
+      });
       
       return {
-        id: docRef.id,
+        id: turmaId,
         ...turma
       };
     } catch (error) {
@@ -162,11 +183,44 @@ class TurmaService {
         throw new Error('Aluno já está nesta turma');
       }
 
+      const agora = new Date().toISOString();
+
+      // Adicionar aluno à lista de alunos da turma
       alunos.push(alunoId);
       await db.collection(this.collection).doc(turmaId).update({
         alunos,
-        atualizado_em: new Date().toISOString()
+        atualizado_em: agora
       });
+
+      // Inicializar registro de frequência do aluno na turma
+      const frequenciaRef = db.collection('frequencias').doc(turmaId);
+      const frequenciaDoc = await frequenciaRef.get();
+      
+      if (frequenciaDoc.exists) {
+        await frequenciaRef.update({
+          [`alunos.${alunoId}`]: {
+            registros: [],
+            total_presencas: 0,
+            total_faltas: 0,
+            ultima_presenca: null,
+            ultima_atualizacao: agora
+          }
+        });
+      }
+
+      // Inicializar registro de autorizações do aluno na turma
+      const autorizacaoRef = db.collection('autorizacoes').doc(turmaId);
+      const autorizacaoDoc = await autorizacaoRef.get();
+      
+      if (autorizacaoDoc.exists) {
+        await autorizacaoRef.update({
+          [`alunos.${alunoId}`]: {
+            autorizacoes: [],
+            responsaveis_autorizados: [],
+            ultima_atualizacao: agora
+          }
+        });
+      }
 
       return await this.obterTurmaPorId(turmaId);
     } catch (error) {

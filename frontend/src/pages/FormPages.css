@@ -2,10 +2,12 @@
 
 /* Container principal para páginas de formulário */
 .form-page-container {
-  background-color: #f8f9fa;
+  background-color: var(--neutral-100);
   width: 100%;
-  padding: 2rem 0;
+  padding: var(--spacing-xl) 0;
   box-sizing: border-box;
+  min-height: calc(100vh - 64px); /* Altura total menos a navbar */
+  font-family: var(--font-primary);
 }
 
 /* Em telas menores, usar altura mínima */
@@ -70,49 +72,62 @@
 
 /* Card principal do formulário */
 .form-page-card {
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  background-color: var(--neutral-50);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
-  transition: box-shadow 0.3s ease;
+  transition: all 0.3s ease;
   max-width: 800px;
   margin: 0 auto;
+  border: 1px solid var(--neutral-200);
 }
 
 .form-page-card:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
 /* Formulário */
 .form-page-form {
-  padding: 2rem;
+  padding: var(--spacing-xl);
 }
 
 .form-page-form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-lg);
 }
 
 .form-page-label {
   font-weight: 600;
-  color: #495057;
-  margin-bottom: 0.5rem;
+  color: var(--neutral-700);
+  margin-bottom: var(--spacing-sm);
   display: block;
+  font-family: var(--font-secondary);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .form-page-input {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
+  padding: var(--spacing-md);
+  border: 2px solid var(--neutral-200);
+  border-radius: var(--radius-md);
   font-size: 1rem;
   transition: all 0.3s ease;
-  background-color: #fff;
+  background-color: var(--neutral-50);
+  font-family: var(--font-secondary);
+  color: var(--neutral-800);
 }
 
 .form-page-input:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+  background-color: white;
+}
+
+.form-page-input::placeholder {
+  color: var(--neutral-400);
 }
 
 .form-page-select {
@@ -153,68 +168,88 @@
 /* Botões do formulário */
 .form-page-form-actions {
   display: flex;
-  gap: 1rem;
+  gap: var(--spacing-md);
   justify-content: flex-end;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e9ecef;
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--neutral-200);
 }
 
 .form-page-submit-btn {
-  padding: 0.875rem 2rem;
+  padding: var(--spacing-md) var(--spacing-xl);
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 1rem;
+  font-size: 0.875rem;
+  background-color: var(--primary-color);
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: var(--font-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 .form-page-submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
+  background-color: var(--secondary-color);
+}
+
+.form-page-submit-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
 }
 
 .form-page-cancel-btn {
-  padding: 0.875rem 2rem;
+  padding: var(--spacing-md) var(--spacing-xl);
   font-weight: 600;
-  border-radius: 8px;
-  border: 2px solid #6c757d;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--neutral-300);
   background-color: transparent;
-  color: #6c757d;
+  color: var(--neutral-600);
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 1rem;
+  font-size: 0.875rem;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: var(--font-secondary);
+  gap: var(--spacing-sm);
 }
 
 .form-page-cancel-btn:hover {
-  background-color: #6c757d;
-  color: #fff;
+  background-color: var(--neutral-200);
+  border-color: var(--neutral-400);
+  color: var(--neutral-800);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Alertas */
 .form-page-alert {
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
   border: 1px solid transparent;
+  font-family: var(--font-secondary);
 }
 
 .form-page-alert-danger {
-  background-color: #f8d7da;
-  border-color: #f5c6cb;
-  color: #721c24;
+  background-color: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.2);
+  color: var(--error-color);
 }
 
 .form-page-alert-success {
-  background-color: #d4edda;
-  border-color: #c3e6cb;
-  color: #155724;
+  background-color: rgba(5, 150, 105, 0.1);
+  border-color: rgba(5, 150, 105, 0.2);
+  color: var(--success-color);
 }
 
 /* ===== RESPONSIVIDADE ===== */

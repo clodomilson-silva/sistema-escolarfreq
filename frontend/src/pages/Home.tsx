@@ -8,19 +8,17 @@ function Home() {
   const { admin } = useAuth();
 
   return (
-    <div className="min-vh-100 bg-light">
+    <div className="home-container">
       <Navbar />
-      <div className="container py-5">
-        <div className="row">
-          <div className="col-12 text-center mb-5">
-            <h1 className="display-4 text-primary mb-3">
-              Bem-vindo ao Sistema Escolar! 👋
-            </h1>
-            <p className="lead text-muted">
-              Olá, <strong>{admin?.nome || "Admin"}</strong>! Gerencie alunos e
-              turmas de forma eficiente.
-            </p>
-          </div>
+      <div className="container">
+        <div className="home-welcome text-center">
+          <h1 className="home-title">
+            Bem-vindo ao Sistema Escolar! 👋
+          </h1>
+          <p className="home-subtitle">
+            Olá, <strong>{admin?.nome || "Admin"}</strong>! Gerencie alunos e
+            turmas de forma eficiente.
+          </p>
         </div>
 
         <div className="row g-4">

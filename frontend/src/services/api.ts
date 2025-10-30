@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: (import.meta.env.VITE_API_BASE_URL || "http://localhost:3000") + "/api", // Backend Node.js
+  baseURL: (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000") + "/api", // Backend Node.js
   headers: {
     "Content-Type": "application/json",
   },
@@ -80,9 +80,17 @@ export const frequenciaAPI = {
   registrar: (frequencia: Omit<FrequenciaData, 'id' | 'data_criacao' | 'data_atualizacao'>) =>
     api.post<{ message: string; data: FrequenciaData }>('/frequencia', frequencia),
 
-  // Registrar frequência em lote
+  // Registrar frequência em lote para uma turma inteira
   registrarLote: (turmaId: string, data: string, frequencias: FrequenciaLote[]) =>
-    api.post<{ message: string; total: number }>('/frequencia/lote', {
+    api.post<{ 
+      success: boolean;
+      message: string;
+      data?: {
+        turma_id: string;
+        data: string;
+        total_registros: number;
+      };
+    }>('/frequencia/lote', {
       turma_id: turmaId,
       data,
       frequencias

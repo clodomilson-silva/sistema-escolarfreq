@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { frequenciaAPI, FrequenciaLote } from '../services/api';
 import './FrequenciaForm.css';
+import { AxiosError } from 'axios';
 
 interface Aluno {
   id: string;
@@ -12,9 +13,10 @@ interface FrequenciaFormProps {
   turmaId: string;
   alunos: Aluno[];
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos, onClose }) => {
+export const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos, onClose, onSuccess }) => {
   const [dataFrequencia, setDataFrequencia] = useState<string>(() => {
     const hoje = new Date();
     return hoje.toISOString().split('T')[0];
@@ -46,7 +48,6 @@ const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos, onClos
       const response = await frequenciaAPI.buscarPorTurmaEData(turmaId, dataFrequencia);
       const existentes = response.data;
 
-      // Atualizar estado com frequências existentes - usar função callback para evitar dependência
       setFrequencias(prev => {
         const frequenciasAtualizadas = { ...prev };
         existentes.forEach(freq => {
@@ -74,13 +75,59 @@ const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos, onClos
     }
   }, [dataFrequencia, turmaId, carregarFrequenciasExistentes]);
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (saving) return;
+
+    setSaving(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const frequenciasArray = Object.values(frequencias);
+      
+      await frequenciaAPI.registrarLote(turmaId, dataFrequencia, frequenciasArray);
+      
+      setSuccess(`✅ Frequência registrada com sucesso para ${frequenciasArray.length} alunos!`);
+      
+      // Aguardar brevemente para mostrar a mensagem
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Notificar sucesso e fechar
+      if (onSuccess) {
+        onSuccess();
+      }
+      onClose();
+      
+    } catch (error) {
+      console.error('Erro ao salvar frequência:', error);
+      let mensagemErro = 'Erro ao salvar frequência';
+      
+      if (error instanceof Error) {
+        const axiosError = error as AxiosError<{ message?: string; error?: string }>;
+        if (axiosError.response?.status === 409) {
+          mensagemErro = 'Já existe frequência registrada para esta turma nesta data.';
+        } else if (axiosError.response?.data?.message) {
+          mensagemErro = axiosError.response.data.message;
+        } else if (axiosError.response?.data?.error) {
+          mensagemErro = axiosError.response.data.error;
+        } else if (axiosError.response?.status === 500) {
+          mensagemErro = 'Erro interno do servidor. Por favor, tente novamente.';
+        }
+      }
+      
+      setError(mensagemErro);
+      setSaving(false);
+    }
+  };
+
+  // Funções de manipulação do formulário
   const handlePresencaChange = (alunoId: string, presente: boolean) => {
     setFrequencias(prev => ({
       ...prev,
       [alunoId]: {
         ...prev[alunoId],
         presente,
-        // Limpar justificativa se marcou como presente
         justificativa: presente ? '' : prev[alunoId].justificativa
       }
     }));
@@ -107,62 +154,30 @@ const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos, onClos
   };
 
   const marcarTodosPresentes = () => {
-    const frequenciasAtualizadas = { ...frequencias };
-    Object.keys(frequenciasAtualizadas).forEach(alunoId => {
-      frequenciasAtualizadas[alunoId] = {
-        ...frequenciasAtualizadas[alunoId],
-        presente: true,
-        justificativa: ''
-      };
+    setFrequencias(prev => {
+      const novasFrequencias = { ...prev };
+      Object.keys(novasFrequencias).forEach(alunoId => {
+        novasFrequencias[alunoId] = {
+          ...novasFrequencias[alunoId],
+          presente: true,
+          justificativa: ''
+        };
+      });
+      return novasFrequencias;
     });
-    setFrequencias(frequenciasAtualizadas);
   };
 
   const marcarTodosFaltosos = () => {
-    const frequenciasAtualizadas = { ...frequencias };
-    Object.keys(frequenciasAtualizadas).forEach(alunoId => {
-      frequenciasAtualizadas[alunoId] = {
-        ...frequenciasAtualizadas[alunoId],
-        presente: false
-      };
+    setFrequencias(prev => {
+      const novasFrequencias = { ...prev };
+      Object.keys(novasFrequencias).forEach(alunoId => {
+        novasFrequencias[alunoId] = {
+          ...novasFrequencias[alunoId],
+          presente: false
+        };
+      });
+      return novasFrequencias;
     });
-    setFrequencias(frequenciasAtualizadas);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    setError('');
-    setSuccess('');
-
-    try {
-      const frequenciasArray = Object.values(frequencias);
-      await frequenciaAPI.registrarLote(turmaId, dataFrequencia, frequenciasArray);
-      
-      setSuccess(`Frequência registrada com sucesso para ${frequenciasArray.length} alunos!`);
-      
-      // Fechar modal após um tempo
-      setTimeout(() => {
-        onClose();
-      }, 1500);
-    } catch (error: unknown) {
-      console.error('Erro ao salvar frequência:', error);
-      setError('Erro ao salvar frequência');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const formatarData = (data: string) => {
-    return new Date(data + 'T00:00:00').toLocaleDateString('pt-BR');
-  };
-
-  const contarPresencas = () => {
-    return Object.values(frequencias).filter(f => f.presente).length;
-  };
-
-  const contarFaltas = () => {
-    return Object.values(frequencias).filter(f => !f.presente).length;
   };
 
   if (loading) {
@@ -170,11 +185,11 @@ const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos, onClos
       <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
         <div className="modal-dialog modal-lg">
           <div className="modal-content">
-            <div className="modal-body text-center">
-              <div className="spinner-border" role="status">
+            <div className="modal-body text-center py-4">
+              <div className="spinner-border text-primary" role="status">
                 <span className="visually-hidden">Carregando...</span>
               </div>
-              <p className="mt-2">Carregando frequências...</p>
+              <p className="mt-2 mb-0">Carregando frequências...</p>
             </div>
           </div>
         </div>
@@ -194,28 +209,29 @@ const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos, onClos
             <button
               type="button"
               className="btn-close"
-              onClick={onClose}
+              onClick={() => !saving && onClose()}
               disabled={saving}
+              aria-label="Fechar"
             ></button>
           </div>
 
           <form onSubmit={handleSubmit}>
             <div className="modal-body">
               {error && (
-                <div className="alert alert-danger" role="alert">
+                <div className="alert alert-danger mb-3">
                   <i className="bi bi-exclamation-triangle me-2"></i>
                   {error}
                 </div>
               )}
 
               {success && (
-                <div className="alert alert-success" role="alert">
+                <div className="alert alert-success mb-3">
                   <i className="bi bi-check-circle me-2"></i>
                   {success}
                 </div>
               )}
 
-              {/* Controles da data e ações em lote */}
+              {/* Data e Ações em Lote */}
               <div className="row mb-4">
                 <div className="col-md-4">
                   <label className="form-label">Data da Frequência</label>
@@ -226,6 +242,7 @@ const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos, onClos
                     onChange={(e) => setDataFrequencia(e.target.value)}
                     max={new Date().toISOString().split('T')[0]}
                     required
+                    disabled={saving}
                   />
                 </div>
                 <div className="col-md-8 d-flex align-items-end gap-2">
@@ -233,6 +250,7 @@ const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos, onClos
                     type="button"
                     className="btn btn-outline-success btn-sm"
                     onClick={marcarTodosPresentes}
+                    disabled={saving}
                   >
                     <i className="bi bi-check-all me-1"></i>
                     Marcar Todos Presentes
@@ -241,6 +259,7 @@ const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos, onClos
                     type="button"
                     className="btn btn-outline-warning btn-sm"
                     onClick={marcarTodosFaltosos}
+                    disabled={saving}
                   >
                     <i className="bi bi-x-circle me-1"></i>
                     Marcar Todos Faltosos
@@ -248,35 +267,7 @@ const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos, onClos
                 </div>
               </div>
 
-              {/* Resumo */}
-              <div className="row mb-3">
-                <div className="col-12">
-                  <div className="card bg-light">
-                    <div className="card-body py-2">
-                      <div className="row text-center">
-                        <div className="col-md-3">
-                          <strong>Data:</strong> {formatarData(dataFrequencia)}
-                        </div>
-                        <div className="col-md-3">
-                          <strong>Total:</strong> {alunos.length} alunos
-                        </div>
-                        <div className="col-md-3">
-                          <span className="text-success">
-                            <strong>Presentes:</strong> {contarPresencas()}
-                          </span>
-                        </div>
-                        <div className="col-md-3">
-                          <span className="text-warning">
-                            <strong>Faltas:</strong> {contarFaltas()}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Lista de alunos */}
+              {/* Lista de Alunos */}
               <div className="frequencia-list">
                 {alunos.map(aluno => {
                   const freq = frequencias[aluno.id];
@@ -295,12 +286,13 @@ const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos, onClos
                           <div className="col-md-3">
                             <div className="form-check form-check-inline">
                               <input
-                                className="form-check-input"
                                 type="radio"
+                                className="form-check-input"
                                 name={`presenca-${aluno.id}`}
                                 id={`presente-${aluno.id}`}
                                 checked={freq.presente}
                                 onChange={() => handlePresencaChange(aluno.id, true)}
+                                disabled={saving}
                               />
                               <label className="form-check-label text-success" htmlFor={`presente-${aluno.id}`}>
                                 <i className="bi bi-check-circle me-1"></i>
@@ -309,12 +301,13 @@ const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos, onClos
                             </div>
                             <div className="form-check form-check-inline">
                               <input
-                                className="form-check-input"
                                 type="radio"
+                                className="form-check-input"
                                 name={`presenca-${aluno.id}`}
                                 id={`falta-${aluno.id}`}
                                 checked={!freq.presente}
                                 onChange={() => handlePresencaChange(aluno.id, false)}
+                                disabled={saving}
                               />
                               <label className="form-check-label text-warning" htmlFor={`falta-${aluno.id}`}>
                                 <i className="bi bi-x-circle me-1"></i>
@@ -330,6 +323,7 @@ const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos, onClos
                               placeholder="Observações"
                               value={freq.observacoes}
                               onChange={(e) => handleObservacoesChange(aluno.id, e.target.value)}
+                              disabled={saving}
                               maxLength={200}
                             />
                           </div>
@@ -341,7 +335,7 @@ const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos, onClos
                               placeholder="Justificativa (apenas faltas)"
                               value={freq.justificativa}
                               onChange={(e) => handleJustificativaChange(aluno.id, e.target.value)}
-                              disabled={freq.presente}
+                              disabled={freq.presente || saving}
                               maxLength={300}
                             />
                           </div>
@@ -393,5 +387,3 @@ const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos, onClos
     </div>
   );
 };
-
-export default FrequenciaForm;

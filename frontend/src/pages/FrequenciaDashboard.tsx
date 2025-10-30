@@ -1,26 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { frequenciaAPI, FrequenciaData, EstatisticasFrequencia } from '../services/api';
+import { frequenciaAPI } from '../services/api';
 import api from '../services/api';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../hooks/useAuth';
-import './FrequenciaDashboard.css';
-
-interface Turma {
-  id: string;
-  nome: string;
-  ano: string;
-  turno: string;
-}
-
-interface Aluno {
-  id: string;
-  nome: string;
-  matricula: string;
-}
+import { FrequenciaForm } from './FrequenciaForm';
+import { Turma, Aluno, FrequenciaData, EstatisticasFrequencia } from '../types';
 
 const FrequenciaDashboard: React.FC = () => {
   const { turmaId } = useParams<{ turmaId: string }>();
+  const { isReady } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [loadingFreq, setLoadingFreq] = useState(false);
+  const [error, setError] = useState<string>('');
+  const [showFrequenciaForm, setShowFrequenciaForm] = useState(false);
   const [turma, setTurma] = useState<Turma | null>(null);
   const [alunos, setAlunos] = useState<Aluno[]>([]);
   const [frequencias, setFrequencias] = useState<FrequenciaData[]>([]);
@@ -29,26 +22,56 @@ const FrequenciaDashboard: React.FC = () => {
     const hoje = new Date();
     return hoje.toISOString().split('T')[0];
   });
-  const [datasDisponiveis, setDatasDisponiveis] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
-  const { isReady } = useAuth();
 
-  useEffect(() => {
-    const carregarDados = async () => {
+  // Função para carregar todos os dados necessários
+  const carregarDados = useCallback(async () => {
+    if (!isReady || !turmaId) return;
+    
+    try {
+      setLoading(true);
+      setError('');
+
+      // Carregar dados da turma
+      const turmaResponse = await api.get(`/turmas/${turmaId}`);
+      setTurma(turmaResponse.data.data);
+
+      // Carregar alunos da turma
+      const alunosResponse = await api.get(`/alunos?turma_id=${turmaId}`);
+      const alunosDaTurma = alunosResponse.data.data || [];
+      setAlunos(alunosDaTurma);
+
+      // Carregar frequências do dia selecionado
+      setLoadingFreq(true);
       try {
-        setLoading(true);
+        type APIFrequenciaData = {
+          id?: string;
+          aluno_id: string;
+          turma_id: string;
+          data: string | Date;
+          presente: boolean;
+          observacoes?: string;
+          justificativa?: string;
+        };
         
-        // Carregar dados da turma
-        const turmaResponse = await api.get(`/turmas/${turmaId}`);
-        setTurma(turmaResponse.data.data);
+        const frequenciasResponse = await frequenciaAPI.buscarPorTurmaEData(turmaId, dataSelecionada);
+        const freqData = frequenciasResponse.data.map((f: APIFrequenciaData) => {
+          const data = typeof f.data === 'string' ? f.data : f.data.toISOString().split('T')[0];
+          return {
+            ...f,
+            data,
+            id: f.id || `${f.aluno_id}_${f.turma_id}_${data}`
+          } as FrequenciaData;
+        });
+        setFrequencias(freqData);
+      } catch (err) {
+        console.error('Erro ao carregar frequências:', err);
+        setFrequencias([]);
+      } finally {
+        setLoadingFreq(false);
+      }
 
-        // Carregar alunos da turma
-        const alunosResponse = await api.get(`/alunos?turma_id=${turmaId}`);
-        const alunosDaTurma = alunosResponse.data.data || [];
-        setAlunos(alunosDaTurma);
-
-        // Carregar estatísticas de cada aluno
+      // Carregar estatísticas dos alunos
+      if (alunosDaTurma.length > 0) {
         const estatisticasPromises = alunosDaTurma.map((aluno: Aluno) =>
           frequenciaAPI.obterEstatisticas(aluno.id, turmaId)
         );
@@ -61,71 +84,27 @@ const FrequenciaDashboard: React.FC = () => {
         });
         
         setEstatisticas(estatisticasMap);
-
-        // Carregar datas disponíveis (últimos 30 dias)
-        const datasArray = [];
-        for (let i = 0; i < 30; i++) {
-          const data = new Date();
-          data.setDate(data.getDate() - i);
-          datasArray.push(data.toISOString().split('T')[0]);
-        }
-        setDatasDisponiveis(datasArray);
-
-      } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-        setError('Erro ao carregar dados da turma');
-      } finally {
-        setLoading(false);
       }
-    };
 
-    if (isReady && turmaId) {
-      carregarDados();
-    }
-  }, [isReady, turmaId]);
-
-  useEffect(() => {
-    const carregarFrequencias = async () => {
-      try {
-        const response = await frequenciaAPI.buscarPorTurmaEData(turmaId!, dataSelecionada);
-        setFrequencias(response.data);
-      } catch (error) {
-        console.error('Erro ao carregar frequências:', error);
-        setFrequencias([]);
-      }
-    };
-
-    if (isReady && turmaId && dataSelecionada) {
-      carregarFrequencias();
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      setError('Erro ao carregar dados da turma');
+    } finally {
+      setLoading(false);
     }
   }, [isReady, turmaId, dataSelecionada]);
 
-  const getFrequenciaAluno = (alunoId: string): FrequenciaData | null => {
-    return frequencias.find(f => f.aluno_id === alunoId) || null;
-  };
+  // Carregar dados iniciais
+  useEffect(() => {
+    carregarDados();
+  }, [carregarDados]);
 
-  const formatarData = (data: string) => {
-    return new Date(data + 'T00:00:00').toLocaleDateString('pt-BR');
-  };
+  // Função para lidar com o sucesso do registro de frequência
+  const handleFrequenciaSuccess = useCallback(() => {
+    carregarDados();
+  }, [carregarDados]);
 
-  const formatarTurno = (turno: string) => {
-    const turnoMap: { [key: string]: { label: string; emoji: string } } = {
-      'matutino': { label: 'Manhã', emoji: '🌅' },
-      'vespertino': { label: 'Tarde', emoji: '☀️' },
-      'noturno': { label: 'Noite', emoji: '🌙' },
-      'integral': { label: 'Integral', emoji: '🌞' }
-    };
-    
-    return turnoMap[turno] || { label: turno, emoji: '⏰' };
-  };
-
-  const contarPresencas = () => {
-    return frequencias.filter(f => f.presente).length;
-  };
-
-  const contarFaltas = () => {
-    return frequencias.filter(f => !f.presente).length;
-  };
+  // ... resto do código do componente permanece igual ...
 
   if (loading) {
     return (
@@ -162,7 +141,25 @@ const FrequenciaDashboard: React.FC = () => {
     );
   }
 
+  const formatarData = (data: string) => {
+    return new Date(data + 'T00:00:00').toLocaleDateString('pt-BR');
+  };
+
+  const formatarTurno = (turno: string) => {
+    const turnoMap: { [key: string]: { label: string; emoji: string } } = {
+      'matutino': { label: 'Manhã', emoji: '🌅' },
+      'vespertino': { label: 'Tarde', emoji: '☀️' },
+      'noturno': { label: 'Noite', emoji: '🌙' },
+      'integral': { label: 'Integral', emoji: '🌞' }
+    };
+    
+    return turnoMap[turno] || { label: turno, emoji: '⏰' };
+  };
+
   const turnoInfo = formatarTurno(turma.turno);
+  const presentes = frequencias.filter(f => f.presente).length;
+  const ausentes = frequencias.filter(f => !f.presente).length;
+  const percentualPresenca = alunos.length ? ((presentes / alunos.length) * 100).toFixed(1) : '0';
 
   return (
     <div className="min-vh-100 bg-light">
@@ -212,17 +209,17 @@ const FrequenciaDashboard: React.FC = () => {
             <div className="card">
               <div className="card-body">
                 <h5 className="card-title">📅 Selecionar Data</h5>
-                <select
-                  className="form-select"
+                <input
+                  type="date"
+                  className="form-control"
                   value={dataSelecionada}
-                  onChange={(e) => setDataSelecionada(e.target.value)}
-                >
-                  {datasDisponiveis.map(data => (
-                    <option key={data} value={data}>
-                      {formatarData(data)}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(e) => {
+                    setDataSelecionada(e.target.value);
+                    carregarDados(); // Recarregar dados ao mudar a data
+                  }}
+                  max={new Date().toISOString().split('T')[0]}
+                  disabled={loadingFreq}
+                />
               </div>
             </div>
           </div>
@@ -230,7 +227,23 @@ const FrequenciaDashboard: React.FC = () => {
           <div className="col-md-8">
             <div className="card">
               <div className="card-body">
-                <h5 className="card-title">📈 Resumo do Dia - {formatarData(dataSelecionada)}</h5>
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h5 className="card-title mb-0">📈 Resumo do Dia - {formatarData(dataSelecionada)}</h5>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => setShowFrequenciaForm(true)}
+                    disabled={!alunos.length || loadingFreq}
+                  >
+                    {loadingFreq ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                        Carregando...
+                      </>
+                    ) : (
+                      <>📝 Registrar Frequência</>
+                    )}
+                  </button>
+                </div>
                 <div className="row text-center">
                   <div className="col-3">
                     <div className="text-primary">
@@ -240,19 +253,19 @@ const FrequenciaDashboard: React.FC = () => {
                   </div>
                   <div className="col-3">
                     <div className="text-success">
-                      <h3>{contarPresencas()}</h3>
+                      <h3>{presentes}</h3>
                       <small>Presentes</small>
                     </div>
                   </div>
                   <div className="col-3">
                     <div className="text-warning">
-                      <h3>{contarFaltas()}</h3>
+                      <h3>{ausentes}</h3>
                       <small>Faltas</small>
                     </div>
                   </div>
                   <div className="col-3">
                     <div className="text-info">
-                      <h3>{frequencias.length > 0 ? ((contarPresencas() / alunos.length) * 100).toFixed(1) : '0'}%</h3>
+                      <h3>{percentualPresenca}%</h3>
                       <small>Frequência</small>
                     </div>
                   </div>
@@ -290,7 +303,7 @@ const FrequenciaDashboard: React.FC = () => {
                       </thead>
                       <tbody>
                         {alunos.map(aluno => {
-                          const freq = getFrequenciaAluno(aluno.id);
+                          const freq = frequencias.find(f => f.aluno_id === aluno.id);
                           const stats = estatisticas[aluno.id];
                           
                           return (
@@ -299,10 +312,14 @@ const FrequenciaDashboard: React.FC = () => {
                                 <strong>{aluno.nome}</strong>
                               </td>
                               <td>
-                                <code>{aluno.matricula}</code>
+                                <code>{aluno.ra}</code>
                               </td>
                               <td>
-                                {freq ? (
+                                {loadingFreq ? (
+                                  <div className="text-center">
+                                    <span className="spinner-border spinner-border-sm" role="status"></span>
+                                  </div>
+                                ) : freq ? (
                                   <span className={`badge ${freq.presente ? 'bg-success' : 'bg-warning'}`}>
                                     {freq.presente ? '✅ Presente' : '❌ Falta'}
                                   </span>
@@ -342,6 +359,16 @@ const FrequenciaDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Modal de Frequência */}
+        {showFrequenciaForm && (
+          <FrequenciaForm
+            turmaId={turmaId!}
+            alunos={alunos}
+            onClose={() => setShowFrequenciaForm(false)}
+            onSuccess={handleFrequenciaSuccess}
+          />
+        )}
       </div>
     </div>
   );

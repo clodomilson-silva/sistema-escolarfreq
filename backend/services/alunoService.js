@@ -62,6 +62,26 @@ class AlunoService {
         query = query.where('matricula', '==', filtros.matricula);
       }
 
+      // Filtrar por turma se fornecido turma_id
+      if (filtros.turma_id) {
+        // Primeiro, buscar a turma para obter a lista de alunos
+        const turmaDoc = await db.collection('turmas').doc(filtros.turma_id).get();
+        if (!turmaDoc.exists) {
+          throw new Error('Turma não encontrada');
+        }
+        
+        // Pegar a lista de IDs de alunos da turma
+        const alunosDaTurma = turmaDoc.data().alunos || [];
+        
+        // Se não houver alunos na turma, retornar lista vazia
+        if (alunosDaTurma.length === 0) {
+          return [];
+        }
+
+        // Adicionar o filtro para buscar apenas os alunos da turma
+        query = query.where('__name__', 'in', alunosDaTurma);
+      }
+
       const snapshot = await query.orderBy('nome').get();
       
       return snapshot.docs.map(doc => ({

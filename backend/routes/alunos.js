@@ -19,11 +19,12 @@ const validarAluno = (schema) => {
 // GET /api/alunos - Listar todos os alunos (protegido)
 router.get('/', authenticateToken, requireAdmin, async (req, res, next) => {
   try {
-    const { nome, matricula } = req.query;
+    const { nome, matricula, turma_id } = req.query;
     const filtros = {};
     
     if (nome) filtros.nome = nome;
     if (matricula) filtros.matricula = matricula;
+    if (turma_id) filtros.turma_id = turma_id;
     
     const alunos = await alunoService.listarAlunos(filtros);
     
