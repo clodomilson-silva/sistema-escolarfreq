@@ -49,11 +49,13 @@ export default function Navbar() {
                 🏠 Home
               </a>
             </li>
-            <li className="nav-item">
-              <a className="nav-link px-3" href="/alunos" style={{ color: 'white' }}>
-                👥 Alunos
-              </a>
-            </li>
+            {admin?.role === 'admin' && (
+              <li className="nav-item">
+                <a className="nav-link px-3" href="/alunos" style={{ color: 'white' }}>
+                  👥 Alunos
+                </a>
+              </li>
+            )}
             <li className="nav-item">
               <a className="nav-link px-3" href="/turmas" style={{ color: 'white' }}>
                 🏫 Turmas
@@ -62,8 +64,17 @@ export default function Navbar() {
           </ul>
           
           <div className="d-flex align-items-center">
+            <span style={{ color: 'rgba(255,255,255,0.9)', marginRight: 'var(--spacing-sm)' }}>
+              <small className="badge" style={{ 
+                backgroundColor: admin?.role === 'admin' ? '#fbbf24' : '#34d399',
+                color: '#1f2937',
+                marginRight: 'var(--spacing-xs)'
+              }}>
+                {admin?.role === 'admin' ? '👑 Admin' : '👨‍🏫 Professor'}
+              </small>
+            </span>
             <span style={{ color: 'rgba(255,255,255,0.9)', marginRight: 'var(--spacing-md)' }}>
-              Olá, <strong>{admin?.nome || 'Admin'}</strong>
+              Olá, <strong>{admin?.nome || 'Usuário'}</strong>
             </span>
             <button 
               onClick={handleLogout} 

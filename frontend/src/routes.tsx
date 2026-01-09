@@ -8,8 +8,10 @@ import TurmasList from "./pages/TurmasList";
 import TurmaForm from "./pages/TurmaForm";
 import TurmaDetalhes from "./pages/TurmaDetalhes";
 import TurmaEdit from "./pages/TurmaEdit";
+import TurmaDisciplinaForm from "./pages/TurmaDisciplinaForm";
 import FrequenciaDashboard from "./pages/FrequenciaDashboard";
 import LoginAuth from "./pages/LoginAuth";
+import RegistroUsuario from "./pages/RegistroUsuario";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function AppRoutes() {
@@ -18,6 +20,9 @@ export default function AppRoutes() {
       <Routes>
         {/* Rota de login */}
         <Route path="/login" element={<LoginAuth />} />
+        
+        {/* Rota de registro */}
+        <Route path="/registro" element={<RegistroUsuario />} />
         
         {/* Redirect da raiz para login */}
         <Route path="/" element={<Navigate to="/login" replace />} />
@@ -62,6 +67,12 @@ export default function AppRoutes() {
         <Route path="/turmas/nova" element={
           <ProtectedRoute>
             <TurmaForm />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/turmas/disciplina/nova" element={
+          <ProtectedRoute>
+            <TurmaDisciplinaForm />
           </ProtectedRoute>
         } />
         

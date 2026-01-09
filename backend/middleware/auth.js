@@ -43,8 +43,17 @@ const requireAdmin = (req, res, next) => {
       success: false,
       message: 'Acesso negado. Apenas administradores podem acessar este recurso'
     });
-  }
-  next();
+  }  next();
+};
+
+// Middleware para verificar se é professor
+const requireProfessor = (req, res, next) => {
+  if (!req.admin || (req.admin.role !== 'professor' && req.admin.role !== 'admin')) {
+    return res.status(403).json({
+      success: false,
+      message: 'Acesso negado. Apenas professores podem acessar este recurso'
+    });
+  }  next();
 };
 
 // Middleware opcional - não obrigatório ter token
@@ -72,5 +81,6 @@ const optionalAuth = async (req, res, next) => {
 module.exports = {
   authenticateToken,
   requireAdmin,
+  requireProfessor,
   optionalAuth
 };

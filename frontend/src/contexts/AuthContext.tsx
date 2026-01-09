@@ -6,7 +6,8 @@ interface Admin {
   id: string;
   nome: string;
   email: string;
-  role: string;
+  role: 'admin' | 'professor';
+  disciplinas?: string[];
   ativo: boolean;
   criado_em: string;
   ultimo_login: string | null;

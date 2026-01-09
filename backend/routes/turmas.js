@@ -2,11 +2,10 @@ const express = require('express');
 const router = express.Router();
 const turmaService = require('../services/turmaService');
 const { turmaSchema, turmaUpdateSchema } = require('../validators/turmaValidator');
-const { authenticateToken, requireAdmin } = require('../middleware/auth');
+const { authenticateToken, requireAdmin, requireProfessor } = require('../middleware/auth');
 
 // Aplicar middleware de autenticação para todas as rotas
 router.use(authenticateToken);
-router.use(requireAdmin);
 
 const validarTurma = (schema) => {
   return (req, res, next) => {
@@ -65,8 +64,28 @@ router.get('/:id', async (req, res, next) => {
 });
 
 // POST /api/turmas - Criar nova turma
+// Admins podem criar turmas base, professores podem criar turmas-disciplina
 router.post('/', validarTurma(turmaSchema), async (req, res, next) => {
   try {
+    // Verificar permissões baseadas no tipo de turma
+    const isProfessor = req.admin.role === 'professor';
+    const isTurmaDisciplina = req.body.tipo === 'disciplina';
+    
+    // Professores só podem criar turmas-disciplina
+    if (isProfessor && !isTurmaDisciplina) {
+      return res.status(403).json({
+        success: false,
+        message: 'Professores só podem criar turmas-disciplina'
+      });
+    }
+    
+    // Admins podem criar qualquer tipo
+    // Se for professor criando turma-disciplina, adicionar seu ID
+    if (isProfessor && isTurmaDisciplina) {
+      req.body.professor_id = req.admin.id;
+      req.body.professor_nome = req.admin.nome;
+    }
+    
     const turma = await turmaService.criarTurma(req.body);
     
     res.status(201).json({
@@ -82,8 +101,8 @@ router.post('/', validarTurma(turmaSchema), async (req, res, next) => {
   }
 });
 
-// PUT /api/turmas/:id - Atualizar turma
-router.put('/:id', validarTurma(turmaUpdateSchema), async (req, res, next) => {
+// PUT /api/turmas/:id - Atualizar turma (apenas admin)
+router.put('/:id', requireAdmin, validarTurma(turmaUpdateSchema), async (req, res, next) => {
   try {
     const { id } = req.params;
     const turma = await turmaService.atualizarTurma(id, req.body);
@@ -103,8 +122,8 @@ router.put('/:id', validarTurma(turmaUpdateSchema), async (req, res, next) => {
   }
 });
 
-// DELETE /api/turmas/:id - Excluir turma
-router.delete('/:id', async (req, res, next) => {
+// DELETE /api/turmas/:id - Excluir turma (apenas admin)
+router.delete('/:id', requireAdmin, async (req, res, next) => {
   try {
     const { id } = req.params;
     await turmaService.excluirTurma(id);
@@ -121,8 +140,8 @@ router.delete('/:id', async (req, res, next) => {
   }
 });
 
-// POST /api/turmas/:id/alunos/:alunoId - Adicionar aluno à turma
-router.post('/:id/alunos/:alunoId', async (req, res, next) => {
+// POST /api/turmas/:id/alunos/:alunoId - Adicionar aluno à turma (apenas admin)
+router.post('/:id/alunos/:alunoId', requireAdmin, async (req, res, next) => {
   try {
     const { id, alunoId } = req.params;
     const turma = await turmaService.adicionarAluno(id, alunoId);

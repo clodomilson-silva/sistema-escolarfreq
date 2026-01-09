@@ -26,6 +26,12 @@ const criarAdminSchema = Joi.object({
     'string.min': 'Senha deve ter pelo menos 8 caracteres',
     'string.pattern.base': 'Senha deve conter pelo menos: 1 letra minúscula, 1 maiúscula, 1 número e 1 caractere especial',
     'any.required': 'Senha é obrigatória'
+  }),
+  role: Joi.string().valid('admin', 'professor').default('professor').messages({
+    'any.only': 'Role deve ser admin ou professor'
+  }),
+  disciplinas: Joi.array().items(Joi.string()).optional().messages({
+    'array.base': 'Disciplinas deve ser uma lista'
   })
 });
 

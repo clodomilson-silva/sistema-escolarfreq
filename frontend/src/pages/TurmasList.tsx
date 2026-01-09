@@ -10,6 +10,10 @@ interface Turma {
   nome: string;
   ano: string;
   turno: string;
+  tipo?: 'base' | 'disciplina';
+  disciplina?: string;
+  professor_nome?: string;
+  turma_base_id?: string;
   criado_em?: string;
   atualizado_em?: string;
 }
@@ -18,7 +22,7 @@ function TurmasList() {
   const [turmas, setTurmas] = useState<Turma[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { isReady } = useAuth();
+  const { isReady, admin } = useAuth();
 
   // Função para mapear turnos do backend para exibição
   const formatarTurno = (turno: string) => {
@@ -115,14 +119,23 @@ function TurmasList() {
           <div className="row">
             <div className="col-12">
               <h1 className="list-page-title text-success">🏫 Lista de Turmas</h1>
-              <p className="list-page-subtitle">Gerencie todas as turmas do sistema escolar</p>
+              <p className="list-page-subtitle">
+                {admin?.role === 'admin' 
+                  ? 'Gerencie turmas base e turmas-disciplina do sistema escolar'
+                  : 'Crie e gerencie suas turmas-disciplina'}
+              </p>
               <div className="list-page-actions">
                 <Link to="/home" className="list-page-btn btn btn-outline-secondary">
                   🏠 Voltar para Home
                 </Link>
-                <Link to="/turmas/nova" className="list-page-btn btn btn-success">
-                  ➕ Cadastrar Nova Turma
+                <Link to="/turmas/disciplina/nova" className="list-page-btn btn btn-info me-2">
+                  📚 Criar Turma-Disciplina
                 </Link>
+                {admin?.role === 'admin' && (
+                  <Link to="/turmas/nova" className="list-page-btn btn btn-success">
+                    ➕ Cadastrar Turma Base
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -147,65 +160,91 @@ function TurmasList() {
                       <thead className="table-success">
                         <tr>
                           <th>Nome da Turma</th>
-                          <th>Número</th>
+                          <th>Tipo</th>
+                          <th>Disciplina</th>
+                          <th>Professor</th>
+                          <th>Ano</th>
                           <th>Turno</th>
-                          <th>Data Criação</th>
                           <th className="text-center">Ações</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {turmas.map((turma) => (
-                          <tr key={turma.id}>
-                            <td className="fw-semibold">{turma.nome}</td>
-                            <td>
-                              <span className="list-page-badge badge bg-primary">{turma.ano}</span>
-                            </td>
-                            <td>
-                              <span className={`list-page-badge badge ${formatarTurno(turma.turno).color}`}>
-                                {formatarTurno(turma.turno).emoji} {formatarTurno(turma.turno).label}
-                              </span>
-                            </td>
-                            <td>
-                              {turma.criado_em ? 
-                                (() => {
-                                  try {
-                                    const data = new Date(turma.criado_em);
-                                    return data.toLocaleDateString('pt-BR');
-                                  } catch {
-                                    console.error('Erro ao formatar data:', turma.criado_em);
-                                    return 'Data inválida';
-                                  }
-                                })() : 
-                                '-'
-                              }
-                            </td>
-                            <td className="text-center">
-                              <div className="list-page-table-actions">
-                                <button
-                                  onClick={() => navigate(`/turmas/${turma.id}`)}
-                                  className="list-page-table-btn btn btn-outline-info btn-sm"
-                                  title="Ver detalhes e gerenciar alunos"
-                                >
-                                  👁️
-                                </button>
-                                <button
-                                  onClick={() => navigate(`/turmas/editar/${turma.id}`)}
-                                  className="list-page-table-btn btn btn-outline-warning btn-sm"
-                                  title="Editar"
-                                >
-                                  ✏️
-                                </button>
-                                <button
-                                  onClick={() => excluirTurma(turma.id)}
-                                  className="list-page-table-btn btn btn-outline-danger btn-sm"
-                                  title="Excluir"
-                                >
-                                  🗑️
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
+                        {turmas.map((turma) => {
+                          const turnoInfo = formatarTurno(turma.turno);
+                          const ehDisciplina = turma.tipo === 'disciplina';
+                          
+                          return (
+                            <tr key={turma.id} className={ehDisciplina ? 'table-info' : ''}>
+                              <td className="fw-semibold">
+                                {ehDisciplina && '└─ '}
+                                {turma.nome}
+                              </td>
+                              <td>
+                                <span className={`list-page-badge badge ${ehDisciplina ? 'bg-info' : 'bg-primary'}`}>
+                                  {ehDisciplina ? '📚 Disciplina' : '🏫 Base'}
+                                </span>
+                              </td>
+                              <td>
+                                {turma.disciplina ? (
+                                  <span className="badge bg-success">{turma.disciplina}</span>
+                                ) : (
+                                  <span className="text-muted">—</span>
+                                )}
+                              </td>
+                              <td>
+                                {turma.professor_nome ? (
+                                  <small>👨‍🏫 {turma.professor_nome}</small>
+                                ) : (
+                                  <span className="text-muted">—</span>
+                                )}
+                              </td>
+                              <td>
+                                <span className="list-page-badge badge bg-secondary">{turma.ano}</span>
+                              </td>
+                              <td>
+                                <span className={`list-page-badge badge ${turnoInfo.color}`}>
+                                  {turnoInfo.emoji} {turnoInfo.label}
+                                </span>
+                              </td>
+                              <td className="text-center">
+                                <div className="list-page-table-actions">
+                                  <button
+                                    onClick={() => navigate(`/turmas/${turma.id}`)}
+                                    className="list-page-table-btn btn btn-outline-info btn-sm"
+                                    title="Ver detalhes"
+                                  >
+                                    👁️
+                                  </button>
+                                  <button
+                                    onClick={() => navigate(`/turmas/${turma.id}/frequencia`)}
+                                    className="list-page-table-btn btn btn-outline-success btn-sm"
+                                    title="Frequência"
+                                  >
+                                    📊
+                                  </button>
+                                  {admin?.role === 'admin' && (
+                                    <>
+                                      <button
+                                        onClick={() => navigate(`/turmas/editar/${turma.id}`)}
+                                        className="list-page-table-btn btn btn-outline-warning btn-sm"
+                                        title="Editar"
+                                      >
+                                        ✏️
+                                      </button>
+                                      <button
+                                        onClick={() => excluirTurma(turma.id)}
+                                        className="list-page-table-btn btn btn-outline-danger btn-sm"
+                                        title="Excluir"
+                                      >
+                                        🗑️
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>

@@ -243,6 +243,18 @@ function LoginAuth() {
                   </div>
                 </form>
 
+                <div className="text-center mt-4">
+                  <p className="text-muted mb-2">
+                    Não tem uma conta?{' '}
+                    <button 
+                      onClick={() => window.location.href = '/registro'} 
+                      className="btn btn-link text-primary fw-bold p-0"
+                    >
+                      Cadastre-se aqui
+                    </button>
+                  </p>
+                </div>
+
                 <div className="text-center mt-3">
                   <button className="btn btn-link text-decoration-none p-0 mb-2 d-flex align-items-center justify-content-center mx-auto" type="button" data-bs-toggle="collapse" data-bs-target="#infoLogin" aria-expanded="false" aria-controls="infoLogin">
                     <FaInfoCircle className="me-2" />

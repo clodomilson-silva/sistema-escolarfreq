@@ -5,6 +5,7 @@ import api from '../services/api';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../hooks/useAuth';
 import { FrequenciaForm } from './FrequenciaForm';
+import EstatisticasAluno from '../components/EstatisticasAluno';
 import { Turma, Aluno, FrequenciaData, EstatisticasFrequencia } from '../types';
 
 const FrequenciaDashboard: React.FC = () => {
@@ -278,73 +279,113 @@ const FrequenciaDashboard: React.FC = () => {
         {/* Lista de Alunos com Frequência */}
         <div className="row">
           <div className="col-12">
-            <div className="card">
-              <div className="card-header d-flex justify-content-between align-items-center">
-                <h5 className="mb-0">👥 Frequência dos Alunos</h5>
-                <span className="badge bg-primary">{alunos.length} alunos</span>
+            <div className="card border-0 shadow-sm">
+              <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 className="mb-0">👥 Frequência Individual dos Alunos</h5>
+                <span className="badge bg-light text-primary">{alunos.length} alunos</span>
               </div>
               <div className="card-body p-0">
                 {alunos.length === 0 ? (
                   <div className="text-center py-5">
-                    <i className="bi bi-people display-4 text-muted"></i>
-                    <p className="text-muted mt-2">Nenhum aluno matriculado nesta turma.</p>
+                    <div className="display-1 text-muted mb-3">📚</div>
+                    <h5 className="text-muted">Nenhum aluno matriculado nesta turma</h5>
+                    <p className="text-muted">Adicione alunos à turma para começar o registro de frequência.</p>
                   </div>
                 ) : (
                   <div className="table-responsive">
-                    <table className="table table-hover mb-0">
+                    <table className="table table-hover align-middle mb-0">
                       <thead className="table-light">
                         <tr>
-                          <th>Aluno</th>
-                          <th>RA</th>
-                          <th>Status ({formatarData(dataSelecionada)})</th>
-                          <th>Observações</th>
-                          <th>Estatísticas Gerais</th>
+                          <th style={{ width: '5%' }}>#</th>
+                          <th style={{ width: '25%' }}>Aluno</th>
+                          <th style={{ width: '10%' }}>RA</th>
+                          <th style={{ width: '15%' }}>Status do Dia</th>
+                          <th style={{ width: '20%' }}>Observações</th>
+                          <th style={{ width: '25%' }}>Estatísticas Gerais</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {alunos.map(aluno => {
+                        {alunos.map((aluno, index) => {
                           const freq = frequencias.find(f => f.aluno_id === aluno.id);
                           const stats = estatisticas[aluno.id];
                           
+                          // Determinar cor da linha baseado no status
+                          let statusCor = '';
+                          if (stats) {
+                            const perc = stats.percentual_presenca;
+                            if (perc >= 90) statusCor = 'table-success-subtle';
+                            else if (perc >= 75) statusCor = 'table-primary-subtle';
+                            else if (perc >= 60) statusCor = 'table-warning-subtle';
+                            else statusCor = 'table-danger-subtle';
+                          }
+                          
                           return (
-                            <tr key={aluno.id}>
-                              <td>
-                                <strong>{aluno.nome}</strong>
+                            <tr key={aluno.id} className={statusCor}>
+                              <td className="text-center">
+                                <span className="badge bg-secondary">{index + 1}</span>
                               </td>
                               <td>
-                                <code>{aluno.ra}</code>
+                                <div className="d-flex align-items-center">
+                                  <div className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" 
+                                       style={{ width: '40px', height: '40px', fontSize: '1.2rem' }}>
+                                    {aluno.nome.charAt(0).toUpperCase()}
+                                  </div>
+                                  <div>
+                                    <strong className="d-block">{aluno.nome}</strong>
+                                    <small className="text-muted">Mat: {aluno.matricula}</small>
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <code className="bg-light px-2 py-1 rounded">{aluno.ra}</code>
                               </td>
                               <td>
                                 {loadingFreq ? (
                                   <div className="text-center">
-                                    <span className="spinner-border spinner-border-sm" role="status"></span>
+                                    <span className="spinner-border spinner-border-sm text-primary" role="status"></span>
                                   </div>
                                 ) : freq ? (
-                                  <span className={`badge ${freq.presente ? 'bg-success' : 'bg-warning'}`}>
-                                    {freq.presente ? '✅ Presente' : '❌ Falta'}
-                                  </span>
+                                  <div className="d-flex flex-column gap-1">
+                                    <span className={`badge ${freq.presente ? 'bg-success' : 'bg-warning'} fs-6`}>
+                                      {freq.presente ? '✅ Presente' : '❌ Falta'}
+                                    </span>
+                                    {!freq.presente && freq.justificativa && (
+                                      <span className="badge bg-info text-dark fs-7">📝 Justificada</span>
+                                    )}
+                                  </div>
                                 ) : (
-                                  <span className="badge bg-secondary">⏸️ Não registrado</span>
+                                  <span className="badge bg-secondary fs-6">⏸️ Não registrado</span>
                                 )}
                               </td>
                               <td>
-                                <small className="text-muted">
-                                  {freq?.observacoes && (
-                                    <div><strong>Obs:</strong> {freq.observacoes}</div>
-                                  )}
-                                  {freq?.justificativa && (
-                                    <div><strong>Just:</strong> {freq.justificativa}</div>
-                                  )}
-                                  {!freq?.observacoes && !freq?.justificativa && '—'}
-                                </small>
+                                {freq ? (
+                                  <div className="small">
+                                    {freq.observacoes && (
+                                      <div className="mb-1">
+                                        <span className="badge bg-info text-dark me-1">💬</span>
+                                        <span className="text-muted">{freq.observacoes}</span>
+                                      </div>
+                                    )}
+                                    {freq.justificativa && (
+                                      <div>
+                                        <span className="badge bg-warning text-dark me-1">📋</span>
+                                        <span className="text-muted">{freq.justificativa}</span>
+                                      </div>
+                                    )}
+                                    {!freq.observacoes && !freq.justificativa && (
+                                      <span className="text-muted fst-italic">Sem observações</span>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <span className="text-muted fst-italic">—</span>
+                                )}
                               </td>
                               <td>
-                                {stats && (
-                                  <div className="small">
-                                    <div><strong>{stats.percentual_presenca}%</strong> de presença</div>
-                                    <div className="text-muted">
-                                      {stats.presencas}P / {stats.faltas}F / {stats.total_dias}T
-                                    </div>
+                                {stats ? (
+                                  <EstatisticasAluno estatisticas={stats} compacto={true} />
+                                ) : (
+                                  <div className="text-center">
+                                    <small className="text-muted">Sem dados</small>
                                   </div>
                                 )}
                               </td>
@@ -359,6 +400,80 @@ const FrequenciaDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Resumo Estatístico Geral */}
+        {alunos.length > 0 && Object.keys(estatisticas).length > 0 && (
+          <div className="row mt-4">
+            <div className="col-12">
+              <div className="card border-0 shadow-sm">
+                <div className="card-header bg-info text-white">
+                  <h5 className="mb-0">📊 Resumo Estatístico da Turma</h5>
+                </div>
+                <div className="card-body">
+                  <div className="row g-3">
+                    {(() => {
+                      const todosStats = Object.values(estatisticas);
+                      const mediaPresenca = todosStats.reduce((acc, s) => acc + s.percentual_presenca, 0) / todosStats.length;
+                      const mediaFaltas = 100 - mediaPresenca;
+                      const excelentes = todosStats.filter(s => s.percentual_presenca >= 90).length;
+                      const bons = todosStats.filter(s => s.percentual_presenca >= 75 && s.percentual_presenca < 90).length;
+                      const regulares = todosStats.filter(s => s.percentual_presenca >= 60 && s.percentual_presenca < 75).length;
+                      const criticos = todosStats.filter(s => s.percentual_presenca < 60).length;
+
+                      return (
+                        <>
+                          <div className="col-md-3">
+                            <div className="card bg-light border-0">
+                              <div className="card-body text-center">
+                                <h3 className="text-primary mb-1">{mediaPresenca.toFixed(1)}%</h3>
+                                <p className="text-muted mb-0 small">Média de Presença</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-md-3">
+                            <div className="card bg-success bg-opacity-10 border-success">
+                              <div className="card-body text-center">
+                                <h3 className="text-success mb-1">🌟 {excelentes}</h3>
+                                <p className="text-muted mb-0 small">Excelente (≥90%)</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-md-3">
+                            <div className="card bg-primary bg-opacity-10 border-primary">
+                              <div className="card-body text-center">
+                                <h3 className="text-primary mb-1">👍 {bons}</h3>
+                                <p className="text-muted mb-0 small">Bom (75-89%)</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-md-3">
+                            <div className="card bg-warning bg-opacity-10 border-warning">
+                              <div className="card-body text-center">
+                                <h3 className="text-warning mb-1">⚠️ {regulares}</h3>
+                                <p className="text-muted mb-0 small">Regular (60-74%)</p>
+                              </div>
+                            </div>
+                          </div>
+                          {criticos > 0 && (
+                            <div className="col-md-12">
+                              <div className="alert alert-danger d-flex align-items-center mb-0">
+                                <span className="fs-3 me-3">🚨</span>
+                                <div>
+                                  <strong>Atenção!</strong> {criticos} aluno(s) com frequência crítica (&lt;60%). 
+                                  É necessário intervenção pedagógica urgente.
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Modal de Frequência */}
         {showFrequenciaForm && (
