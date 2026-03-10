@@ -73,8 +73,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         });
         
         if (response.data.success) {
-          console.log('Token válido, definindo usuário:', response.data.data.admin);
-          setAdmin(response.data.data.admin);
+          console.log('Token válido, definindo usuário:', response.data.data.user);
+          setAdmin(response.data.data.user);
           setToken(tokenToVerify);
           
           // Configurar token no interceptor ANTES de marcar como não carregando
@@ -122,15 +122,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const response = await api.post('/auth/login', { email, senha });
       
       if (response.data.success) {
-        const { admin: adminData, token: authToken } = response.data.data;
+        const { user: userData, token: authToken } = response.data.data;
         
-        console.log('Login bem-sucedido, definindo estado:', adminData);
+        console.log('Login bem-sucedido, definindo estado:', userData);
         
         // Salvar token no cookie por 24h
         Cookies.set('auth_token', authToken, { expires: 1 });
         
         // Definir estado
-        setAdmin(adminData);
+        setAdmin(userData);
         setToken(authToken);
         
         // Aguardar um pouco para garantir que o estado foi atualizado

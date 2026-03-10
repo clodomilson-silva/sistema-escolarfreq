@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    'drf_yasg',
+    'drf_spectacular',
     
     # Local apps
     'core',
@@ -164,7 +164,16 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'EXCEPTION_HANDLER': 'config.exceptions.custom_exception_handler',
+}
+
+# DRF Spectacular
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Sistema Escolar API',
+    'DESCRIPTION': 'API para gerenciamento de frequência escolar',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
 
 # Simple JWT

@@ -89,7 +89,7 @@ function TurmaDetalhes() {
   const adicionarAluno = async (alunoId: string) => {
     try {
       setLoadingAlunos(true);
-      await api.post(`/turmas/${id}/alunos/${alunoId}`);
+      await api.post(`/turmas/${id}/add_aluno/`, { aluno_id: alunoId });
       await carregarDados(); // Recarregar dados
       alert("Aluno adicionado à turma com sucesso!");
     } catch (error) {
@@ -104,7 +104,7 @@ function TurmaDetalhes() {
     if (window.confirm("Tem certeza que deseja remover este aluno da turma?")) {
       try {
         setLoadingAlunos(true);
-        await api.delete(`/turmas/${id}/alunos/${alunoId}`);
+        await api.post(`/turmas/${id}/remove_aluno/`, { aluno_id: alunoId });
         await carregarDados(); // Recarregar dados
         alert("Aluno removido da turma com sucesso!");
       } catch (error) {

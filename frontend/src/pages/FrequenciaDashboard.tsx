@@ -33,36 +33,22 @@ const FrequenciaDashboard: React.FC = () => {
       setError('');
 
       // Carregar dados da turma
-      const turmaResponse = await api.get(`/turmas/${turmaId}`);
+      const turmaResponse = await api.get(`/turmas/${turmaId}/`);
       setTurma(turmaResponse.data.data);
 
       // Carregar alunos da turma
-      const alunosResponse = await api.get(`/alunos?turma_id=${turmaId}`);
+      const alunosResponse = await api.get(`/alunos/?turma_id=${turmaId}`);
       const alunosDaTurma = alunosResponse.data.data || [];
       setAlunos(alunosDaTurma);
 
       // Carregar frequências do dia selecionado
       setLoadingFreq(true);
       try {
-        type APIFrequenciaData = {
-          id?: string;
-          aluno_id: string;
-          turma_id: string;
-          data: string | Date;
-          presente: boolean;
-          observacoes?: string;
-          justificativa?: string;
-        };
-        
         const frequenciasResponse = await frequenciaAPI.buscarPorTurmaEData(turmaId, dataSelecionada);
-        const freqData = frequenciasResponse.data.map((f: APIFrequenciaData) => {
-          const data = typeof f.data === 'string' ? f.data : f.data.toISOString().split('T')[0];
-          return {
-            ...f,
-            data,
-            id: f.id || `${f.aluno_id}_${f.turma_id}_${data}`
-          } as FrequenciaData;
-        });
+        const freqData = frequenciasResponse.data.data.map((f: FrequenciaData) => ({
+          ...f,
+          id: f.id || `${f.aluno}_${f.turma}_${f.data}`
+        }));
         setFrequencias(freqData);
       } catch (err) {
         console.error('Erro ao carregar frequências:', err);
@@ -81,7 +67,7 @@ const FrequenciaDashboard: React.FC = () => {
         const estatisticasMap: { [key: string]: EstatisticasFrequencia } = {};
         
         alunosDaTurma.forEach((aluno: Aluno, index: number) => {
-          estatisticasMap[aluno.id] = estatisticasResults[index].data;
+          estatisticasMap[aluno.id] = estatisticasResults[index].data.data;
         });
         
         setEstatisticas(estatisticasMap);
@@ -306,7 +292,7 @@ const FrequenciaDashboard: React.FC = () => {
                       </thead>
                       <tbody>
                         {alunos.map((aluno, index) => {
-                          const freq = frequencias.find(f => f.aluno_id === aluno.id);
+                          const freq = frequencias.find(f => f.aluno === aluno.id);
                           const stats = estatisticas[aluno.id];
                           
                           // Determinar cor da linha baseado no status
@@ -337,7 +323,7 @@ const FrequenciaDashboard: React.FC = () => {
                                 </div>
                               </td>
                               <td>
-                                <code className="bg-light px-2 py-1 rounded">{aluno.ra}</code>
+                                <code className="bg-light px-2 py-1 rounded">{aluno.matricula}</code>
                               </td>
                               <td>
                                 {loadingFreq ? (
@@ -346,12 +332,15 @@ const FrequenciaDashboard: React.FC = () => {
                                   </div>
                                 ) : freq ? (
                                   <div className="d-flex flex-column gap-1">
-                                    <span className={`badge ${freq.presente ? 'bg-success' : 'bg-warning'} fs-6`}>
-                                      {freq.presente ? '✅ Presente' : '❌ Falta'}
+                                    <span className={`badge ${
+                                      freq.status === 'presente' ? 'bg-success' : 
+                                      freq.status === 'justificado' ? 'bg-info' : 
+                                      'bg-warning'
+                                    } fs-6`}>
+                                      {freq.status === 'presente' ? '✅ Presente' : 
+                                       freq.status === 'justificado' ? '📝 Justificado' : 
+                                       '❌ Ausente'}
                                     </span>
-                                    {!freq.presente && freq.justificativa && (
-                                      <span className="badge bg-info text-dark fs-7">📝 Justificada</span>
-                                    )}
                                   </div>
                                 ) : (
                                   <span className="badge bg-secondary fs-6">⏸️ Não registrado</span>
@@ -366,13 +355,7 @@ const FrequenciaDashboard: React.FC = () => {
                                         <span className="text-muted">{freq.observacoes}</span>
                                       </div>
                                     )}
-                                    {freq.justificativa && (
-                                      <div>
-                                        <span className="badge bg-warning text-dark me-1">📋</span>
-                                        <span className="text-muted">{freq.justificativa}</span>
-                                      </div>
-                                    )}
-                                    {!freq.observacoes && !freq.justificativa && (
+                                    {!freq.observacoes && (
                                       <span className="text-muted fst-italic">Sem observações</span>
                                     )}
                                   </div>

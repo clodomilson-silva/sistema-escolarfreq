@@ -33,9 +33,8 @@ export const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos,
     alunos.forEach(aluno => {
       initFrequencias[aluno.id] = {
         aluno_id: aluno.id,
-        presente: true,
-        observacoes: '',
-        justificativa: ''
+        status: 'presente',
+        observacoes: ''
       };
     });
     setFrequencias(initFrequencias);
@@ -46,17 +45,16 @@ export const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos,
     try {
       setLoading(true);
       const response = await frequenciaAPI.buscarPorTurmaEData(turmaId, dataFrequencia);
-      const existentes = response.data;
+      const existentes = response.data.data; // Django retorna { success, data, total }
 
       setFrequencias(prev => {
         const frequenciasAtualizadas = { ...prev };
         existentes.forEach(freq => {
-          if (frequenciasAtualizadas[freq.aluno_id]) {
-            frequenciasAtualizadas[freq.aluno_id] = {
-              aluno_id: freq.aluno_id,
-              presente: freq.presente,
-              observacoes: freq.observacoes || '',
-              justificativa: freq.justificativa || ''
+          if (frequenciasAtualizadas[freq.aluno]) {
+            frequenciasAtualizadas[freq.aluno] = {
+              aluno_id: freq.aluno,
+              status: freq.status,
+              observacoes: freq.observacoes || ''
             };
           }
         });
@@ -86,7 +84,7 @@ export const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos,
     try {
       const frequenciasArray = Object.values(frequencias);
       
-      await frequenciaAPI.registrarLote(turmaId, dataFrequencia, frequenciasArray);
+      await frequenciaAPI.registrarLote(turmaId, dataFrequencia, frequenciasArray, 'Geral');
       
       setSuccess(`✅ Frequência registrada com sucesso para ${frequenciasArray.length} alunos!`);
       
@@ -122,13 +120,12 @@ export const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos,
   };
 
   // Funções de manipulação do formulário
-  const handlePresencaChange = (alunoId: string, presente: boolean) => {
+  const handlePresencaChange = (alunoId: string, status: 'presente' | 'ausente' | 'justificado') => {
     setFrequencias(prev => ({
       ...prev,
       [alunoId]: {
         ...prev[alunoId],
-        presente,
-        justificativa: presente ? '' : prev[alunoId].justificativa
+        status
       }
     }));
   };
@@ -143,15 +140,7 @@ export const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos,
     }));
   };
 
-  const handleJustificativaChange = (alunoId: string, justificativa: string) => {
-    setFrequencias(prev => ({
-      ...prev,
-      [alunoId]: {
-        ...prev[alunoId],
-        justificativa
-      }
-    }));
-  };
+
 
   const marcarTodosPresentes = () => {
     setFrequencias(prev => {
@@ -159,8 +148,7 @@ export const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos,
       Object.keys(novasFrequencias).forEach(alunoId => {
         novasFrequencias[alunoId] = {
           ...novasFrequencias[alunoId],
-          presente: true,
-          justificativa: ''
+          status: 'presente'
         };
       });
       return novasFrequencias;
@@ -173,7 +161,7 @@ export const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos,
       Object.keys(novasFrequencias).forEach(alunoId => {
         novasFrequencias[alunoId] = {
           ...novasFrequencias[alunoId],
-          presente: false
+          status: 'ausente'
         };
       });
       return novasFrequencias;
@@ -280,7 +268,7 @@ export const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos,
                           <div className="col-md-3">
                             <strong>{aluno.nome}</strong>
                             <br />
-                            <small className="text-muted">RA: {aluno.ra}</small>
+                            <small className="text-muted">Matrícula: {aluno.matricula}</small>
                           </div>
                           
                           <div className="col-md-3">
@@ -290,8 +278,8 @@ export const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos,
                                 className="form-check-input"
                                 name={`presenca-${aluno.id}`}
                                 id={`presente-${aluno.id}`}
-                                checked={freq.presente}
-                                onChange={() => handlePresencaChange(aluno.id, true)}
+                                checked={freq.status === 'presente'}
+                                onChange={() => handlePresencaChange(aluno.id, 'presente')}
                                 disabled={saving}
                               />
                               <label className="form-check-label text-success" htmlFor={`presente-${aluno.id}`}>
@@ -304,19 +292,34 @@ export const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos,
                                 type="radio"
                                 className="form-check-input"
                                 name={`presenca-${aluno.id}`}
-                                id={`falta-${aluno.id}`}
-                                checked={!freq.presente}
-                                onChange={() => handlePresencaChange(aluno.id, false)}
+                                id={`ausente-${aluno.id}`}
+                                checked={freq.status === 'ausente'}
+                                onChange={() => handlePresencaChange(aluno.id, 'ausente')}
                                 disabled={saving}
                               />
-                              <label className="form-check-label text-warning" htmlFor={`falta-${aluno.id}`}>
+                              <label className="form-check-label text-warning" htmlFor={`ausente-${aluno.id}`}>
                                 <i className="bi bi-x-circle me-1"></i>
-                                Falta
+                                Ausente
+                              </label>
+                            </div>
+                            <div className="form-check form-check-inline">
+                              <input
+                                type="radio"
+                                className="form-check-input"
+                                name={`presenca-${aluno.id}`}
+                                id={`justificado-${aluno.id}`}
+                                checked={freq.status === 'justificado'}
+                                onChange={() => handlePresencaChange(aluno.id, 'justificado')}
+                                disabled={saving}
+                              />
+                              <label className="form-check-label text-info" htmlFor={`justificado-${aluno.id}`}>
+                                <i className="bi bi-file-text me-1"></i>
+                                Justificado
                               </label>
                             </div>
                           </div>
 
-                          <div className="col-md-3">
+                          <div className="col-md-6">
                             <input
                               type="text"
                               className="form-control form-control-sm"
@@ -324,18 +327,6 @@ export const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos,
                               value={freq.observacoes}
                               onChange={(e) => handleObservacoesChange(aluno.id, e.target.value)}
                               disabled={saving}
-                              maxLength={200}
-                            />
-                          </div>
-
-                          <div className="col-md-3">
-                            <input
-                              type="text"
-                              className="form-control form-control-sm"
-                              placeholder="Justificativa (apenas faltas)"
-                              value={freq.justificativa}
-                              onChange={(e) => handleJustificativaChange(aluno.id, e.target.value)}
-                              disabled={freq.presente || saving}
                               maxLength={300}
                             />
                           </div>

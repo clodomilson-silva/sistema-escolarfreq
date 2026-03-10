@@ -1,18 +1,17 @@
-// Turma Base (criada pelo admin)
+// Turma (Django)
 export interface Turma {
   id: string;
   nome: string;
-  ano: string;
-  turno: string;
-  alunos: string[];
-  tipo: 'base' | 'disciplina'; // 'base' = turma principal, 'disciplina' = turma-disciplina
-  turma_base_id?: string; // ID da turma base (se for turma-disciplina)
-  disciplina?: string; // Nome da disciplina/unidade curricular
-  professor_id?: string; // ID do professor responsável
-  professor_nome?: string; // Nome do professor
-  carga_horaria?: number; // Carga horária da disciplina
-  descricao?: string; // Descrição da disciplina
-  status?: 'ativa' | 'inativa' | 'concluida';
+  ano: number;
+  turno: 'matutino' | 'vespertino' | 'noturno' | 'integral';
+  disciplina: string;
+  professor?: string;
+  sala?: string;
+  alunos: Aluno[] | string[]; // Array de objetos Aluno ou IDs
+  total_alunos?: number;
+  horarios?: Record<string, unknown>;
+  dias_letivos?: string[];
+  status: 'ativa' | 'inativa' | 'concluida';
   criado_em?: string;
   atualizado_em?: string;
 }
@@ -21,22 +20,30 @@ export interface Aluno {
   id: string;
   nome: string;
   matricula: string;
-  ra: string;
-  email?: string;
-  telefone?: string;
+  email: string;
   data_nascimento?: string;
-  turma_id?: string;
+  telefone?: string;
+  endereco?: string;
+  responsavel?: string;
+  telefone_responsavel?: string;
+  idade?: number;
+  criado_em?: string;
+  atualizado_em?: string;
 }
 
 export interface FrequenciaData {
   id: string;
-  aluno_id: string;
-  turma_id: string;
+  turma: string;
+  turma_nome?: string;
+  aluno: string;
+  aluno_nome?: string;
+  aluno_matricula?: string;
   data: string;
-  presente: boolean;
+  disciplina: string;
+  status: 'presente' | 'ausente' | 'justificado';
   observacoes?: string;
-  justificativa?: string;
-  disciplina?: string; // Para identificar a disciplina da frequência
+  criado_em?: string;
+  atualizado_em?: string;
 }
 
 export interface EstatisticasFrequencia {
