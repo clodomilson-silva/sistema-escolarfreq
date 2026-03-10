@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const verificarToken = async (tokenToVerify: string) => {
       try {
         console.log('Verificando token...', tokenToVerify.substring(0, 20) + '...');
-        const response = await api.get('/auth/verify', {
+        const response = await api.get('/auth/verify/', {
           headers: {
             Authorization: `Bearer ${tokenToVerify}`
           }
@@ -119,7 +119,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = async (email: string, senha: string) => {
     try {
       console.log('Tentando fazer login...');
-      const response = await api.post('/auth/login', { email, senha });
+      const response = await api.post('/auth/login/', { email, senha });
       
       if (response.data.success) {
         const { user: userData, token: authToken } = response.data.data;

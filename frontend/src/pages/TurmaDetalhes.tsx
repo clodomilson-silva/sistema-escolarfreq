@@ -57,8 +57,8 @@ function TurmaDetalhes() {
       
       // Carregar turma e todos os alunos em paralelo
       const [turmaResponse, alunosResponse] = await Promise.all([
-        api.get(`/turmas/${id}`),
-        api.get('/alunos')
+        api.get(`/turmas/${id}/`),
+        api.get('/alunos/')
       ]);
 
       const turmaData = turmaResponse.data.data;
@@ -66,13 +66,27 @@ function TurmaDetalhes() {
 
       setTurma(turmaData);
 
-      // Filtrar alunos da turma e disponíveis
-      const alunosIds = turmaData.alunos || [];
-      const alunosDaTurmaFiltrados = todosAlunosData.filter((aluno: Aluno) => 
-        alunosIds.includes(aluno.id)
-      );
+      // O backend retorna objetos completos de alunos, não apenas IDs
+      const alunosDaTurmaData = turmaData.alunos || [];
+      
+      // Se alunos são objetos, usar diretamente; se são IDs, filtrar da lista
+      let alunosDaTurmaFiltrados: Aluno[];
+      let alunosIds: string[];
+      
+      if (alunosDaTurmaData.length > 0 && typeof alunosDaTurmaData[0] === 'object') {
+        // Backend retorna objetos completos
+        alunosDaTurmaFiltrados = alunosDaTurmaData as Aluno[];
+        alunosIds = alunosDaTurmaFiltrados.map((a: Aluno) => String(a.id));
+      } else {
+        // Backend retorna apenas IDs
+        alunosIds = alunosDaTurmaData.map((id: any) => String(id));
+        alunosDaTurmaFiltrados = todosAlunosData.filter((aluno: Aluno) => 
+          alunosIds.includes(String(aluno.id))
+        );
+      }
+      
       const alunosDisponiveisFiltrados = todosAlunosData.filter((aluno: Aluno) => 
-        !alunosIds.includes(aluno.id)
+        !alunosIds.includes(String(aluno.id))
       );
 
       setAlunosDaTurma(alunosDaTurmaFiltrados);

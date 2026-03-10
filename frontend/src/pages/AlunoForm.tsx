@@ -28,7 +28,7 @@ function AlunoForm() {
         email,
       });
       
-      const response = await api.post("/alunos", {
+      const response = await api.post("/alunos/", {
         nome,
         matricula,
         data_nascimento: dataNascimento,

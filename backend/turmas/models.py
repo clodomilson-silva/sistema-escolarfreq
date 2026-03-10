@@ -19,12 +19,28 @@ class Turma(models.Model):
         ('concluida', 'Concluída'),
     ]
     
+    TIPO_CHOICES = [
+        ('base', 'Turma Base'),
+        ('disciplina', 'Turma-Disciplina'),
+    ]
+    
     nome = models.CharField('Nome', max_length=100, unique=True)
     ano = models.IntegerField('Ano')
     turno = models.CharField('Turno', max_length=20, choices=TURNO_CHOICES)
-    disciplina = models.CharField('Disciplina', max_length=100)
+    disciplina = models.CharField('Disciplina', max_length=100, blank=True, default='Geral')
     professor = models.CharField('Professor', max_length=255, blank=True, null=True)
     sala = models.CharField('Sala', max_length=50, blank=True, null=True)
+    
+    # Tipo de turma e relação com turma base
+    tipo = models.CharField('Tipo', max_length=20, choices=TIPO_CHOICES, default='base')
+    turma_base = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        related_name='turmas_disciplina',
+        blank=True,
+        null=True,
+        verbose_name='Turma Base'
+    )
     
     alunos = models.ManyToManyField(
         Aluno,

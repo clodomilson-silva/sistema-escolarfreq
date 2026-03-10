@@ -23,7 +23,7 @@ function TurmaForm() {
     setLoading(true);
     
     try {
-      const response = await api.post("/turmas", {
+      const response = await api.post("/turmas/", {
         nome,
         ano: ano,
         turno,

@@ -24,7 +24,7 @@ function AlunoEdit() {
       const carregarAluno = async () => {
         try {
           setLoading(true);
-          const response = await api.get(`/alunos/${id}`);
+          const response = await api.get(`/alunos/${id}/`);
           
           if (response.data.success) {
             const aluno = response.data.data;

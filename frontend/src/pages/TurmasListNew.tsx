@@ -30,7 +30,7 @@ function TurmasList() {
     try {
       setLoading(true);
       console.log('Carregando turmas...');
-      const response = await api.get("/turmas");
+      const response = await api.get("/turmas/");
       console.log('Resposta da API turmas:', response.data);
       
       // A API retorna { success: true, data: [...], total: number }
@@ -69,7 +69,7 @@ function TurmasList() {
   const excluirTurma = async (id: string) => {
     if (window.confirm("Tem certeza que deseja excluir esta turma?")) {
       try {
-        await api.delete(`/turmas/${id}`);
+        await api.delete(`/turmas/${id}/`);
         alert("Turma excluída com sucesso!");
         carregarTurmas();
       } catch (error) {

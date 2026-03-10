@@ -70,7 +70,7 @@ function RegistroUsuario() {
     try {
       const { confirmarSenha: _, ...dadosRegistro } = formData;
       
-      await api.post('/auth/register', dadosRegistro);
+      await api.post('/auth/register/', dadosRegistro);
       
       setSucesso('Usuário cadastrado com sucesso! Redirecionando para login...');
       

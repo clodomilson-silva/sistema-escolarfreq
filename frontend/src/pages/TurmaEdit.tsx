@@ -32,7 +32,7 @@ function TurmaEdit() {
         setLoading(true);
         console.log('Carregando turma:', id);
         
-        const response = await api.get(`/turmas/${id}`);
+        const response = await api.get(`/turmas/${id}/`);
         console.log('Resposta da API:', response.data);
         
         if (response.data.success) {
@@ -121,7 +121,7 @@ function TurmaEdit() {
         turno: turma.turno
       };
 
-      const response = await api.put(`/turmas/${id}`, dadosParaEnviar);
+      const response = await api.put(`/turmas/${id}/`, dadosParaEnviar);
       console.log('Resposta da atualização:', response.data);
 
       if (response.data.success) {

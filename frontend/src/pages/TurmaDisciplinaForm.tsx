@@ -25,7 +25,7 @@ const TurmaDisciplinaForm: React.FC = () => {
 
   const carregarTurmasBase = async () => {
     try {
-      const response = await api.get('/turmas');
+      const response = await api.get('/turmas/');
       // Filtrar apenas turmas base (não disciplinas)
       const turmasBase = response.data.data.filter((t: Turma) => !t.tipo || t.tipo === 'base');
       setTurmasBase(turmasBase);
@@ -49,28 +49,32 @@ const TurmaDisciplinaForm: React.FC = () => {
     setSucesso('');
 
     try {
-      // Buscar dados da turma base
-      const turmaBase = turmasBase.find(t => t.id === formData.turma_base_id);
+      // Validar se turma base foi selecionada
+      if (!formData.turma_base_id) {
+        throw new Error('Selecione uma turma base');
+      }
+
+      // Buscar dados da turma base (converter IDs para string para comparação)
+      const turmaBase = turmasBase.find(t => String(t.id) === String(formData.turma_base_id));
       if (!turmaBase) {
+        console.error('Turma base não encontrada. ID buscado:', formData.turma_base_id);
+        console.error('Turmas disponíveis:', turmasBase.map(t => ({ id: t.id, nome: t.nome })));
         throw new Error('Turma base não encontrada');
       }
 
-      // Criar turma-disciplina
+      // Criar turma-disciplina (alunos são copiados automaticamente no backend)
       const turmaDisciplina = {
         nome: `${turmaBase.nome} - ${formData.disciplina}`,
         ano: turmaBase.ano,
         turno: turmaBase.turno,
-        alunos: turmaBase.alunos, // Copiar alunos da turma base
-        tipo: 'disciplina',
-        turma_base_id: formData.turma_base_id,
+        tipo: 'disciplina' as const,
+        turma_base_id: parseInt(formData.turma_base_id),
         disciplina: formData.disciplina,
-        professor_nome: formData.professor_nome,
-        carga_horaria: parseInt(formData.carga_horaria),
-        descricao: formData.descricao,
-        status: 'ativa'
+        professor: formData.professor_nome,
+        status: 'ativa' as const
       };
 
-      await api.post('/turmas', turmaDisciplina);
+      await api.post('/turmas/', turmaDisciplina);
       
       setSucesso('Turma-disciplina criada com sucesso!');
       setTimeout(() => {

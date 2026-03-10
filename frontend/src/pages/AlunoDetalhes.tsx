@@ -28,7 +28,7 @@ function AlunoDetalhes() {
     const buscarAluno = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`/alunos/${id}`);
+        const response = await api.get(`/alunos/${id}/`);
         
         if (response.data.success) {
           setAluno(response.data.data);

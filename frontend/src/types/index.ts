@@ -7,6 +7,8 @@ export interface Turma {
   disciplina: string;
   professor?: string;
   sala?: string;
+  tipo?: 'base' | 'disciplina';
+  turma_base_id?: string | null;
   alunos: Aluno[] | string[]; // Array de objetos Aluno ou IDs
   total_alunos?: number;
   horarios?: Record<string, unknown>;

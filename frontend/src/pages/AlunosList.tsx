@@ -29,7 +29,7 @@ function AlunosList() {
     try {
       setLoading(true);
       console.log('Carregando alunos...');
-      const response = await api.get("/alunos");
+      const response = await api.get("/alunos/");
       console.log('Resposta da API:', response.data);
       
       // A API retorna { success: true, data: [...], total: number }
@@ -67,7 +67,7 @@ function AlunosList() {
   const excluirAluno = async (id: string) => {
     if (window.confirm("Tem certeza que deseja excluir este aluno?")) {
       try {
-        await api.delete(`/alunos/${id}`);
+        await api.delete(`/alunos/${id}/`);
         alert("Aluno excluído com sucesso!");
         carregarAlunos(); // Atualiza a lista após exclusão
       } catch (error) {
