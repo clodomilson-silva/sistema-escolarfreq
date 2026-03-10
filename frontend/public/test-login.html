@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Login - Sistema Escolar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2563eb;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+        }
+        .error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste de Login - API Django</h1>
+        <p>Este é um teste direto da API sem o React. Clique no botão abaixo para testar o login.</p>
+        
+        <button onclick="testarLogin()">Testar Login</button>
+        
+        <div id="resultado"></div>
+    </div>
+
+    <script>
+        async function testarLogin() {
+            const resultadoDiv = document.getElementById('resultado');
+            resultadoDiv.innerHTML = '<p>🔄 Testando login...</p>';
+
+            try {
+                console.log('Iniciando requisição para: http://localhost:8000/api/auth/login/');
+                
+                const response = await fetch('http://localhost:8000/api/auth/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@escola.com',
+                        senha: 'admin123'
+                    }),
+                    credentials: 'include'
+                });
+
+                console.log('Status da resposta:', response.status);
+                console.log('Headers da resposta:', [...response.headers.entries()]);
+
+                const data = await response.json();
+                console.log('Dados recebidos:', data);
+
+                if (data.success) {
+                    resultadoDiv.className = 'result success';
+                    resultadoDiv.innerHTML = `
+                        <h3>✅ Login bem-sucedido!</h3>
+                        <p><strong>Mensagem:</strong> ${data.message}</p>
+                        <p><strong>Usuário:</strong> ${data.data.user.nome}</p>
+                        <p><strong>Email:</strong> ${data.data.user.email}</p>
+                        <p><strong>Role:</strong> ${data.data.user.role}</p>
+                        <p><strong>Token (primeiros 50 chars):</strong> ${data.data.token.substring(0, 50)}...</p>
+                        <h4>Resposta completa:</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultadoDiv.className = 'result error';
+                    resultadoDiv.innerHTML = `
+                        <h3>❌ Erro no login</h3>
+                        <p>${data.error || 'Erro desconhecido'}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erro completo:', error);
+                resultadoDiv.className = 'result error';
+                resultadoDiv.innerHTML = `
+                    <h3>❌ Erro na requisição</h3>
+                    <p><strong>Mensagem:</strong> ${error.message}</p>
+                    <p><strong>Tipo:</strong> ${error.name}</p>
+                    <p>Verifique o console do navegador (F12) para mais detalhes.</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

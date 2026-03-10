@@ -202,10 +202,12 @@ SIMPLE_JWT = {
 }
 
 # CORS
-CORS_ALLOWED_ORIGINS = os.getenv(
-    'CORS_ALLOWED_ORIGINS',
-    'http://localhost:5173,http://localhost:5174'
-).split(',')
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5174',
+]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -229,6 +231,10 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+
+# Allow all origins in development
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
 
 # Security Settings (for production)
 if not DEBUG:
