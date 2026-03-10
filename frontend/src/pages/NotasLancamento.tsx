@@ -296,11 +296,6 @@ const NotasLancamento = () => {
             </select>
           </div>
 
-          {/* Debug: Estado da avaliação selecionada */}
-          {console.log('Renderizando - Avaliação selecionada:', avaliacaoSelecionada)}
-          {console.log('Renderizando - Quantidade de alunos:', alunos.length)}
-          {console.log('Renderizando - Alunos:', alunos)}
-
           {avaliacaoSelecionada ? (
             <>
               {/* Card com informações da avaliação */}

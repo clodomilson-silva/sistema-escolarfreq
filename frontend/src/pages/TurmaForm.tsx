@@ -74,39 +74,51 @@ function TurmaForm() {
   };
 
   return (
-    <div className="min-vh-100 bg-light">
+    <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
       <Navbar />
       <div className="container py-4">
-        <div className="form-page-header">
-          <div className="row">
-            <div className="col-12">
-              <h1 className="form-page-title text-success">🏫 Cadastrar Nova Turma</h1>
-              <p className="form-page-subtitle">Preencha os dados da nova turma</p>
-              <div className="form-page-actions">
-                <Link to="/home" className="form-page-btn btn btn-outline-secondary">
-                  🏠 Voltar para Home
-                </Link>
-                <Link to="/turmas" className="form-page-btn btn btn-outline-success">
-                  🏫 Ver Lista de Turmas
-                </Link>
-              </div>
+        <div className="page-header">
+          <div className="d-flex align-items-center gap-3 mb-3">
+            <div style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: 'var(--radius-md)',
+              background: 'linear-gradient(135deg, var(--success-color), #20c997)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white'
+            }}>
+              <i className="bi bi-grid-3x3-gap" style={{ fontSize: '1.5rem' }}></i>
             </div>
+            <div>
+              <h1 style={{ color: 'var(--text-primary)', fontSize: '2rem', margin: 0 }}>Cadastrar Nova Turma</h1>
+              <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Preencha os dados da nova turma</p>
+            </div>
+          </div>
+          <div className="d-flex gap-2 flex-wrap">
+            <Link to="/home" className="btn btn-outline-secondary">
+              <i className="bi bi-house-door me-2"></i>Voltar para Home
+            </Link>
+            <Link to="/turmas" className="btn btn-outline-success">
+              <i className="bi bi-grid-3x3-gap me-2"></i>Ver Lista de Turmas
+            </Link>
           </div>
         </div>
         
-        <div className="row justify-content-center">
+        <div className="row justify-content-center mt-4">
           <div className="col-md-8 col-lg-6">
-            <div className="form-page-card">
-              <div className="form-page-form">
+            <div className="card">
+              <div className="card-body p-4">
 
                 <form onSubmit={handleSubmit}>
-                  <div className="form-page-form-group">
-                    <label htmlFor="nome" className="form-page-label">
+                  <div className="mb-3">
+                    <label htmlFor="nome" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
                       Nome da Turma: <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
-                      className="form-page-input"
+                      className="form-control"
                       id="nome"
                       value={nome}
                       onChange={(e) => setNome(e.target.value)}
@@ -116,13 +128,13 @@ function TurmaForm() {
                     />
                   </div>
 
-                  <div className="form-page-form-group">
-                    <label htmlFor="ano" className="form-page-label">
+                  <div className="mb-3">
+                    <label htmlFor="ano" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
                       Número da Turma: <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
-                      className="form-page-input"
+                      className="form-control"
                       id="ano"
                       value={ano}
                       onChange={(e) => setAno(e.target.value)}
@@ -132,12 +144,12 @@ function TurmaForm() {
                     />
                   </div>
 
-                  <div className="form-page-form-group">
-                    <label htmlFor="turno" className="form-page-label">
+                  <div className="mb-3">
+                    <label htmlFor="turno" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
                       Turno: <span className="text-danger">*</span>
                     </label>
                     <select
-                      className="form-page-select"
+                      className="form-select"
                       id="turno"
                       value={turno}
                       onChange={(e) => setTurno(e.target.value)}
@@ -145,20 +157,20 @@ function TurmaForm() {
                       disabled={loading}
                     >
                       <option value="">Selecione o turno</option>
-                      <option value="matutino">🌅 Manhã (Matutino)</option>
-                      <option value="vespertino">☀️ Tarde (Vespertino)</option>
-                      <option value="noturno">🌙 Noite (Noturno)</option>
-                      <option value="integral">🌞 Integral</option>
+                      <option value="matutino">Manhã (Matutino)</option>
+                      <option value="vespertino">Tarde (Vespertino)</option>
+                      <option value="noturno">Noite (Noturno)</option>
+                      <option value="integral">Integral</option>
                     </select>
                   </div>
 
-                  <div className="form-page-form-actions">
-                    <Link to="/turmas" className="form-page-cancel-btn">
-                      ❌ Cancelar
+                  <div className="d-flex gap-2 justify-content-end mt-4">
+                    <Link to="/turmas" className="btn btn-outline-secondary">
+                      <i className="bi bi-x-circle me-2"></i>Cancelar
                     </Link>
                     <button 
                       type="submit" 
-                      className="form-page-submit-btn btn btn-success"
+                      className="btn btn-success"
                       disabled={loading}
                     >
                       {loading ? (
@@ -167,7 +179,9 @@ function TurmaForm() {
                           Cadastrando...
                         </>
                       ) : (
-                        "✅ Cadastrar Turma"
+                        <>
+                          <i className="bi bi-check-circle me-2"></i>Cadastrar Turma
+                        </>
                       )}
                     </button>
                   </div>

@@ -189,13 +189,13 @@ function AlunoDetalhes() {
           <div className="row justify-content-center">
             <div className="col-md-6">
               <div className="alert alert-danger text-center">
-                <h4>❌ Erro</h4>
+                <h4><i className="bi bi-x-circle"></i> Erro</h4>
                 <p>{erro || "Aluno não encontrado"}</p>
                 <button 
                   className="btn btn-primary"
                   onClick={() => navigate("/alunos")}
                 >
-                  🔙 Voltar para Lista
+                  <i className="bi bi-arrow-left me-2"></i>Voltar para Lista
                 </button>
               </div>
             </div>
@@ -214,20 +214,20 @@ function AlunoDetalhes() {
             {/* Header */}
             <div className="d-flex align-items-center mb-4 justify-content-between">
               <h1 className="h2 mb-0">
-                <span className="text-primary">👤</span> Detalhes do Aluno
+                <i className="bi bi-person text-primary me-2"></i>Detalhes do Aluno
               </h1>
               <button 
                 className="btn btn-outline-secondary"
                 onClick={() => navigate("/alunos")}
               >
-                🔙 Voltar
+                <i className="bi bi-arrow-left me-2"></i>Voltar
               </button>
             </div>
 
             {/* CardFrequências por Turma */}
                 <div className="row mt-4">
                   <div className="col-12">
-                    <h5 className="text-primary mb-3">📅 Frequência por Turma</h5>
+                    <h5 className="text-primary mb-3"><i className="bi bi-calendar3 me-2"></i>Frequência por Turma</h5>
                     {loadingFreq ? (
                       <div className="text-center py-3">
                         <div className="spinner-border spinner-border-sm text-primary" role="status">
@@ -315,7 +315,7 @@ function AlunoDetalhes() {
                                 {/* Lista de Datas Faltadas */}
                                 {freq.datas_faltadas.length > 0 && (
                                   <div>
-                                    <h6 className="text-muted mb-2">📋 Datas em que faltou:</h6>
+                                    <h6 className="text-muted mb-2"><i className="bi bi-clipboard me-2"></i>Datas em que faltou:</h6>
                                     <div className="list-group">
                                       {freq.datas_faltadas.map((falta, idx) => (
                                         <div key={idx} className="list-group-item">
@@ -353,7 +353,7 @@ function AlunoDetalhes() {
               <div className="card-header bg-primary text-white text-center py-4" style={{ borderRadius: '20px 20px 0 0' }}>
                 <div className="d-inline-flex align-items-center justify-content-center bg-white text-primary rounded-circle mb-3" 
                      style={{ width: '80px', height: '80px', fontSize: '2rem' }}>
-                  👨‍🎓
+                  <i className="bi bi-person-badge"></i>
                 </div>
                 <h3 className="mb-1">{aluno.nome}</h3>
                 <p className="mb-0 fs-5">Matrícula: {aluno.matricula}</p>
@@ -363,26 +363,26 @@ function AlunoDetalhes() {
                 <div className="col g-4">
                   {/* Informações Pessoais */}
                   <div className="row-md-6">
-                    <h5 className="text-primary mb-3">📋 Informações Pessoais</h5>
+                    <h5 className="text-primary mb-3"><i className="bi bi-clipboard me-2"></i>Informações Pessoais</h5>
                     
                     <div className="mb-3">
-                      <label className="form-label fw-semibold">📧 Email:</label>
-                      <div className="p-2 bg-light rounded">
+                      <label className="form-label fw-semibold"><i className="bi bi-envelope me-2"></i>Email:</label>
+                      <div className="p-2 rounded" style={{ background: 'var(--bg-primary)' }}>
                         {aluno.email || "Não informado"}
                       </div>
                     </div>
 
                     <div className="mb-3">
-                      <label className="form-label fw-semibold">🎂 Data de Nascimento:</label>
-                      <div className="p-2 bg-light rounded">
+                      <label className="form-label fw-semibold"><i className="bi bi-cake2 me-2"></i>Data de Nascimento:</label>
+                      <div className="p-2 rounded" style={{ background: 'var(--bg-primary)' }}>
                         {aluno.dataNascimento ? formatarData(aluno.dataNascimento) : "Não informado"}
                       </div>
                     </div>
 
                     {aluno.telefone && (
                       <div className="mb-3">
-                        <label className="form-label fw-semibold">📞 Telefone:</label>
-                        <div className="p-2 bg-light rounded">
+                        <label className="form-label fw-semibold"><i className="bi bi-telephone me-2"></i>Telefone:</label>
+                        <div className="p-2 rounded" style={{ background: 'var(--bg-primary)' }}>
                           {aluno.telefone}
                         </div>
                       </div>
@@ -391,28 +391,28 @@ function AlunoDetalhes() {
 
                   {/* Informações Adicionais */}
                   <div className="row-md-6">
-                    <h5 className="text-primary mb-3">🏠 Informações Adicionais</h5>
+                    <h5 className="text-primary mb-3"><i className="bi bi-house me-2"></i>Informações Adicionais</h5>
                     
                     {aluno.endereco && (
                       <div className="mb-3">
-                        <label className="form-label fw-semibold">📍 Endereço:</label>
-                        <div className="p-2 bg-light rounded">
+                        <label className="form-label fw-semibold"><i className="bi bi-geo-alt me-2"></i>Endereço:</label>
+                        <div className="p-2 rounded" style={{ background: 'var(--bg-primary)' }}>
                           {aluno.endereco}
                         </div>
                       </div>
                     )}
 
                     <div className="mb-3">
-                      <label className="form-label fw-semibold">📅 Cadastrado em:</label>
-                      <div className="p-2 bg-light rounded">
+                      <label className="form-label fw-semibold"><i className="bi bi-calendar3 me-2"></i>Cadastrado em:</label>
+                      <div className="p-2 rounded" style={{ background: 'var(--bg-primary)' }}>
                         {formatarData(aluno.criado_em)}
                       </div>
                     </div>
 
                     {aluno.atualizado_em && (
                       <div className="mb-3">
-                        <label className="form-label fw-semibold">✏️ Última atualização:</label>
-                        <div className="p-2 bg-light rounded">
+                        <label className="form-label fw-semibold"><i className="bi bi-pencil me-2"></i>Última atualização:</label>
+                        <div className="p-2 rounded" style={{ background: 'var(--bg-primary)' }}>
                           {formatarData(aluno.atualizado_em)}
                         </div>
                       </div>
@@ -429,14 +429,14 @@ function AlunoDetalhes() {
                         onClick={() => navigate(`/alunos/editar/${aluno.id}`)}
                         style={{ borderRadius: '12px' }}
                       >
-                        ✏️ Editar Aluno
+                        <i className="bi bi-pencil me-2"></i>Editar Aluno
                       </button>
                       <button 
                         className="btn btn-outline-secondary btn-lg"
                         onClick={() => navigate("/alunos")}
                         style={{ borderRadius: '12px' }}
                       >
-                        📋 Ver Todos os Alunos
+                        <i className="bi bi-clipboard me-2"></i>Ver Todos os Alunos
                       </button>
                     </div>
                   </div>

@@ -82,39 +82,51 @@ function AlunoForm() {
   };
 
   return (
-    <div className="min-vh-100 bg-light">
+    <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
       <Navbar />
       <div className="container py-4">
-        <div className="form-page-header">
-          <div className="row">
-            <div className="col-12">
-              <h1 className="form-page-title text-primary">📝 Cadastrar Novo Aluno</h1>
-              <p className="form-page-subtitle">Preencha os dados do novo aluno</p>
-              <div className="form-page-actions">
-                <Link to="/home" className="form-page-btn btn btn-outline-secondary">
-                  🏠 Voltar para Home
-                </Link>
-                <Link to="/alunos" className="form-page-btn btn btn-outline-info">
-                  👥 Ver Lista de Alunos
-                </Link>
-              </div>
+        <div className="page-header">
+          <div className="d-flex align-items-center gap-3 mb-3">
+            <div style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: 'var(--radius-md)',
+              background: 'linear-gradient(135deg, var(--primary-color), var(--primary-dark))',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white'
+            }}>
+              <i className="bi bi-person-plus" style={{ fontSize: '1.5rem' }}></i>
             </div>
+            <div>
+              <h1 style={{ color: 'var(--text-primary)', fontSize: '2rem', margin: 0 }}>Cadastrar Novo Aluno</h1>
+              <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Preencha os dados do novo aluno</p>
+            </div>
+          </div>
+          <div className="d-flex gap-2 flex-wrap">
+            <Link to="/home" className="btn btn-outline-secondary">
+              <i className="bi bi-house-door me-2"></i>Voltar para Home
+            </Link>
+            <Link to="/alunos" className="btn btn-outline-info">
+              <i className="bi bi-people me-2"></i>Ver Lista de Alunos
+            </Link>
           </div>
         </div>
         
-        <div className="row justify-content-center">
+        <div className="row justify-content-center mt-4">
           <div className="col-md-8 col-lg-6">
-            <div className="form-page-card">
-              <div className="form-page-form">
+            <div className="card">
+              <div className="card-body p-4">
 
                 <form onSubmit={handleSubmit}>
-                  <div className="form-page-form-group">
-                    <label htmlFor="nome" className="form-page-label">
+                  <div className="mb-3">
+                    <label htmlFor="nome" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
                       Nome Completo: <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
-                      className="form-page-input"
+                      className="form-control"
                       id="nome"
                       value={nome}
                       onChange={(e) => setNome(e.target.value)}
@@ -123,13 +135,13 @@ function AlunoForm() {
                     />
                   </div>
 
-                  <div className="form-page-form-group">
-                    <label htmlFor="matricula" className="form-page-label">
+                  <div className="mb-3">
+                    <label htmlFor="matricula" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
                       Matrícula: <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
-                      className="form-page-input"
+                      className="form-control"
                       id="matricula"
                       value={matricula}
                       onChange={(e) => setMatricula(e.target.value)}
@@ -138,13 +150,13 @@ function AlunoForm() {
                     />
                   </div>
 
-                  <div className="form-page-form-group">
-                    <label htmlFor="dataNascimento" className="form-page-label">
+                  <div className="mb-3">
+                    <label htmlFor="dataNascimento" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
                       Data de Nascimento: <span className="text-danger">*</span>
                     </label>
                     <input
                       type="date"
-                      className="form-page-input"
+                      className="form-control"
                       id="dataNascimento"
                       value={dataNascimento}
                       onChange={(e) => setDataNascimento(e.target.value)}
@@ -152,13 +164,13 @@ function AlunoForm() {
                     />
                   </div>
 
-                  <div className="form-page-form-group">
-                    <label htmlFor="email" className="form-page-label">
+                  <div className="mb-3">
+                    <label htmlFor="email" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
                       Email: <span className="text-danger">*</span>
                     </label>
                     <input
                       type="email"
-                      className="form-page-input"
+                      className="form-control"
                       id="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -167,12 +179,12 @@ function AlunoForm() {
                     />
                   </div>
 
-                  <div className="form-page-form-actions">
-                    <Link to="/alunos" className="form-page-cancel-btn">
-                      ❌ Cancelar
+                  <div className="d-flex gap-2 justify-content-end mt-4">
+                    <Link to="/alunos" className="btn btn-outline-secondary">
+                      <i className="bi bi-x-circle me-2"></i>Cancelar
                     </Link>
-                    <button type="submit" className="form-page-submit-btn btn btn-primary">
-                      ✅ Cadastrar Aluno
+                    <button type="submit" className="btn btn-primary">
+                      <i className="bi bi-check-circle me-2"></i>Cadastrar Aluno
                     </button>
                   </div>
                 </form>

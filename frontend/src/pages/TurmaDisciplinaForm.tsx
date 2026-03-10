@@ -94,30 +94,30 @@ const TurmaDisciplinaForm: React.FC = () => {
   };
 
   return (
-    <div className="min-vh-100 bg-light">
+    <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
       <Navbar />
       <div className="container py-4">
         <div className="row justify-content-center">
           <div className="col-lg-8">
             <div className="card border-0 shadow-sm">
-              <div className="card-header bg-primary text-white">
+              <div className="card-header text-white" style={{ background: 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))' }}>
                 <h4 className="mb-0">
-                  📚 Criar Turma-Disciplina
+                  <i className="bi bi-journal-check me-2"></i>Criar Turma-Disciplina
                 </h4>
                 <p className="mb-0 mt-2 small">
                   Crie uma turma vinculada a uma disciplina/unidade curricular específica
                 </p>
               </div>
-              <div className="card-body p-4">
+              <div className="card-body p-4" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
                 {erro && (
-                  <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                  <div className="alert alert-dismissible fade show" role="alert" style={{ background: 'var(--error-bg)', color: 'var(--error-color)', border: '1px solid var(--error-color)' }}>
                     <strong>Erro!</strong> {erro}
                     <button type="button" className="btn-close" onClick={() => setErro('')}></button>
                   </div>
                 )}
 
                 {sucesso && (
-                  <div className="alert alert-success alert-dismissible fade show" role="alert">
+                  <div className="alert alert-dismissible fade show" role="alert" style={{ background: 'var(--success-bg)', color: 'var(--success-color)', border: '1px solid var(--success-color)' }}>
                     <strong>Sucesso!</strong> {sucesso}
                     <button type="button" className="btn-close" onClick={() => setSucesso('')}></button>
                   </div>
@@ -127,7 +127,7 @@ const TurmaDisciplinaForm: React.FC = () => {
                   {/* Turma Base */}
                   <div className="mb-4">
                     <label htmlFor="turma_base_id" className="form-label fw-bold">
-                      🏫 Turma Base *
+                      Turma Base *
                     </label>
                     <select
                       id="turma_base_id"
@@ -152,7 +152,7 @@ const TurmaDisciplinaForm: React.FC = () => {
                   {/* Disciplina */}
                   <div className="mb-4">
                     <label htmlFor="disciplina" className="form-label fw-bold">
-                      📖 Disciplina / Unidade Curricular *
+                      Disciplina / Unidade Curricular *
                     </label>
                     <input
                       type="text"
@@ -172,7 +172,7 @@ const TurmaDisciplinaForm: React.FC = () => {
                   {/* Professor */}
                   <div className="mb-4">
                     <label htmlFor="professor_nome" className="form-label fw-bold">
-                      👨‍🏫 Nome do Professor *
+                      Nome do Professor *
                     </label>
                     <input
                       type="text"
@@ -189,7 +189,7 @@ const TurmaDisciplinaForm: React.FC = () => {
                   {/* Carga Horária */}
                   <div className="mb-4">
                     <label htmlFor="carga_horaria" className="form-label fw-bold">
-                      ⏰ Carga Horária (horas) *
+                      Carga Horária (horas) *
                     </label>
                     <input
                       type="number"
@@ -211,7 +211,7 @@ const TurmaDisciplinaForm: React.FC = () => {
                   <div className="row mb-4">
                     <div className="col-md-6">
                       <label htmlFor="data_inicio" className="form-label fw-bold">
-                        📅 Data de Início *
+                        Data de Início *
                       </label>
                       <input
                         type="date"
@@ -228,7 +228,7 @@ const TurmaDisciplinaForm: React.FC = () => {
                     </div>
                     <div className="col-md-6">
                       <label htmlFor="data_fim" className="form-label fw-bold">
-                        📅 Data de Término *
+                        Data de Término *
                       </label>
                       <input
                         type="date"
@@ -248,7 +248,7 @@ const TurmaDisciplinaForm: React.FC = () => {
                   {/* Descrição */}
                   <div className="mb-4">
                     <label htmlFor="descricao" className="form-label fw-bold">
-                      📝 Descrição (Opcional)
+                      Descrição (Opcional)
                     </label>
                     <textarea
                       id="descricao"
@@ -262,8 +262,8 @@ const TurmaDisciplinaForm: React.FC = () => {
                   </div>
 
                   {/* Informação */}
-                  <div className="alert alert-info">
-                    <h6 className="alert-heading">ℹ️ Informações importantes:</h6>
+                  <div className="alert" style={{ background: 'var(--info-bg)', color: 'var(--info-color)', border: '1px solid var(--info-color)' }}>
+                    <h6 className="alert-heading">Informações importantes:</h6>
                     <ul className="mb-0 small">
                       <li>A turma-disciplina herdará todos os alunos da turma base selecionada</li>
                       <li>Os registros de frequência serão específicos desta disciplina</li>
@@ -280,7 +280,7 @@ const TurmaDisciplinaForm: React.FC = () => {
                       onClick={() => navigate('/turmas')}
                       disabled={loading}
                     >
-                      ❌ Cancelar
+                      <i className="bi bi-x-circle me-2"></i>Cancelar
                     </button>
                     <button
                       type="submit"
@@ -293,7 +293,7 @@ const TurmaDisciplinaForm: React.FC = () => {
                           Criando...
                         </>
                       ) : (
-                        <>✅ Criar Turma-Disciplina</>
+                        <><i className="bi bi-check-circle me-2"></i>Criar Turma-Disciplina</>
                       )}
                     </button>
                   </div>

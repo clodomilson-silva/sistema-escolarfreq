@@ -115,7 +115,7 @@ const BoletimAluno = () => {
           className="btn btn-outline-secondary"
           onClick={() => navigate('/alunos')}
         >
-          🔙 Voltar para Lista de Alunos
+          <i className="bi bi-arrow-left me-2"></i>Voltar para Lista de Alunos
         </button>
       </div>
 

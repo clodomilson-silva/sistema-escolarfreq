@@ -99,10 +99,13 @@ function RegistroUsuario() {
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-lg-6 col-md-8">
-            <div className="card border-0 shadow-lg">
+            <div className="card border-0 shadow-lg" style={{ background: 'var(--bg-primary)' }}>
               <div className="card-body p-5">
                 <div className="text-center mb-4">
-                  <h2 className="fw-bold text-primary">📝 Cadastro de Usuário</h2>
+                  <h2 className="fw-bold text-primary">
+                    <i className="bi bi-person-plus me-2"></i>
+                    Cadastro de Usuário
+                  </h2>
                   <p className="text-muted">Crie sua conta no Ponto Class</p>
                 </div>
 
@@ -123,7 +126,7 @@ function RegistroUsuario() {
                   {/* Nome */}
                   <div className="mb-3">
                     <label htmlFor="nome" className="form-label fw-bold">
-                      👤 Nome Completo
+                      Nome Completo
                     </label>
                     <input
                       type="text"
@@ -140,7 +143,7 @@ function RegistroUsuario() {
                   {/* Email */}
                   <div className="mb-3">
                     <label htmlFor="email" className="form-label fw-bold">
-                      📧 Email
+                      Email
                     </label>
                     <input
                       type="email"
@@ -157,7 +160,7 @@ function RegistroUsuario() {
                   {/* Tipo de Usuário */}
                   <div className="mb-3">
                     <label htmlFor="role" className="form-label fw-bold">
-                      🎭 Tipo de Usuário
+                      Tipo de Usuário
                     </label>
                     <select
                       id="role"
@@ -167,8 +170,8 @@ function RegistroUsuario() {
                       onChange={handleChange}
                       required
                     >
-                      <option value="professor">👨‍🏫 Professor</option>
-                      <option value="admin">👑 Administrador</option>
+                      <option value="professor">Professor</option>
+                      <option value="admin">Administrador</option>
                     </select>
                     <div className="form-text">
                       {formData.role === 'professor' 
@@ -181,7 +184,7 @@ function RegistroUsuario() {
                   {formData.role === 'professor' && (
                     <div className="mb-3">
                       <label className="form-label fw-bold">
-                        📚 Disciplinas que Ministra
+                        Disciplinas que Ministra
                       </label>
                       <div className="input-group mb-2">
                         <input
@@ -197,7 +200,8 @@ function RegistroUsuario() {
                           className="btn btn-outline-primary"
                           onClick={adicionarDisciplina}
                         >
-                          ➕ Adicionar
+                          <i className="bi bi-plus me-1"></i>
+                          Adicionar
                         </button>
                       </div>
                       {formData.disciplinas.length > 0 && (
@@ -224,7 +228,7 @@ function RegistroUsuario() {
                   {/* Senha */}
                   <div className="mb-3">
                     <label htmlFor="senha" className="form-label fw-bold">
-                      🔒 Senha
+                      Senha
                     </label>
                     <input
                       type="password"
@@ -245,7 +249,7 @@ function RegistroUsuario() {
                   {/* Confirmar Senha */}
                   <div className="mb-4">
                     <label htmlFor="confirmarSenha" className="form-label fw-bold">
-                      🔒 Confirmar Senha
+                      Confirmar Senha
                     </label>
                     <input
                       type="password"
@@ -272,7 +276,10 @@ function RegistroUsuario() {
                           Cadastrando...
                         </>
                       ) : (
-                        '✅ Criar Conta'
+                        <>
+                          <i className="bi bi-check-circle me-2"></i>
+                          Criar Conta
+                        </>
                       )}
                     </button>
                   </div>

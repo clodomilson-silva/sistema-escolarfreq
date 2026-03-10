@@ -137,50 +137,64 @@ function AlunosList() {
   };
 
   return (
-    <div className="min-vh-100 bg-light">
+    <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
       <Navbar />
       <div className="container py-4">
-        <div className="list-page-header">
-          <div className="row">
-            <div className="col-12">
-              <h1 className="list-page-title text-primary">👥 Lista de Alunos</h1>
-              <p className="list-page-subtitle">Gerencie todos os alunos matriculados no sistema</p>
-              <div className="list-page-actions">
-                <Link to="/home" className="list-page-btn btn btn-outline-secondary">
-                  🏠 Voltar para Home
-                </Link>
-                <Link to="/alunos/novo" className="list-page-btn btn btn-primary">
-                  ➕ Cadastrar Novo Aluno
-                </Link>
-              </div>
+        <div className="page-header">
+          <div className="d-flex align-items-center gap-3 mb-3">
+            <div style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: 'var(--radius-md)',
+              background: 'linear-gradient(135deg, var(--primary-color), var(--primary-dark))',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white'
+            }}>
+              <i className="bi bi-people" style={{ fontSize: '1.5rem' }}></i>
             </div>
+            <div>
+              <h1 style={{ color: 'var(--text-primary)', fontSize: '2rem', margin: 0 }}>Lista de Alunos</h1>
+              <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Gerencie todos os alunos matriculados no sistema</p>
+            </div>
+          </div>
+          <div className="d-flex gap-2 flex-wrap">
+            <Link to="/home" className="btn btn-outline-secondary">
+              <i className="bi bi-house-door me-2"></i>Voltar para Home
+            </Link>
+            <Link to="/alunos/novo" className="btn btn-primary">
+              <i className="bi bi-plus-circle me-2"></i>Cadastrar Novo Aluno
+            </Link>
           </div>
         </div>
 
-        <div className="row">
+        <div className="row mt-4">
           <div className="col-12">
-            <div className="list-page-card">
+            <div className="card">
               <div className="card-body">
                 {loading ? (
-                  <div className="d-flex flex-column align-items-center justify-content-center py-5">
+                  <div className="loading-state">
                     <div className="spinner-border text-primary" style={{ width: '3rem', height: '3rem' }} role="status">
                       <span className="visually-hidden">Carregando...</span>
                     </div>
-                    <p className="mt-3 text-muted fs-5">Carregando alunos...</p>
+                    <p className="mt-3" style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Carregando alunos...</p>
                   </div>
                 ) : alunos.length === 0 ? (
-                  <div className="list-page-empty">
-                    <div className="list-page-empty-icon text-muted">📚</div>
-                    <h4 className="list-page-empty-title">Nenhum aluno cadastrado</h4>
-                    <p className="list-page-empty-text">Comece cadastrando o primeiro aluno!</p>
-                    <Link to="/alunos/novo" className="list-page-btn btn btn-primary">
-                      Cadastrar Primeiro Aluno
+                  <div className="empty-state">
+                    <div className="empty-state-icon">
+                      <i className="bi bi-book" style={{ fontSize: '4rem', color: 'var(--text-muted)' }}></i>
+                    </div>
+                    <h4 style={{ color: 'var(--text-primary)' }}>Nenhum aluno cadastrado</h4>
+                    <p style={{ color: 'var(--text-secondary)' }}>Comece cadastrando o primeiro aluno!</p>
+                    <Link to="/alunos/novo" className="btn btn-primary mt-3">
+                      <i className="bi bi-plus-circle me-2"></i>Cadastrar Primeiro Aluno
                     </Link>
                   </div>
                 ) : (
                   <div className="table-responsive">
-                    <table className="list-page-table table table-hover">
-                      <thead className="table-primary">
+                    <table className="table table-hover">
+                      <thead>
                         <tr>
                           <th>Nome</th>
                           <th>Matrícula</th>
@@ -192,41 +206,45 @@ function AlunosList() {
                       <tbody>
                         {alunos.map((aluno) => (
                           <tr key={aluno.id}>
-                            <td className="fw-semibold">{aluno.nome}</td>
+                            <td className="fw-semibold" style={{ color: 'var(--text-primary)' }}>{aluno.nome}</td>
                             <td>
-                              <span className="list-page-badge badge bg-info">{aluno.matricula}</span>
+                              <span className="badge" style={{ 
+                                background: 'var(--info-color)', 
+                                color: 'white',
+                                padding: '0.35rem 0.75rem'
+                              }}>{aluno.matricula}</span>
                             </td>
-                            <td>{aluno.email}</td>
-                            <td>{new Date(aluno.data_nascimento).toLocaleDateString('pt-BR')}</td>
+                            <td style={{ color: 'var(--text-secondary)' }}>{aluno.email}</td>
+                            <td style={{ color: 'var(--text-secondary)' }}>{new Date(aluno.data_nascimento).toLocaleDateString('pt-BR')}</td>
                             <td className="text-center">
-                              <div className="list-page-table-actions">
+                              <div className="d-flex gap-2 justify-content-center">
                                 <button
                                   onClick={() => navigate(`/alunos/${aluno.id}`)}
-                                  className="list-page-table-btn btn btn-outline-info btn-sm"
+                                  className="btn btn-sm btn-outline-info"
                                   title="Ver detalhes"
                                 >
-                                  👁️
+                                  <i className="bi bi-eye"></i>
                                 </button>
                                 <button
                                   onClick={() => abrirModalBoletim(aluno)}
-                                  className="list-page-table-btn btn btn-outline-success btn-sm"
+                                  className="btn btn-sm btn-outline-success"
                                   title="Ver Boletim"
                                 >
-                                  📊
+                                  <i className="bi bi-graph-up"></i>
                                 </button>
                                 <button
                                   onClick={() => navigate(`/alunos/editar/${aluno.id}`)}
-                                  className="list-page-table-btn btn btn-outline-warning btn-sm"
+                                  className="btn btn-sm btn-outline-warning"
                                   title="Editar"
                                 >
-                                  ✏️
+                                  <i className="bi bi-pencil"></i>
                                 </button>
                                 <button
                                   onClick={() => excluirAluno(aluno.id)}
-                                  className="list-page-table-btn btn btn-outline-danger btn-sm"
+                                  className="btn btn-sm btn-outline-danger"
                                   title="Excluir"
                                 >
-                                  🗑️
+                                  <i className="bi bi-trash"></i>
                                 </button>
                               </div>
                             </td>
@@ -246,44 +264,62 @@ function AlunosList() {
       {showBoletimModal && (
         <div 
           className="modal fade show" 
-          style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}
+          style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.7)' }}
           onClick={() => setShowBoletimModal(false)}
         >
           <div 
             className="modal-dialog modal-dialog-centered"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="modal-content">
-              <div className="modal-header bg-primary text-white">
-                <h5 className="modal-title">📊 Boletim de {alunoSelecionado?.nome}</h5>
+            <div className="modal-content" style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-primary)'
+            }}>
+              <div className="modal-header" style={{
+                background: 'linear-gradient(135deg, var(--primary-color), var(--primary-dark))',
+                borderBottom: '1px solid var(--border-color)'
+              }}>
+                <h5 className="modal-title text-white">
+                  <i className="bi bi-graph-up me-2"></i>Boletim de {alunoSelecionado?.nome}
+                </h5>
                 <button 
                   type="button" 
                   className="btn-close btn-close-white"
                   onClick={() => setShowBoletimModal(false)}
                 ></button>
               </div>
-              <div className="modal-body">
+              <div className="modal-body" style={{ background: 'var(--bg-card)' }}>
                 {loadingTurmas ? (
                   <div className="text-center py-4">
                     <div className="spinner-border text-primary" role="status">
                       <span className="visually-hidden">Carregando...</span>
                     </div>
-                    <p className="mt-2">Carregando turmas...</p>
+                    <p className="mt-2" style={{ color: 'var(--text-secondary)' }}>Carregando turmas...</p>
                   </div>
                 ) : turmasAluno.length === 0 ? (
-                  <div className="alert alert-info">
-                    <i className="bi bi-info-circle"></i> Aluno não está matriculado em nenhuma turma.
+                  <div className="alert" style={{
+                    background: 'rgba(13, 110, 253, 0.1)',
+                    border: '1px solid rgba(13, 110, 253, 0.2)',
+                    color: 'var(--info-color)'
+                  }}>
+                    <i className="bi bi-info-circle me-2"></i>Aluno não está matriculado em nenhuma turma.
                   </div>
                 ) : (
                   <>
-                    <p className="text-muted mb-3">Selecione a turma/disciplina para visualizar o boletim:</p>
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>Selecione a turma/disciplina para visualizar o boletim:</p>
                     <div className="list-group">
                       {turmasAluno.map((turma) => (
-                        <div key={turma.id} className="list-group-item">
+                        <div key={turma.id} className="list-group-item" style={{
+                          background: 'var(--bg-secondary)',
+                          border: '1px solid var(--border-color)',
+                          marginBottom: '0.5rem',
+                          borderRadius: 'var(--radius-md)'
+                        }}>
                           <div className="d-flex justify-content-between align-items-center">
                             <div>
-                              <h6 className="mb-1">{turma.nome}</h6>
-                              <small className="text-muted">Disciplina: {turma.disciplina}</small>
+                              <h6 className="mb-1" style={{ color: 'var(--text-primary)' }}>{turma.nome}</h6>
+                              <small style={{ color: 'var(--text-muted)' }}>Disciplina: {turma.disciplina}</small>
                             </div>
                             <div className="btn-group" role="group">
                               <button
@@ -294,7 +330,7 @@ function AlunosList() {
                                 }}
                                 title="Ver Boletim"
                               >
-                                👁️ Ver
+                                <i className="bi bi-eye me-1"></i>Ver
                               </button>
                               <button
                                 className="btn btn-sm btn-outline-success"
@@ -304,7 +340,7 @@ function AlunosList() {
                                 }}
                                 title="Imprimir/PDF"
                               >
-                                🖨️ PDF
+                                <i className="bi bi-printer me-1"></i>PDF
                               </button>
                             </div>
                           </div>

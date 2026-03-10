@@ -86,7 +86,7 @@ export const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos,
       
       await frequenciaAPI.registrarLote(turmaId, dataFrequencia, frequenciasArray, 'Geral');
       
-      setSuccess(`✅ Frequência registrada com sucesso para ${frequenciasArray.length} alunos!`);
+      setSuccess(`Frequência registrada com sucesso para ${frequenciasArray.length} alunos!`);
       
       // Aguardar brevemente para mostrar a mensagem
       await new Promise(resolve => setTimeout(resolve, 800));

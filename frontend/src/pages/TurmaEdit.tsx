@@ -179,20 +179,25 @@ function TurmaEdit() {
   }
 
     return (
-    <div className="min-vh-100 bg-light">
+    <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
       <Navbar />
       <div className="container py-4">
-        <div className="form-page-header">
+        <div className="mb-4">
           <div className="row">
             <div className="col-12">
-              <h1 className="form-page-title text-success">✏️ Editar Turma</h1>
-              <p className="form-page-subtitle">Edite os dados da turma selecionada</p>
-              <div className="form-page-actions">
-                <Link to="/home" className="form-page-btn btn btn-outline-secondary">
-                  🏠 Voltar para Home
+              <h1 className="h2 mb-3 text-white">
+                <i className="bi bi-pencil me-2"></i>
+                Editar Turma
+              </h1>
+              <p className="text-white-50 mb-3">Edite os dados da turma selecionada</p>
+              <div className="d-flex gap-2 mb-3">
+                <Link to="/home" className="btn btn-outline-secondary">
+                  <i className="bi bi-house-door me-1"></i>
+                  Voltar para Home
                 </Link>
-                <Link to="/turmas" className="form-page-btn btn btn-outline-success">
-                  🏫 Ver Lista de Turmas
+                <Link to="/turmas" className="btn btn-outline-success">
+                  <i className="bi bi-grid-3x3-gap me-1"></i>
+                  Ver Lista de Turmas
                 </Link>
               </div>
             </div>
@@ -201,8 +206,19 @@ function TurmaEdit() {
 
         {/* Alertas de erro */}
         {Object.keys(errors).length > 0 && (
-          <div className="alert alert-danger border-0 rounded-3 mb-4" role="alert">
-            <strong>❌ Erros encontrados:</strong>
+          <div 
+            className="alert alert-danger mb-4" 
+            role="alert"
+            style={{
+              background: 'rgba(220, 53, 69, 0.1)',
+              border: '1px solid rgba(220, 53, 69, 0.3)',
+              color: '#dc3545'
+            }}
+          >
+            <strong>
+              <i className="bi bi-x-circle me-2"></i>
+              Erros encontrados:
+            </strong>
             <ul className="mb-0 mt-2">
               {Object.values(errors).map((error, index) => (
                 <li key={index}>{error}</li>
@@ -213,17 +229,16 @@ function TurmaEdit() {
         
         <div className="row justify-content-center">
           <div className="col-md-8 col-lg-6">
-            <div className="form-page-card">
-              <div className="form-page-form">
-
+            <div className="card" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
+              <div className="card-body p-4">
                 <form onSubmit={handleSubmit}>
-                  <div className="form-page-form-group">
-                    <label htmlFor="nome" className="form-page-label">
+                  <div className="mb-3">
+                    <label htmlFor="nome" className="form-label text-white">
                       Nome da Turma: <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
-                      className={`form-page-input ${errors.nome ? 'is-invalid' : ''}`}
+                      className={`form-control ${errors.nome ? 'is-invalid' : ''}`}
                       id="nome"
                       name="nome"
                       value={turma.nome}
@@ -231,6 +246,11 @@ function TurmaEdit() {
                       required
                       disabled={saving}
                       placeholder="Ex: 1º Ano A, 2º Ano B, etc."
+                      style={{
+                        background: 'var(--bg-primary)',
+                        border: '1px solid var(--border-color)',
+                        color: 'var(--text-primary)'
+                      }}
                     />
                     {errors.nome && (
                       <div className="invalid-feedback">
@@ -239,13 +259,13 @@ function TurmaEdit() {
                     )}
                   </div>
 
-                  <div className="form-page-form-group">
-                    <label htmlFor="ano" className="form-page-label">
+                  <div className="mb-3">
+                    <label htmlFor="ano" className="form-label text-white">
                       Número da Turma: <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
-                      className={`form-page-input ${errors.ano ? 'is-invalid' : ''}`}
+                      className={`form-control ${errors.ano ? 'is-invalid' : ''}`}
                       id="ano"
                       name="ano"
                       value={turma.ano}
@@ -253,6 +273,11 @@ function TurmaEdit() {
                       required
                       disabled={saving}
                       placeholder="Ex: 101, 201.1, 301.A, 1º ano..."
+                      style={{
+                        background: 'var(--bg-primary)',
+                        border: '1px solid var(--border-color)',
+                        color: 'var(--text-primary)'
+                      }}
                     />
                     {errors.ano && (
                       <div className="invalid-feedback">
@@ -261,24 +286,29 @@ function TurmaEdit() {
                     )}
                   </div>
 
-                  <div className="form-page-form-group">
-                    <label htmlFor="turno" className="form-page-label">
+                  <div className="mb-4">
+                    <label htmlFor="turno" className="form-label text-white">
                       Turno: <span className="text-danger">*</span>
                     </label>
                     <select
-                      className={`form-page-select ${errors.turno ? 'is-invalid' : ''}`}
+                      className={`form-select ${errors.turno ? 'is-invalid' : ''}`}
                       id="turno"
                       name="turno"
                       value={turma.turno}
                       onChange={handleChange}
                       required
                       disabled={saving}
+                      style={{
+                        background: 'var(--bg-primary)',
+                        border: '1px solid var(--border-color)',
+                        color: 'var(--text-primary)'
+                      }}
                     >
                       <option value="">Selecione o turno</option>
-                      <option value="matutino">🌅 Manhã (Matutino)</option>
-                      <option value="vespertino">☀️ Tarde (Vespertino)</option>
-                      <option value="noturno">🌙 Noite (Noturno)</option>
-                      <option value="integral">🌞 Integral</option>
+                      <option value="matutino">Manhã (Matutino)</option>
+                      <option value="vespertino">Tarde (Vespertino)</option>
+                      <option value="noturno">Noite (Noturno)</option>
+                      <option value="integral">Integral</option>
                     </select>
                     {errors.turno && (
                       <div className="invalid-feedback">
@@ -287,13 +317,14 @@ function TurmaEdit() {
                     )}
                   </div>
 
-                  <div className="form-page-form-actions">
-                    <Link to="/turmas" className="form-page-cancel-btn">
-                      ❌ Cancelar
+                  <div className="d-flex gap-2 justify-content-end">
+                    <Link to="/turmas" className="btn btn-outline-secondary">
+                      <i className="bi bi-x-circle me-1"></i>
+                      Cancelar
                     </Link>
                     <button 
                       type="submit" 
-                      className="form-page-submit-btn btn btn-success"
+                      className="btn btn-success"
                       disabled={saving}
                     >
                       {saving ? (
@@ -302,7 +333,10 @@ function TurmaEdit() {
                           Salvando...
                         </>
                       ) : (
-                        "💾 Salvar Alterações"
+                        <>
+                          <i className="bi bi-save me-1"></i>
+                          Salvar Alterações
+                        </>
                       )}
                     </button>
                   </div>

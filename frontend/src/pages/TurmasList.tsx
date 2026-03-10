@@ -54,14 +54,14 @@ function TurmasList() {
 
   // Função para mapear turnos do backend para exibição
   const formatarTurno = (turno: string) => {
-    const turnoMap: { [key: string]: { label: string; emoji: string; color: string } } = {
-      'matutino': { label: 'Manhã', emoji: '🌅', color: 'bg-warning' },
-      'vespertino': { label: 'Tarde', emoji: '☀️', color: 'bg-info' },
-      'noturno': { label: 'Noite', emoji: '🌙', color: 'bg-dark' },
-      'integral': { label: 'Integral', emoji: '🌞', color: 'bg-success' }
+    const turnoMap: { [key: string]: { label: string; icon: string; color: string } } = {
+      'matutino': { label: 'Manhã', icon: 'bi-sunrise', color: 'bg-warning' },
+      'vespertino': { label: 'Tarde', icon: 'bi-sun', color: 'bg-info' },
+      'noturno': { label: 'Noite', icon: 'bi-moon-stars', color: 'bg-dark' },
+      'integral': { label: 'Integral', icon: 'bi-brightness-high', color: 'bg-success' }
     };
     
-    return turnoMap[turno] || { label: turno, emoji: '⏰', color: 'bg-secondary' };
+    return turnoMap[turno] || { label: turno, icon: 'bi-clock', color: 'bg-secondary' };
   };
 
   useEffect(() => {
@@ -198,81 +198,100 @@ function TurmasList() {
   console.log('Renderizando lista de turmas...');
   
   return (
-    <div className="min-vh-100 bg-light">
+    <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
       <Navbar />
       <div className="container py-4">
-        <div className="list-page-header">
-          <div className="row">
-            <div className="col-12">
-              <h1 className="list-page-title text-success">🏫 Lista de Turmas</h1>
-              <p className="list-page-subtitle">
+        <div className="page-header">
+          <div className="d-flex align-items-center gap-3 mb-3">
+            <div style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: 'var(--radius-md)',
+              background: 'linear-gradient(135deg, var(--success-color), #20c997)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white'
+            }}>
+              <i className="bi bi-grid-3x3-gap" style={{ fontSize: '1.5rem' }}></i>
+            </div>
+            <div>
+              <h1 style={{ color: 'var(--text-primary)', fontSize: '2rem', margin: 0 }}>Lista de Turmas</h1>
+              <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
                 {admin?.role === 'admin' 
                   ? 'Gerencie turmas base e turmas-disciplina do sistema escolar'
                   : 'Crie e gerencie suas turmas-disciplina'}
               </p>
-              <div className="list-page-actions">
-                <Link to="/home" className="list-page-btn btn btn-outline-secondary">
-                  🏠 Voltar para Home
-                </Link>
-                <Link to="/turmas/disciplina/nova" className="list-page-btn btn btn-info me-2">
-                  📚 Criar Turma-Disciplina
-                </Link>
-                {admin?.role === 'admin' && (
-                  <Link to="/turmas/nova" className="list-page-btn btn btn-success">
-                    ➕ Cadastrar Turma Base
-                  </Link>
-                )}
-              </div>
-              
-              {/* Debug info */}
-              <div className="alert alert-info mt-3">
-                <strong>Debug:</strong> Turmas carregadas: {Array.isArray(turmas) ? turmas.length : 'NÃO É ARRAY'} | 
-                Tipo: {typeof turmas} | 
-                É Array: {Array.isArray(turmas) ? 'Sim' : 'Não'}
-                {debugData && (
-                  <>
-                    <br />
-                    <button 
-                      className="btn btn-sm btn-outline-primary mt-2"
-                      onClick={() => {
-                        console.log('Debug Data Completo:', debugData);
-                        alert('Dados no console! Pressione F12 para ver.');
-                      }}
-                    >
-                      Mostrar Dados Brutos no Console
-                    </button>
-                  </>
-                )}
-              </div>
             </div>
+          </div>
+          <div className="d-flex gap-2 flex-wrap">
+            <Link to="/home" className="btn btn-outline-secondary">
+              <i className="bi bi-house-door me-2"></i>Voltar para Home
+            </Link>
+            <Link to="/turmas/disciplina/nova" className="btn btn-info">
+              <i className="bi bi-journal-check me-2"></i>Criar Turma-Disciplina
+            </Link>
+            {admin?.role === 'admin' && (
+              <Link to="/turmas/nova" className="btn btn-success">
+                <i className="bi bi-plus-circle me-2"></i>Cadastrar Turma Base
+              </Link>
+            )}
+          </div>
+              
+          {/* Debug info */}
+          <div className="alert mt-3" style={{
+            background: 'rgba(13, 110, 253, 0.1)',
+            border: '1px solid rgba(13, 110, 253, 0.2)',
+            color: 'var(--info-color)',
+            borderRadius: 'var(--radius-md)'
+          }}>
+            <strong>Debug:</strong> Turmas carregadas: {Array.isArray(turmas) ? turmas.length : 'NÃO É ARRAY'} | 
+            Tipo: {typeof turmas} | 
+            É Array: {Array.isArray(turmas) ? 'Sim' : 'Não'}
+            {debugData && (
+              <>
+                <br />
+                <button 
+                  className="btn btn-sm btn-outline-primary mt-2"
+                  onClick={() => {
+                    console.log('Debug Data Completo:', debugData);
+                    alert('Dados no console! Pressione F12 para ver.');
+                  }}
+                >
+                  Mostrar Dados Brutos no Console
+                </button>
+              </>
+            )}
           </div>
         </div>
 
-        <div className="row">
+        <div className="row mt-4">
           <div className="col-12">
-            <div className="list-page-card">
+            <div className="card">
               <div className="card-body">
                 {!Array.isArray(turmas) || turmas.length === 0 ? (
-                  <div className="list-page-empty">
-                    <div className="list-page-empty-icon text-muted">🏫</div>
-                    <h4 className="list-page-empty-title">
+                  <div className="empty-state">
+                    <div className="empty-state-icon">
+                      <i className="bi bi-grid-3x3-gap" style={{ fontSize: '4rem', color: 'var(--text-muted)' }}></i>
+                    </div>
+                    <h4 style={{ color: 'var(--text-primary)' }}>
                       {!Array.isArray(turmas) ? 'Erro ao carregar turmas' : 'Nenhuma turma cadastrada'}
                     </h4>
-                    <p className="list-page-empty-text">
+                    <p style={{ color: 'var(--text-secondary)' }}>
                       {!Array.isArray(turmas) 
                         ? 'Ocorreu um erro ao processar os dados. Tente recarregar a página.' 
                         : 'Comece criando a primeira turma para organizar os alunos!'}
                     </p>
                     {Array.isArray(turmas) && (
-                      <Link to="/turmas/nova" className="list-page-btn btn btn-success">
-                        Cadastrar Primeira Turma
+                      <Link to="/turmas/nova" className="btn btn-success mt-3">
+                        <i className="bi bi-plus-circle me-2"></i>Cadastrar Primeira Turma
                       </Link>
                     )}
                   </div>
                 ) : (
                   <div className="table-responsive">
-                    <table className="list-page-table table table-hover">
-                      <thead className="table-success">
+                    <table className="table table-hover">
+                      <thead>
                         <tr>
                           <th>Nome da Turma</th>
                           <th>Tipo</th>
@@ -289,69 +308,72 @@ function TurmasList() {
                           const ehDisciplina = turma.tipo === 'disciplina';
                           
                           return (
-                            <tr key={turma.id} className={ehDisciplina ? 'table-info' : ''}>
-                              <td className="fw-semibold">
+                            <tr key={turma.id} style={ehDisciplina ? { background: 'rgba(13, 202, 240, 0.05)' } : {}}>
+                              <td className="fw-semibold" style={{ color: 'var(--text-primary)' }}>
                                 {ehDisciplina && '└─ '}
                                 {turma.nome}
                               </td>
                               <td>
-                                <span className={`list-page-badge badge ${ehDisciplina ? 'bg-info' : 'bg-primary'}`}>
-                                  {ehDisciplina ? '📚 Disciplina' : '🏫 Base'}
+                                <span className={`badge ${ehDisciplina ? 'bg-info' : 'bg-primary'}`}>
+                                  <i className={`bi ${ehDisciplina ? 'bi-journal-check' : 'bi-grid-3x3-gap'} me-1`}></i>
+                                  {ehDisciplina ? 'Disciplina' : 'Base'}
                                 </span>
                               </td>
                               <td>
                                 {turma.disciplina ? (
                                   <span className="badge bg-success">{turma.disciplina}</span>
                                 ) : (
-                                  <span className="text-muted">—</span>
+                                  <span style={{ color: 'var(--text-muted)' }}>—</span>
                                 )}
                               </td>
                               <td>
                                 {turma.professor_nome ? (
-                                  <small>👨‍🏫 {turma.professor_nome}</small>
+                                  <small style={{ color: 'var(--text-secondary)' }}>
+                                    <i className="bi bi-person-badge me-1"></i>{turma.professor_nome}
+                                  </small>
                                 ) : (
-                                  <span className="text-muted">—</span>
+                                  <span style={{ color: 'var(--text-muted)' }}>—</span>
                                 )}
                               </td>
                               <td>
-                                <span className="list-page-badge badge bg-secondary">{turma.ano}</span>
+                                <span className="badge bg-secondary">{turma.ano}</span>
                               </td>
                               <td>
-                                <span className={`list-page-badge badge ${turnoInfo.color}`}>
-                                  {turnoInfo.emoji} {turnoInfo.label}
+                                <span className={`badge ${turnoInfo.color}`}>
+                                  <i className={`bi ${turnoInfo.icon} me-1`}></i>{turnoInfo.label}
                                 </span>
                               </td>
                               <td className="text-center">
-                                <div className="list-page-table-actions">
+                                <div className="d-flex gap-2 justify-content-center">
                                   <button
                                     onClick={() => navigate(`/turmas/${turma.id}`)}
-                                    className="list-page-table-btn btn btn-outline-info btn-sm"
+                                    className="btn btn-sm btn-outline-info"
                                     title="Ver detalhes"
                                   >
-                                    👁️
+                                    <i className="bi bi-eye"></i>
                                   </button>
                                   <button
                                     onClick={() => navigate(`/turmas/${turma.id}/frequencia`)}
-                                    className="list-page-table-btn btn btn-outline-success btn-sm"
+                                    className="btn btn-sm btn-outline-success"
                                     title="Frequência"
                                   >
-                                    📊
+                                    <i className="bi bi-calendar-check"></i>
                                   </button>
                                   {admin?.role === 'admin' && (
                                     <>
                                       <button
                                         onClick={() => navigate(`/turmas/editar/${turma.id}`)}
-                                        className="list-page-table-btn btn btn-outline-warning btn-sm"
+                                        className="btn btn-sm btn-outline-warning"
                                         title="Editar"
                                       >
-                                        ✏️
+                                        <i className="bi bi-pencil"></i>
                                       </button>
                                       <button
                                         onClick={() => excluirTurma(turma.id)}
-                                        className="list-page-table-btn btn btn-outline-danger btn-sm"
+                                        className="btn btn-sm btn-outline-danger"
                                         title="Excluir"
                                       >
-                                        🗑️
+                                        <i className="bi bi-trash"></i>
                                       </button>
                                     </>
                                   )}

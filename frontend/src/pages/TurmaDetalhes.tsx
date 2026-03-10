@@ -64,14 +64,14 @@ function TurmaDetalhes() {
 
   // Função para mapear turnos do backend para exibição
   const formatarTurno = (turno: string) => {
-    const turnoMap: { [key: string]: { label: string; emoji: string; color: string } } = {
-      'matutino': { label: 'Manhã', emoji: '🌅', color: 'bg-warning' },
-      'vespertino': { label: 'Tarde', emoji: '☀️', color: 'bg-info' },
-      'noturno': { label: 'Noite', emoji: '🌙', color: 'bg-dark' },
-      'integral': { label: 'Integral', emoji: '🌞', color: 'bg-success' }
+    const turnoMap: { [key: string]: { label: string; icon: string; color: string } } = {
+      'matutino': { label: 'Manhã', icon: 'bi-sunrise', color: 'bg-warning' },
+      'vespertino': { label: 'Tarde', icon: 'bi-sun', color: 'bg-info' },
+      'noturno': { label: 'Noite', icon: 'bi-moon-stars', color: 'bg-dark' },
+      'integral': { label: 'Integral', icon: 'bi-brightness-high', color: 'bg-success' }
     };
     
-    return turnoMap[turno] || { label: turno, emoji: '⏰', color: 'bg-secondary' };
+    return turnoMap[turno] || { label: turno, icon: 'bi-clock', color: 'bg-secondary' };
   };
 
   useEffect(() => {
@@ -183,7 +183,7 @@ function TurmaDetalhes() {
       const response = await api.post(`/turmas/${id}/concluir/`);
       
       if (response.data.success) {
-        alert('✅ Turma concluída com sucesso!');
+        alert('Turma concluída com sucesso!');
         setShowConclusaoModal(false);
         await carregarDados(); // Recarregar dados
       }
@@ -215,7 +215,7 @@ function TurmaDetalhes() {
 
   if (loading) {
     return (
-      <div className="min-vh-100 bg-light">
+      <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
         <Navbar />
         <div className="container py-4">
           <div className="text-center">
@@ -231,7 +231,7 @@ function TurmaDetalhes() {
 
   if (!turma) {
     return (
-      <div className="min-vh-100 bg-light">
+      <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
         <Navbar />
         <div className="container py-4">
           <div className="alert alert-danger">
@@ -249,16 +249,20 @@ function TurmaDetalhes() {
   const turnoInfo = formatarTurno(turma.turno);
 
   return (
-    <div className="min-vh-100 bg-light">
+    <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
       <Navbar />
       <div className="container py-4">
         {/* Header */}
         <div className="row mb-4">
           <div className="col-12">
             <div className="d-flex justify-content-between align-items-center">
-              <h1 className="h2 text-success mb-0">🏫 Detalhes da Turma</h1>
+              <h1 className="h2 mb-0" style={{ color: 'var(--text-primary)' }}>
+                <i className="bi bi-grid-3x3-gap me-2"></i>
+                Detalhes da Turma
+              </h1>
               <Link to="/turmas" className="btn btn-outline-secondary">
-                🔙 Voltar para Lista
+                <i className="bi bi-arrow-left me-2"></i>
+                Voltar para Lista
               </Link>
             </div>
           </div>
@@ -273,7 +277,7 @@ function TurmaDetalhes() {
                   <div className="me-3">
                     <div className="bg-white text-success rounded-circle d-flex align-items-center justify-content-center" 
                          style={{ width: '60px', height: '60px', fontSize: '1.5rem' }}>
-                      🏫
+                      <i className="bi bi-grid-3x3-gap"></i>
                     </div>
                   </div>
                   <div>
@@ -285,26 +289,39 @@ function TurmaDetalhes() {
               <div className="card-body">
                 <div className="row justify-content-center">
                   <div className="col-md-3 text-center">
-                    <strong>🔢 Número da Turma:</strong>
+                    <strong style={{ color: 'var(--text-primary)' }}>
+                      <i className="bi bi-hash me-1"></i>
+                      Número da Turma:
+                    </strong>
                     <br />
                     <span className="badge bg-primary fs-6">{turma.ano}</span>
                   </div>
                   <div className="col-md-3 text-center">
-                    <strong>⏰ Turno:</strong>
+                    <strong style={{ color: 'var(--text-primary)' }}>
+                      <i className="bi bi-clock me-1"></i>
+                      Turno:
+                    </strong>
                     <br />
                     <span className={`badge ${turnoInfo.color} fs-6`}>
-                      {turnoInfo.emoji} {turnoInfo.label}
+                      <i className={`${turnoInfo.icon} me-1`}></i>
+                      {turnoInfo.label}
                     </span>
                   </div>
                   <div className="col-md-3 text-center">
-                    <strong>👥 Total de Alunos:</strong>
+                    <strong style={{ color: 'var(--text-primary)' }}>
+                      <i className="bi bi-people me-1"></i>
+                      Total de Alunos:
+                    </strong>
                     <br />
                     <span className="badge bg-info fs-6">{alunosDaTurma.length} aluno(s)</span>
                   </div>
                   <div className="col-md-3 text-center">
-                    <strong>📅 Criada em:</strong>
+                    <strong style={{ color: 'var(--text-primary)' }}>
+                      <i className="bi bi-calendar3 me-1"></i>
+                      Criada em:
+                    </strong>
                     <br />
-                    <span className="text-muted">
+                    <span style={{ color: 'var(--text-muted)' }}>
                       {turma.criado_em ? 
                         (() => {
                           try {
@@ -326,9 +343,12 @@ function TurmaDetalhes() {
                   <div className="row mt-3">
                     <div className="col-12">
                       <div className="alert alert-info mb-0 d-flex align-items-center" role="alert">
-                        <i className="bi bi-book me-2 fs-4"></i>
+                        <i className="bi bi-journal-check me-2 fs-4"></i>
                         <div>
-                          <strong>📚 Disciplina:</strong> {turma.disciplina}
+                          <strong>
+                            <i className="bi bi-journal-check me-1"></i>
+                            Disciplina:
+                          </strong> {turma.disciplina}
                           <span className="badge bg-primary ms-2">Turma-Disciplina</span>
                         </div>
                       </div>
@@ -345,13 +365,20 @@ function TurmaDetalhes() {
           <div className="col mb-4">
             <div className="card shadow-sm border-0 h-100" style={{ width: '100%', maxWidth: '100%' }}>
               <div className="card-header bg-primary text-white">
-                <h5 className="mb-0">👥 Alunos Matriculados ({alunosDaTurma.length})</h5>
+                <h5 className="mb-0">
+                  <i className="bi bi-people me-2"></i>
+                  Alunos Matriculados ({alunosDaTurma.length})
+                </h5>
               </div>
               <div className="card-body" style={{ maxHeight: '500px', overflowY: 'auto' }}>
                 {alunosDaTurma.length === 0 ? (
                   <div className="text-center py-4">
-                    <p className="text-muted mb-3">🤷‍♂️ Nenhum aluno matriculado nesta turma</p>
-                    <small className="text-muted">Adicione alunos usando a lista ao lado</small>
+                    <p style={{ color: 'var(--text-muted)' }} className="mb-3">
+                      Nenhum aluno matriculado nesta turma
+                    </p>
+                    <small style={{ color: 'var(--text-muted)' }}>
+                      Adicione alunos usando a lista ao lado
+                    </small>
                   </div>
                 ) : (
                   <div className="list-group list-group-flush">
@@ -359,8 +386,11 @@ function TurmaDetalhes() {
                       <div key={aluno.id} className="list-group-item d-flex justify-content-between align-items-center">
                         <div>
                           <h6 className="mb-1">{aluno.nome}</h6>
-                          <small className="text-muted">
-                            📋 {aluno.matricula} • 📧 {aluno.email}
+                          <small style={{ color: 'var(--text-muted)' }}>
+                            <i className="bi bi-clipboard me-1"></i>
+                            {aluno.matricula} • 
+                            <i className="bi bi-envelope ms-2 me-1"></i>
+                            {aluno.email}
                           </small>
                         </div>
                         <button
@@ -372,7 +402,7 @@ function TurmaDetalhes() {
                           {loadingAlunos ? (
                             <span className="spinner-border spinner-border-sm" role="status"></span>
                           ) : (
-                            "🗑️"
+                            <i className="bi bi-trash"></i>
                           )}
                         </button>
                       </div>
@@ -387,13 +417,21 @@ function TurmaDetalhes() {
           <div className="col mb-4">
             <div className="card shadow-sm border-0 h-100" style={{ width: '100%', maxWidth: '100%' }}>
               <div className="card-header bg-info text-white">
-                <h5 className="mb-0">➕ Adicionar Alunos ({alunosDisponiveis.length})</h5>
+                <h5 className="mb-0">
+                  <i className="bi bi-plus-circle me-2"></i>
+                  Adicionar Alunos ({alunosDisponiveis.length})
+                </h5>
               </div>
               <div className="card-body" style={{ maxHeight: '500px', overflowY: 'auto' }}>
                 {alunosDisponiveis.length === 0 ? (
                   <div className="text-center py-4">
-                    <p className="text-muted mb-3">✅ Todos os alunos já estão matriculados</p>
-                    <small className="text-muted">Ou não há alunos cadastrados no sistema</small>
+                    <p style={{ color: 'var(--text-muted)' }} className="mb-3">
+                      <i className="bi bi-check-circle me-1"></i>
+                      Todos os alunos já estão matriculados
+                    </p>
+                    <small style={{ color: 'var(--text-muted)' }}>
+                      Ou não há alunos cadastrados no sistema
+                    </small>
                   </div>
                 ) : (
                   <div className="list-group list-group-flush">
@@ -401,8 +439,11 @@ function TurmaDetalhes() {
                       <div key={aluno.id} className="list-group-item d-flex justify-content-between align-items-center">
                         <div>
                           <h6 className="mb-1">{aluno.nome}</h6>
-                          <small className="text-muted">
-                            📋 {aluno.matricula} • 📧 {aluno.email}
+                          <small style={{ color: 'var(--text-muted)' }}>
+                            <i className="bi bi-clipboard me-1"></i>
+                            {aluno.matricula} • 
+                            <i className="bi bi-envelope ms-2 me-1"></i>
+                            {aluno.email}
                           </small>
                         </div>
                         <button
@@ -414,7 +455,7 @@ function TurmaDetalhes() {
                           {loadingAlunos ? (
                             <span className="spinner-border spinner-border-sm" role="status"></span>
                           ) : (
-                            "➕"
+                            <i className="bi bi-plus-circle"></i>
                           )}
                         </button>
                       </div>
@@ -433,7 +474,8 @@ function TurmaDetalhes() {
               {/* Badge de Status */}
               {turma.status === 'concluida' && (
                 <span className="badge bg-success fs-5 py-2 px-3">
-                  ✅ Turma Concluída
+                  <i className="bi bi-check-circle me-1"></i>
+                  Turma Concluída
                 </span>
               )}
               
@@ -442,13 +484,15 @@ function TurmaDetalhes() {
                 onClick={() => setShowFrequenciaForm(true)}
                 disabled={alunosDaTurma.length === 0 || turma.status === 'concluida'}
               >
-                📊 Registrar Frequência
+                <i className="bi bi-calendar-check me-2"></i>
+                Registrar Frequência
               </button>
               <Link 
                 to={`/turmas/${id}/frequencia`} 
                 className="btn btn-info"
               >
-                📈 Dashboard de Frequência
+                <i className="bi bi-bar-chart me-2"></i>
+                Dashboard de Frequência
               </Link>
               
               {/* Botões específicos para turmas-disciplina */}
@@ -459,14 +503,16 @@ function TurmaDetalhes() {
                     className={`btn btn-primary ${turma.status === 'concluida' ? 'disabled' : ''}`}
                     title="Criar nova avaliação para esta disciplina"
                   >
-                    📝 Criar Avaliação
+                    <i className="bi bi-pencil-square me-2"></i>
+                    Criar Avaliação
                   </Link>
                   <Link 
                     to={`/turmas/${id}/notas`} 
                     className={`btn btn-success ${turma.status === 'concluida' ? 'disabled' : ''}`}
                     title="Lançar notas das avaliações"
                   >
-                    📊 Lançar Notas
+                    <i className="bi bi-clipboard me-2"></i>
+                    Lançar Notas
                   </Link>
                   
                   {/* Botão de Conclusão */}
@@ -476,7 +522,8 @@ function TurmaDetalhes() {
                       onClick={() => setShowConclusaoModal(true)}
                       title="Concluir turma após validações"
                     >
-                      🎓 Concluir Turma
+                      <i className="bi bi-mortarboard me-2"></i>
+                      Concluir Turma
                     </button>
                   )}
                 </>
@@ -486,19 +533,22 @@ function TurmaDetalhes() {
                 to={`/turmas/${id}/edit`} 
                 className="btn btn-warning"
               >
-                ✏️ Editar Turma
+                <i className="bi bi-pencil me-2"></i>
+                Editar Turma
               </Link>
               <Link 
                 to="/turmas" 
                 className="btn btn-outline-secondary"
               >
-                📋 Lista de Turmas
+                <i className="bi bi-clipboard me-2"></i>
+                Lista de Turmas
               </Link>
               <Link 
                 to="/alunos/novo" 
                 className="btn btn-outline-primary"
               >
-                👤 Cadastrar Novo Aluno
+                <i className="bi bi-person-plus me-2"></i>
+                Cadastrar Novo Aluno
               </Link>
             </div>
           </div>
@@ -532,7 +582,8 @@ function TurmaDetalhes() {
             <div className="modal-content">
               <div className={`modal-header ${verificacaoConclusao.pode_concluir ? 'bg-success' : 'bg-warning'} text-white`}>
                 <h5 className="modal-title">
-                  {verificacaoConclusao.pode_concluir ? '✅' : '⚠️'} Concluir Turma
+                  <i className={`bi ${verificacaoConclusao.pode_concluir ? 'bi-check-circle' : 'bi-exclamation-triangle'} me-2`}></i>
+                  Concluir Turma
                 </h5>
                 <button 
                   type="button" 
@@ -545,8 +596,11 @@ function TurmaDetalhes() {
                 
                 {/* Estatísticas */}
                 <div className="card mb-3">
-                  <div className="card-header bg-light">
-                    <strong>📊 Estatísticas de Preenchimento</strong>
+                  <div className="card-header">
+                    <strong>
+                      <i className="bi bi-bar-chart me-2"></i>
+                      Estatísticas de Preenchimento
+                    </strong>
                   </div>
                   <div className="card-body">
                     <div className="row">
@@ -595,7 +649,10 @@ function TurmaDetalhes() {
                 {/* Mensagens */}
                 {verificacaoConclusao.pode_concluir ? (
                   <div className="alert alert-success">
-                    <strong>✅ Turma pronta para ser concluída!</strong>
+                    <strong>
+                      <i className="bi bi-check-circle me-2"></i>
+                      Turma pronta para ser concluída!
+                    </strong>
                     <p className="mb-0 mt-2">
                       Todos os requisitos foram atendidos. Ao concluir, a turma será marcada como finalizada 
                       e não será mais possível registrar frequências ou lançar notas.
@@ -603,7 +660,10 @@ function TurmaDetalhes() {
                   </div>
                 ) : (
                   <div className="alert alert-warning">
-                    <strong>⚠️ Requisitos não atendidos:</strong>
+                    <strong>
+                      <i className="bi bi-exclamation-triangle me-2"></i>
+                      Requisitos não atendidos:
+                    </strong>
                     <ul className="mb-0 mt-2">
                       {verificacaoConclusao.motivos.map((motivo, idx) => (
                         <li key={idx}>{motivo}</li>
@@ -634,7 +694,10 @@ function TurmaDetalhes() {
                         Concluindo...
                       </>
                     ) : (
-                      '🎓 Concluir Turma'
+                      <>
+                        <i className="bi bi-mortarboard me-2"></i>
+                        Concluir Turma
+                      </>
                     )}
                   </button>
                 )}

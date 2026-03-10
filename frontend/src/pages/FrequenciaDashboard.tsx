@@ -95,7 +95,7 @@ const FrequenciaDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-vh-100 bg-light">
+      <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
         <Navbar />
         <div className="container py-4">
           <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
@@ -113,7 +113,7 @@ const FrequenciaDashboard: React.FC = () => {
 
   if (error || !turma) {
     return (
-      <div className="min-vh-100 bg-light">
+      <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
         <Navbar />
         <div className="container py-4">
           <div className="alert alert-danger">
@@ -133,14 +133,14 @@ const FrequenciaDashboard: React.FC = () => {
   };
 
   const formatarTurno = (turno: string) => {
-    const turnoMap: { [key: string]: { label: string; emoji: string } } = {
-      'matutino': { label: 'Manhã', emoji: '🌅' },
-      'vespertino': { label: 'Tarde', emoji: '☀️' },
-      'noturno': { label: 'Noite', emoji: '🌙' },
-      'integral': { label: 'Integral', emoji: '🌞' }
+    const turnoMap: { [key: string]: { label: string; icon: string } } = {
+      'matutino': { label: 'Manhã', icon: 'bi-sunrise' },
+      'vespertino': { label: 'Tarde', icon: 'bi-sun' },
+      'noturno': { label: 'Noite', icon: 'bi-moon-stars' },
+      'integral': { label: 'Integral', icon: 'bi-brightness-high' }
     };
     
-    return turnoMap[turno] || { label: turno, emoji: '⏰' };
+    return turnoMap[turno] || { label: turno, icon: 'bi-clock' };
   };
 
   const turnoInfo = formatarTurno(turma.turno);
@@ -180,7 +180,7 @@ const FrequenciaDashboard: React.FC = () => {
                   <strong>Ano:</strong> {turma.ano}
                 </span>
                 <span className="badge bg-white bg-opacity-25 px-3 py-2">
-                  {turnoInfo.emoji} <strong>Turno:</strong> {turnoInfo.label}
+                  <i className={`bi ${turnoInfo.icon} me-1`}></i> <strong>Turno:</strong> {turnoInfo.label}
                 </span>
                 <span className="badge bg-white bg-opacity-25 px-3 py-2">
                   <i className="bi bi-people-fill me-1"></i>
@@ -441,7 +441,7 @@ const FrequenciaDashboard: React.FC = () => {
                                   <div>
                                     <div className="fw-semibold text-dark mb-1">{aluno.nome}</div>
                                     <div className="d-flex gap-2 align-items-center">
-                                      <span className="badge bg-light text-dark border">
+                                      <span className="badge" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}>
                                         <i className="bi bi-person-badge me-1"></i>
                                         {aluno.matricula}
                                       </span>
@@ -743,7 +743,7 @@ const FrequenciaDashboard: React.FC = () => {
                                 <i className="bi bi-exclamation-triangle-fill fs-2 me-3 mt-1"></i>
                                 <div className="flex-grow-1">
                                   <h5 className="alert-heading mb-3">
-                                    <strong>⚠️ Atenção Necessária!</strong>
+                                    <strong>Atenção Necessária!</strong>
                                   </h5>
                                   <p className="mb-3 fs-6">
                                     <strong className="fs-5">{criticos}</strong> aluno{criticos > 1 ? 's' : ''} com frequência <strong>crítica</strong> (abaixo de 60%).
@@ -766,7 +766,7 @@ const FrequenciaDashboard: React.FC = () => {
                                 <i className="bi bi-check-circle-fill fs-2 me-3"></i>
                                 <div>
                                   <h5 className="alert-heading mb-2">
-                                    <strong>🎉 Parabéns!</strong>
+                                    <strong>Parabéns!</strong>
                                   </h5>
                                   <p className="mb-0 fs-6">
                                     A turma apresenta excelente taxa de frequência. Continue o bom trabalho!

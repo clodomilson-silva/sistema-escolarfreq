@@ -1,35 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { 
-  FaSchool, 
-  FaUsers, 
-  FaLock, 
-  FaMobileAlt, 
-  FaChartLine,
-  FaEnvelope,
-  FaKey,
-  FaSignInAlt,
-  FaInfoCircle,
-  FaLightbulb,
-  FaExclamationTriangle
-} from "react-icons/fa";
-import "./LoginAuth.css";
 
 function LoginAuth() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
+  const [showInfo, setShowInfo] = useState(false);
   
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   // Se já está autenticado, redirecionar imediatamente
-  if (isAuthenticated) {
-    navigate("/home", { replace: true });
-    return null;
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/home", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +34,6 @@ function LoginAuth() {
       console.log('Tentando fazer login...');
       await login(email, senha);
       console.log('Login bem-sucedido, redirecionando...');
-      // Forçar redirecionamento após login
       window.location.href = "/home";
     } catch (error: unknown) {
       console.error('Erro no login:', error);
@@ -76,219 +63,337 @@ function LoginAuth() {
   };
 
   return (
-    <div className="min-vh-100 d-flex align-items-center justify-content-center login-compact" style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)' }}>
-      <div className="container-xl login-container login-compact-container">
-        <div className="row min-vh-100 align-items-center login-compact-row px-5">
-          {/* Coluna da esquerda - Informações do sistema (apenas em telas grandes) */}
-          <div className="col-lg-7 d-none d-lg-flex flex-column justify-content-center text-white px-5 login-info-section login-compact-info">
-            <div className="mb-5 login-compact-info-content">
-              <h1 className="display-3 fw-bold mb-4 login-info-title text-center">
-                <FaSchool className="me-3" /> Ponto Class
-              </h1>
-              <p className="fs-3 mb-5 opacity-90 text-center">
-                Plataforma completa para gestão educacional moderna e eficiente
-              </p>
-              <div className="login-info-items-grid justify-content-between">
-                <div className="col-10">
-                  <div className="d-flex align-items-center mb-4">
-                    <div className="bg-white bg-opacity-20 rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style={{ minWidth: '60px', minHeight: '60px' }}>
-                      <FaUsers style={{ fontSize: '1.5rem' }} />
-                    </div>
-                    <div>
-                      <h5 className="mb-1 fs-4">Gestão de Alunos</h5>
-                      <small className="opacity-75 fs-6">Cadastro e acompanhamento completo dos estudantes</small>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-10">
-                  <div className="d-flex align-items-center mb-4">
-                    <div className="bg-white bg-opacity-20 rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style={{ minWidth: '60px', minHeight: '60px' }}>
-                      <FaChartLine style={{ fontSize: '1.5rem' }} />
-                    </div>
-                    <div>
-                      <h5 className="mb-1 fs-4">Controle de Frequência</h5>
-                      <small className="opacity-75 fs-6">Registro e análise de presença em tempo real</small>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-10">
-                  <div className="d-flex align-items-center mb-4">
-                    <div className="bg-white bg-opacity-20 rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style={{ minWidth: '60px', minHeight: '60px' }}>
-                      <FaLock style={{ fontSize: '1.5rem' }} />
-                    </div>
-                    <div>
-                      <h5 className="mb-1 fs-4">Acesso Seguro</h5>
-                      <small className="opacity-75 fs-6">Autenticação JWT com criptografia robusta</small>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-10">
-                  <div className="d-flex align-items-center mb-4">
-                    <div className="bg-white bg-opacity-20 rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style={{ minWidth: '60px', minHeight: '60px' }}>
-                      <FaMobileAlt style={{ fontSize: '1.5rem' }} />
-                    </div>
-                    <div>
-                      <h5 className="mb-1 fs-4">Interface Moderna</h5>
-                      <small className="opacity-75 fs-6">Design responsivo para todas as telas</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Coluna da direita - Formulário de login */}
-          <div className="col-lg-5 col-md-8 col-sm-10 mx-auto login-compact-form-wrapper">
-            <div className="card shadow-lg border-0 login-card login-form-container login-compact-card" style={{ borderRadius: '20px' }}>
-              <div className="card-body p-4 p-lg-5 login-card-body login-compact-card-body">
-                <div className="text-center mb-2 mb-lg-3">
-                  <div className="mb-2">
-                    <div className="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
-                         style={{ width: '64px', height: '64px', fontSize: '2rem' }}>
-                      <FaSchool />
-                    </div>
-                  </div>
-                  <h1 className="h3 text-dark fw-bold mb-2 login-title" style={{ fontSize: '1.5rem' }}>Ponto Class</h1>
-                  <p className="text-muted small mb-0">Acesse sua conta</p>
-                </div>
-
-                <form onSubmit={handleSubmit}>
-                  {erro && (
-                    <div className="alert alert-danger border-0 rounded-3 mb-3 d-flex align-items-center" role="alert">
-                      <FaExclamationTriangle className="me-2" />
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'var(--bg-primary)',
+      padding: '2rem 1rem'
+    }}>
+      <div className="container">
+        <div className="row justify-content-center">
+          {/* Card Principal */}
+          <div className="col-lg-10 col-xl-9">
+            <div className="card" style={{
+              borderRadius: 'var(--radius-xl)',
+              overflow: 'hidden',
+              border: '1px solid var(--border-color)',
+              boxShadow: 'var(--shadow-xl)'
+            }}>
+              <div className="row g-0">
+                {/* Painel Esquerdo - Informações */}
+                <div className="col-lg-6 d-none d-lg-flex flex-column justify-content-center p-5" style={{
+                  background: 'linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%)',
+                  color: 'white'
+                }}>
+                  <div className="mb-5">
+                    <div className="d-flex align-items-center gap-3 mb-4">
+                      <div style={{
+                        width: '60px',
+                        height: '60px',
+                        borderRadius: 'var(--radius-lg)',
+                        background: 'rgba(255, 255, 255, 0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backdropFilter: 'blur(10px)'
+                      }}>
+                        <i className="bi bi-book" style={{ fontSize: '2rem' }}></i>
+                      </div>
                       <div>
-                        <strong>Erro:</strong> {erro}
+                        <h1 style={{ fontSize: '2rem', fontWeight: '700', margin: 0 }}>
+                          Sistema Escolar
+                        </h1>
+                        <p style={{ margin: 0, opacity: 0.9, fontSize: '1rem' }}>
+                          Gestão Educacional Moderna
+                        </p>
                       </div>
                     </div>
-                  )}
+                    
+                    <p style={{ fontSize: '1.1rem', opacity: 0.95, lineHeight: '1.6', marginBottom: '3rem' }}>
+                      Plataforma completa para gestão de alunos, turmas, frequência e notas
+                    </p>
+                  </div>
 
-                  <div className="mb-3">
-                    <label htmlFor="email" className="form-label fw-semibold text-dark d-flex align-items-center">
-                      <FaEnvelope className="me-2" /> Email
-                    </label>
-                    <div className="input-group">
-                      <span className="input-group-text bg-light border-end-0">
-                        <FaEnvelope className="text-muted" />
-                      </span>
+                  <div className="d-flex flex-column gap-4">
+                    <div className="d-flex align-items-start gap-3">
+                      <div style={{
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: 'var(--radius-md)',
+                        background: 'rgba(255, 255, 255, 0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}>
+                        <i className="bi bi-people" style={{ fontSize: '1.5rem' }}></i>
+                      </div>
+                      <div>
+                        <h5 style={{ fontWeight: '600', marginBottom: '0.25rem' }}>Gestão de Alunos</h5>
+                        <p style={{ margin: 0, opacity: 0.85, fontSize: '0.95rem' }}>
+                          Cadastro completo e acompanhamento individual
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="d-flex align-items-start gap-3">
+                      <div style={{
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: 'var(--radius-md)',
+                        background: 'rgba(255, 255, 255, 0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}>
+                        <i className="bi bi-calendar-check" style={{ fontSize: '1.5rem' }}></i>
+                      </div>
+                      <div>
+                        <h5 style={{ fontWeight: '600', marginBottom: '0.25rem' }}>Controle de Frequência</h5>
+                        <p style={{ margin: 0, opacity: 0.85, fontSize: '0.95rem' }}>
+                          Registro e análise de presença em tempo real
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="d-flex align-items-start gap-3">
+                      <div style={{
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: 'var(--radius-md)',
+                        background: 'rgba(255, 255, 255, 0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}>
+                        <i className="bi bi-journal-check" style={{ fontSize: '1.5rem' }}></i>
+                      </div>
+                      <div>
+                        <h5 style={{ fontWeight: '600', marginBottom: '0.25rem' }}>Sistema de Notas</h5>
+                        <p style={{ margin: 0, opacity: 0.85, fontSize: '0.95rem' }}>
+                          Lançamento de notas e geração de boletins
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="d-flex align-items-start gap-3">
+                      <div style={{
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: 'var(--radius-md)',
+                        background: 'rgba(255, 255, 255, 0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}>
+                        <i className="bi bi-shield-check" style={{ fontSize: '1.5rem' }}></i>
+                      </div>
+                      <div>
+                        <h5 style={{ fontWeight: '600', marginBottom: '0.25rem' }}>Segurança</h5>
+                        <p style={{ margin: 0, opacity: 0.85, fontSize: '0.95rem' }}>
+                          Autenticação JWT e controle de acesso por perfil
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Painel Direito - Formulário */}
+                <div className="col-lg-6 p-4 p-lg-5" style={{
+                  backgroundColor: 'var(--bg-card)'
+                }}>
+                  <div className="text-center mb-4">
+                    <div className="d-lg-none mb-4">
+                      <div className="d-flex align-items-center justify-content-center gap-2 mb-2">
+                        <div style={{
+                          width: '48px',
+                          height: '48px',
+                          borderRadius: 'var(--radius-md)',
+                          background: 'linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <i className="bi bi-book" style={{ fontSize: '1.5rem', color: 'white' }}></i>
+                        </div>
+                        <h2 style={{ margin: 0, fontSize: '1.75rem', fontWeight: '700' }}>
+                          Sistema Escolar
+                        </h2>
+                      </div>
+                    </div>
+                    
+                    <h3 style={{
+                      fontSize: '1.5rem',
+                      fontWeight: '600',
+                      color: 'var(--text-primary)',
+                      marginBottom: '0.5rem'
+                    }}>
+                      Bem-vindo de volta
+                    </h3>
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: 0 }}>
+                      Entre com suas credenciais para acessar o sistema
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleSubmit}>
+                    {erro && (
+                      <div className="alert alert-danger d-flex align-items-center gap-2 mb-4">
+                        <i className="bi bi-exclamation-triangle-fill"></i>
+                        <div>
+                          <strong>Erro:</strong> {erro}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mb-3">
+                      <label htmlFor="email" className="form-label d-flex align-items-center gap-2">
+                        <i className="bi bi-envelope"></i>
+                        <span>Email</span>
+                      </label>
                       <input
                         type="email"
-                        className="form-control form-control-lg login-input border-start-0 ps-0"
+                        className="form-control form-control-lg"
                         id="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         disabled={loading}
-                        placeholder="admin@sistema-escolar.com"
-                        style={{ 
-                          fontSize: '1rem',
-                          border: '2px solid #e9ecef'
-                        }}
+                        placeholder="seu@email.com"
+                        style={{ fontSize: '1rem' }}
                       />
                     </div>
-                  </div>
 
-                  <div className="mb-4">
-                    <label htmlFor="senha" className="form-label fw-semibold text-dark d-flex align-items-center">
-                      <FaKey className="me-2" /> Senha
-                    </label>
-                    <div className="input-group">
-                      <span className="input-group-text bg-light border-end-0">
-                        <FaKey className="text-muted" />
-                      </span>
+                    <div className="mb-4">
+                      <label htmlFor="senha" className="form-label d-flex align-items-center gap-2">
+                        <i className="bi bi-key"></i>
+                        <span>Senha</span>
+                      </label>
                       <input
                         type="password"
-                        className="form-control form-control-lg login-input border-start-0 ps-0"
+                        className="form-control form-control-lg"
                         id="senha"
                         value={senha}
                         onChange={(e) => setSenha(e.target.value)}
                         required
                         disabled={loading}
                         placeholder="Digite sua senha"
-                        style={{ 
-                          fontSize: '1rem',
-                          border: '2px solid #e9ecef'
-                        }}
+                        style={{ fontSize: '1rem' }}
                       />
                     </div>
-                  </div>
 
-                  <div className="d-grid mb-3">
-                    <button 
-                      type="submit" 
-                      className="btn btn-primary btn-lg py-3 fw-semibold login-button d-flex align-items-center justify-content-center"
-                      disabled={loading}
-                      style={{ 
-                        borderRadius: '12px',
-                        background: 'linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)',
-                        border: 'none',
-                        boxShadow: '0 4px 15px rgba(37, 99, 235, 0.3)',
-                        fontSize: '1rem',
-                        textTransform: 'uppercase',
-                        letterSpacing: '1px',
-                        transition: 'all 0.3s ease'
-                      }}
-                    >
-                      {loading ? (
-                        <>
-                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                          Entrando...
-                        </>
-                      ) : (
-                        <>
-                          <FaSignInAlt className="me-2" />
-                          Entrar no Sistema
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </form>
-
-                <div className="text-center mt-4">
-                  <p className="text-muted mb-2">
-                    Não tem uma conta?{' '}
-                    <button 
-                      onClick={() => window.location.href = '/registro'} 
-                      className="btn btn-link text-primary fw-bold p-0"
-                    >
-                      Cadastre-se aqui
-                    </button>
-                  </p>
-                </div>
-
-                <div className="text-center mt-3">
-                  <button className="btn btn-link text-decoration-none p-0 mb-2 d-flex align-items-center justify-content-center mx-auto" type="button" data-bs-toggle="collapse" data-bs-target="#infoLogin" aria-expanded="false" aria-controls="infoLogin">
-                    <FaInfoCircle className="me-2" />
-                    <small>Informações de acesso</small>
-                  </button>
-                  <div className="collapse" id="infoLogin">
-                    <div className="pt-2 border-top mt-2">
-                      <p className="text-muted small mb-2"><FaLock className="me-1" /> Acesso Administrativo</p>
-                      <small className="text-muted d-block mb-2">
-                        Apenas administradores podem acessar o sistema
-                      </small>
-                      <button className="btn btn-link text-decoration-none p-0 mb-2 d-flex align-items-center justify-content-center mx-auto" type="button" data-bs-toggle="collapse" data-bs-target="#credenciaisLogin" aria-expanded="false" aria-controls="credenciaisLogin">
-                        <FaLightbulb className="me-2" />
-                        <small>Credenciais de primeiro acesso</small>
+                    <div className="d-grid mb-4">
+                      <button 
+                        type="submit" 
+                        className="btn btn-primary btn-lg"
+                        disabled={loading}
+                        style={{
+                          padding: '0.875rem',
+                          fontSize: '1rem',
+                          fontWeight: '600'
+                        }}
+                      >
+                        {loading ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                            Entrando...
+                          </>
+                        ) : (
+                          <>
+                            <i className="bi bi-box-arrow-in-right me-2"></i>
+                            Entrar no Sistema
+                          </>
+                        )}
                       </button>
-                      <div className="collapse" id="credenciaisLogin">
-                        <div className="bg-light rounded-3 p-3 mt-2">
-                          <small className="text-dark">
-                            <strong className="d-flex align-items-center justify-content-center mb-2">
-                              <FaLightbulb className="me-2" /> Credenciais padrão:
-                            </strong>
-                            <div className="login-credencial-row justify-content-center">
-                              <span className="fw-semibold">Email:</span>
-                              <code className="bg-white px-2 py-1 rounded ms-2">admin@sistema-escolar.com</code>
-                            </div>
-                            <div className="login-credencial-row justify-content-center">
-                              <span className="fw-semibold">Senha:</span>
-                              <code className="bg-white px-2 py-1 rounded ms-2">Admin123!</code>
-                            </div>
-                          </small>
-                        </div>
-                      </div>
                     </div>
-                  </div>
+
+                    <div className="text-center">
+                      <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+                        Não tem uma conta?{' '}
+                        <button 
+                          type="button"
+                          onClick={() => navigate('/registro')} 
+                          className="btn btn-link p-0" 
+                          style={{
+                            color: 'var(--primary-color)',
+                            fontWeight: '600',
+                            textDecoration: 'none'
+                          }}
+                        >
+                          Cadastre-se aqui
+                        </button>
+                      </p>
+                    </div>
+
+                    <hr style={{ borderColor: 'var(--border-color)', margin: '1.5rem 0' }} />
+
+                    <div className="text-center">
+                      <button 
+                        type="button"
+                        className="btn btn-link d-flex align-items-center justify-content-center gap-2 mx-auto p-0"
+                        onClick={() => setShowInfo(!showInfo)}
+                        style={{
+                          color: 'var(--text-secondary)',
+                          textDecoration: 'none',
+                          fontSize: '0.9rem'
+                        }}
+                      >
+                        <i className={`bi bi-chevron-${showInfo ? 'up' : 'down'}`}></i>
+                        Informações de acesso
+                      </button>
+                      
+                      {showInfo && (
+                        <div style={{
+                          marginTop: '1rem',
+                          padding: '1rem',
+                          backgroundColor: 'var(--bg-tertiary)',
+                          borderRadius: 'var(--radius-md)',
+                          border: '1px solid var(--border-color)',
+                          textAlign: 'left'
+                        }}>
+                          <div className="d-flex align-items-center gap-2 mb-3">
+                            <i className="bi bi-info-circle" style={{ color: 'var(--primary-color)', fontSize: '1.25rem' }}></i>
+                            <strong style={{ color: 'var(--text-primary)' }}>
+                              Credenciais de Primeiro Acesso
+                            </strong>
+                          </div>
+                          
+                          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                            <div className="mb-2">
+                              <strong>Email:</strong>
+                              <code style={{
+                                backgroundColor: 'var(--bg-secondary)',
+                                color: 'var(--primary-color)',
+                                padding: '0.25rem 0.5rem',
+                                borderRadius: 'var(--radius-sm)',
+                                marginLeft: '0.5rem',
+                                fontSize: '0.85rem'
+                              }}>
+                                admin@sistema-escolar.com
+                              </code>
+                            </div>
+                            <div>
+                              <strong>Senha:</strong>
+                              <code style={{
+                                backgroundColor: 'var(--bg-secondary)',
+                                color: 'var(--primary-color)',
+                                padding: '0.25rem 0.5rem',
+                                borderRadius: 'var(--radius-sm)',
+                                marginLeft: '0.5rem',
+                                fontSize: '0.85rem'
+                              }}>
+                                Admin123!
+                              </code>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
