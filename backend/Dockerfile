@@ -1,36 +1,30 @@
-# Backend Dockerfile
-FROM node:18-alpine
+FROM python:3.11-slim
 
-# Definir diretório de trabalho
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Set work directory
 WORKDIR /app
 
-# Copiar package.json e package-lock.json
-COPY package*.json ./
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
-# Instalar dependências
-RUN npm ci --only=production
+# Install Python dependencies
+COPY requirements.txt /app/
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copiar código fonte
-COPY . .
+# Copy project
+COPY . /app/
 
-# Criar usuário não-root para segurança
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S backend -u 1001
+# Create directories for static and media files
+RUN mkdir -p /app/staticfiles /app/mediafiles
 
-# Mudar ownership dos arquivos
-RUN chown -R backend:nodejs /app
-USER backend
+# Collect static files
+RUN python manage.py collectstatic --noinput || true
 
-# Expor porta
-EXPOSE 3000
-
-# Variáveis de ambiente padrão
-ENV NODE_ENV=production
-ENV PORT=3000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "const http = require('http'); const req = http.request('http://localhost:3000/health', res => process.exit(res.statusCode === 200 ? 0 : 1)); req.on('error', () => process.exit(1)); req.end();"
-
-# Comando para iniciar a aplicação
-CMD ["npm", "start"]
+# Run gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "config.wsgi:application"]

@@ -1,7 +1,28 @@
 version: '3.8'
 
 services:
-  # Backend Development Service
+  # PostgreSQL Database
+  db-dev:
+    image: postgres:14-alpine
+    container_name: sistema-escolar-db-dev
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=sistema_escolar
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - sistema-escolar-dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend Development Service (Django)
   backend-dev:
     build:
       context: ./backend
@@ -9,20 +30,26 @@ services:
     container_name: sistema-escolar-backend-dev
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "8000:8000"
     environment:
-      - NODE_ENV=development
-      - PORT=3000
-      - FRONTEND_URL=http://localhost:5173
+      - DEBUG=True
+      - DB_HOST=db-dev
+      - DB_NAME=sistema_escolar
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_PORT=5432
     env_file:
       - ./backend/.env
     volumes:
       - ./backend:/app
-      - /app/node_modules
-      - ./backend/firebase-credentials.json:/app/firebase-credentials.json:ro
+    depends_on:
+      db-dev:
+        condition: service_healthy
     networks:
       - sistema-escolar-dev-network
-    command: npm run dev
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
 
   # Frontend Development Service
   frontend-dev:
@@ -35,7 +62,7 @@ services:
       - "5173:5173"
     environment:
       - NODE_ENV=development
-      - VITE_API_URL=http://localhost:3000
+      - VITE_API_URL=http://localhost:8000
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -49,3 +76,7 @@ networks:
   sistema-escolar-dev-network:
     driver: bridge
     name: sistema-escolar-dev-network
+
+volumes:
+  postgres_data_dev:
+    driver: local

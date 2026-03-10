@@ -1,35 +1,27 @@
-# Backend Development Dockerfile
-FROM node:18-alpine
+FROM python:3.11-slim
 
-# Instalar ferramentas de desenvolvimento
-RUN apk add --no-cache git
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# Definir diretório de trabalho
+# Set work directory
 WORKDIR /app
 
-# Copiar package.json e package-lock.json
-COPY package*.json ./
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
-# Instalar todas as dependências (incluindo dev)
-RUN npm install
+# Install Python dependencies
+COPY requirements.txt /app/
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copiar código fonte
-COPY . .
+# Copy project
+COPY . /app/
 
-# Criar usuário não-root para segurança
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S backend -u 1001
+# Expose port
+EXPOSE 8000
 
-# Mudar ownership dos arquivos
-RUN chown -R backend:nodejs /app
-USER backend
-
-# Expor porta
-EXPOSE 3000
-
-# Variáveis de ambiente padrão
-ENV NODE_ENV=development
-ENV PORT=3000
-
-# Comando padrão (pode ser sobrescrito no docker-compose)
-CMD ["npm", "run", "dev"]
+# Run Django development server
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
