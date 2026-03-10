@@ -173,16 +173,37 @@ class FrequenciaViewSet(viewsets.ModelViewSet):
             ]
         }
         """
+        # Log detalhado para debug
+        print("\n=== DEBUG BULK_CREATE ===")
+        print(f"Request data: {request.data}")
+        print(f"Request data type: {type(request.data)}")
+        
         serializer = FrequenciaBulkCreateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            print(f"❌ Validation errors: {serializer.errors}")
+            return Response({
+                'success': False,
+                'errors': serializer.errors,
+                'message': 'Erro de validação'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        print(f"✅ Data validated successfully")
+        print(f"✅ Data validated successfully")
         
         turma_id = serializer.validated_data['turma_id']
         data = serializer.validated_data['data']
         disciplina = serializer.validated_data['disciplina']
         frequencias_data = serializer.validated_data['frequencias']
         
+        print(f"Turma ID: {turma_id} (type: {type(turma_id)})")
+        print(f"Data: {data}")
+        print(f"Disciplina: {disciplina}")
+        print(f"Frequências: {frequencias_data}")
+        
         # Get turma
         turma = get_object_or_404(Turma, id=turma_id)
+        print(f"✅ Turma encontrada: {turma.nome}")
+        print(f"Alunos na turma: {list(turma.alunos.values_list('id', flat=True))}")
         
         # Create or update frequencias
         created_count = 0
@@ -193,12 +214,23 @@ class FrequenciaViewSet(viewsets.ModelViewSet):
             status_value = freq_data['status']
             observacoes = freq_data.get('observacoes', '')
             
+            print(f"\n➡️ Processando aluno_id: {aluno_id} (type: {type(aluno_id)})")
+            
             # Get aluno
-            aluno = get_object_or_404(Aluno, id=aluno_id)
+            try:
+                aluno = get_object_or_404(Aluno, id=aluno_id)
+                print(f"✅ Aluno encontrado: {aluno.nome}")
+            except Exception as e:
+                print(f"❌ Erro ao buscar aluno {aluno_id}: {e}")
+                continue
             
             # Check if aluno belongs to turma
             if not turma.alunos.filter(id=aluno_id).exists():
+                print(f"⚠️ Aluno {aluno.nome} (ID: {aluno_id}) NÃO pertence à turma {turma.nome}")
                 continue
+            
+            print(f"✅ Aluno {aluno.nome} pertence à turma")
+            print(f"✅ Aluno {aluno.nome} pertence à turma")
             
             # Create or update frequencia
             freq, created = Frequencia.objects.update_or_create(
@@ -214,8 +246,15 @@ class FrequenciaViewSet(viewsets.ModelViewSet):
             
             if created:
                 created_count += 1
+                print(f"✅ Frequência CRIADA para {aluno.nome}")
             else:
                 updated_count += 1
+                print(f"✅ Frequência ATUALIZADA para {aluno.nome}")
+        
+        print(f"\n=== RESULTADO ===")
+        print(f"Criados: {created_count}")
+        print(f"Atualizados: {updated_count}")
+        print("=" * 50 + "\n")
         
         return Response({
             'success': True,

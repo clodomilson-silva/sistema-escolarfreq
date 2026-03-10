@@ -151,3 +151,122 @@ class AlunoViewSet(viewsets.ModelViewSet):
             'total': queryset.count(),
             'message': f'{queryset.count()} aluno(s) encontrado(s)'
         })
+    
+    @action(detail=True, methods=['get'])
+    def boletim(self, request, pk=None):
+        """
+        Gerar boletim do aluno com notas e frequências
+        GET /api/alunos/{id}/boletim/?data_inicio=YYYY-MM-DD&data_fim=YYYY-MM-DD
+        """
+        from turmas.models import Turma, Nota
+        from frequencia.models import Frequencia
+        from django.db.models import Avg, Count, Q
+        from decimal import Decimal
+        
+        aluno = self.get_object()
+        data_inicio = request.query_params.get('data_inicio')
+        data_fim = request.query_params.get('data_fim')
+        
+        # Buscar todas as turmas-disciplina do aluno
+        turmas_disciplina = Turma.objects.filter(
+            alunos=aluno,
+            tipo='disciplina'
+        ).select_related('turma_base')
+        
+        boletim_data = {
+            'aluno': {
+                'id': aluno.id,
+                'nome': aluno.nome,
+                'matricula': aluno.matricula,
+                'email': aluno.email
+            },
+            'periodo': {
+                'data_inicio': data_inicio,
+                'data_fim': data_fim
+            },
+            'disciplinas': []
+        }
+        
+        for turma_disc in turmas_disciplina:
+            # Filtrar notas da turma-disciplina
+            notas_query = Nota.objects.filter(
+                aluno=aluno,
+                avaliacao__turma=turma_disc
+            ).select_related('avaliacao')
+            
+            # Filtrar por período se fornecido
+            if data_inicio:
+                notas_query = notas_query.filter(avaliacao__data__gte=data_inicio)
+            if data_fim:
+                notas_query = notas_query.filter(avaliacao__data__lte=data_fim)
+            
+            # Calcular média ponderada
+            notas_list = []
+            soma_valores = Decimal('0')
+            soma_pesos = Decimal('0')
+            
+            for nota in notas_query:
+                notas_list.append({
+                    'avaliacao': nota.avaliacao.descricao,
+                    'tipo': nota.avaliacao.tipo,
+                    'data': nota.avaliacao.data,
+                    'valor': float(nota.valor),
+                    'nota_maxima': float(nota.avaliacao.nota_maxima),
+                    'peso': float(nota.avaliacao.peso),
+                    'observacoes': nota.observacoes
+                })
+                soma_valores += nota.valor * nota.avaliacao.peso
+                soma_pesos += nota.avaliacao.peso
+            
+            media = float(soma_valores / soma_pesos) if soma_pesos > 0 else 0.0
+            
+            # Filtrar frequências da turma-disciplina
+            freq_query = Frequencia.objects.filter(
+                aluno=aluno,
+                turma=turma_disc
+            )
+            
+            # Filtrar por período se fornecido
+            if data_inicio:
+                freq_query = freq_query.filter(data__gte=data_inicio)
+            if data_fim:
+                freq_query = freq_query.filter(data__lte=data_fim)
+            
+            # Estatísticas de frequência
+            total_aulas = freq_query.count()
+            presencas = freq_query.filter(status='presente').count()
+            ausencias = freq_query.filter(status='ausente').count()
+            justificadas = freq_query.filter(status='justificado').count()
+            
+            percentual_presenca = (presencas / total_aulas * 100) if total_aulas > 0 else 0.0
+            
+            disciplina_data = {
+                'turma_id': turma_disc.id,
+                'turma_nome': turma_disc.nome,
+                'disciplina': turma_disc.disciplina,
+                'professor': turma_disc.professor,
+                'periodo_letivo': {
+                    'data_inicio': turma_disc.data_inicio,
+                    'data_fim': turma_disc.data_fim
+                },
+                'notas': {
+                    'avaliacoes': notas_list,
+                    'total_avaliacoes': len(notas_list),
+                    'media': round(media, 2)
+                },
+                'frequencia': {
+                    'total_aulas': total_aulas,
+                    'presencas': presencas,
+                    'ausencias': ausencias,
+                    'justificadas': justificadas,
+                    'percentual_presenca': round(percentual_presenca, 2)
+                }
+            }
+            
+            boletim_data['disciplinas'].append(disciplina_data)
+        
+        return Response({
+            'success': True,
+            'data': boletim_data,
+            'message': 'Boletim gerado com sucesso'
+        })

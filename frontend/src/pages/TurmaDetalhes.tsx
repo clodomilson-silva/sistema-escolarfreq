@@ -10,6 +10,12 @@ interface Turma {
   nome: string;
   ano: string;
   turno: string;
+  tipo?: 'base' | 'disciplina';
+  disciplina?: string;
+  professor?: string;
+  data_inicio?: string | null;
+  data_fim?: string | null;
+  status: 'ativa' | 'inativa' | 'concluida';
   alunos: string[];
   criado_em?: string;
   atualizado_em?: string;
@@ -23,6 +29,26 @@ interface Aluno {
   data_nascimento: string;
 }
 
+interface VerificacaoConclusao {
+  pode_concluir: boolean;
+  motivos: string[];
+  estatisticas: {
+    total_alunos: number;
+    total_avaliacoes: number;
+    notas: {
+      cadastradas: number;
+      esperadas: number;
+      percentual: number;
+    };
+    frequencias: {
+      cadastradas: number;
+      esperadas: number;
+      percentual: number;
+      dias_letivos_estimados: number;
+    };
+  };
+}
+
 function TurmaDetalhes() {
   const { id } = useParams<{ id: string }>();
   const [turma, setTurma] = useState<Turma | null>(null);
@@ -31,6 +57,9 @@ function TurmaDetalhes() {
   const [loading, setLoading] = useState(true);
   const [loadingAlunos, setLoadingAlunos] = useState(false);
   const [showFrequenciaForm, setShowFrequenciaForm] = useState(false);
+  const [verificacaoConclusao, setVerificacaoConclusao] = useState<VerificacaoConclusao | null>(null);
+  const [loadingConclusao, setLoadingConclusao] = useState(false);
+  const [showConclusaoModal, setShowConclusaoModal] = useState(false);
   const { isReady } = useAuth();
 
   // Função para mapear turnos do backend para exibição
@@ -50,6 +79,13 @@ function TurmaDetalhes() {
       carregarDados();
     }
   }, [isReady, id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Verificar possibilidade de conclusão quando turma carregar
+  useEffect(() => {
+    if (turma && turma.tipo === 'disciplina' && turma.status !== 'concluida') {
+      verificarConclusao();
+    }
+  }, [turma]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const carregarDados = async () => {
     try {
@@ -128,6 +164,53 @@ function TurmaDetalhes() {
         setLoadingAlunos(false);
       }
     }
+  };
+
+  const verificarConclusao = async () => {
+    try {
+      const response = await api.get(`/turmas/${id}/verificar_conclusao/`);
+      if (response.data.success) {
+        setVerificacaoConclusao(response.data.data);
+      }
+    } catch (error) {
+      console.error('Erro ao verificar conclusão:', error);
+    }
+  };
+
+  const concluirTurma = async () => {
+    try {
+      setLoadingConclusao(true);
+      const response = await api.post(`/turmas/${id}/concluir/`);
+      
+      if (response.data.success) {
+        alert('✅ Turma concluída com sucesso!');
+        setShowConclusaoModal(false);
+        await carregarDados(); // Recarregar dados
+      }
+    } catch (error: any) {
+      console.error('Erro ao concluir turma:', error);
+      const motivos = error.response?.data?.motivos || ['Erro desconhecido'];
+      alert('Não foi possível concluir a turma:\n\n' + motivos.join('\n'));
+    } finally {
+      setLoadingConclusao(false);
+    }
+  };
+
+  const podeExibirBotaoConcluir = () => {
+    if (!turma || turma.tipo !== 'disciplina' || turma.status === 'concluida') {
+      return false;
+    }
+    
+    // Verificar se a data de fim já passou
+    if (turma.data_fim) {
+      const dataFim = new Date(turma.data_fim);
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      dataFim.setHours(0, 0, 0, 0);
+      return dataFim <= hoje;
+    }
+    
+    return false;
   };
 
   if (loading) {
@@ -237,6 +320,21 @@ function TurmaDetalhes() {
                     </span>
                   </div>
                 </div>
+                
+                {/* Informações específicas para turma-disciplina */}
+                {turma.tipo === 'disciplina' && turma.disciplina && (
+                  <div className="row mt-3">
+                    <div className="col-12">
+                      <div className="alert alert-info mb-0 d-flex align-items-center" role="alert">
+                        <i className="bi bi-book me-2 fs-4"></i>
+                        <div>
+                          <strong>📚 Disciplina:</strong> {turma.disciplina}
+                          <span className="badge bg-primary ms-2">Turma-Disciplina</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -332,10 +430,17 @@ function TurmaDetalhes() {
         <div className="row">
           <div className="col-12">
             <div className="d-flex gap-3 justify-content-center flex-wrap">
+              {/* Badge de Status */}
+              {turma.status === 'concluida' && (
+                <span className="badge bg-success fs-5 py-2 px-3">
+                  ✅ Turma Concluída
+                </span>
+              )}
+              
               <button 
                 className="btn btn-success"
                 onClick={() => setShowFrequenciaForm(true)}
-                disabled={alunosDaTurma.length === 0}
+                disabled={alunosDaTurma.length === 0 || turma.status === 'concluida'}
               >
                 📊 Registrar Frequência
               </button>
@@ -345,6 +450,38 @@ function TurmaDetalhes() {
               >
                 📈 Dashboard de Frequência
               </Link>
+              
+              {/* Botões específicos para turmas-disciplina */}
+              {turma.tipo === 'disciplina' && (
+                <>
+                  <Link 
+                    to={`/turmas/${id}/avaliacoes/nova`} 
+                    className={`btn btn-primary ${turma.status === 'concluida' ? 'disabled' : ''}`}
+                    title="Criar nova avaliação para esta disciplina"
+                  >
+                    📝 Criar Avaliação
+                  </Link>
+                  <Link 
+                    to={`/turmas/${id}/notas`} 
+                    className={`btn btn-success ${turma.status === 'concluida' ? 'disabled' : ''}`}
+                    title="Lançar notas das avaliações"
+                  >
+                    📊 Lançar Notas
+                  </Link>
+                  
+                  {/* Botão de Conclusão */}
+                  {podeExibirBotaoConcluir() && (
+                    <button
+                      className="btn btn-warning"
+                      onClick={() => setShowConclusaoModal(true)}
+                      title="Concluir turma após validações"
+                    >
+                      🎓 Concluir Turma
+                    </button>
+                  )}
+                </>
+              )}
+              
               <Link 
                 to={`/turmas/${id}/edit`} 
                 className="btn btn-warning"
@@ -379,6 +516,132 @@ function TurmaDetalhes() {
           }))}
           onClose={() => setShowFrequenciaForm(false)}
         />
+      )}
+
+      {/* Modal de Conclusão da Turma */}
+      {showConclusaoModal && verificacaoConclusao && (
+        <div 
+          className="modal fade show" 
+          style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}
+          onClick={() => setShowConclusaoModal(false)}
+        >
+          <div 
+            className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-content">
+              <div className={`modal-header ${verificacaoConclusao.pode_concluir ? 'bg-success' : 'bg-warning'} text-white`}>
+                <h5 className="modal-title">
+                  {verificacaoConclusao.pode_concluir ? '✅' : '⚠️'} Concluir Turma
+                </h5>
+                <button 
+                  type="button" 
+                  className="btn-close btn-close-white"
+                  onClick={() => setShowConclusaoModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <h6 className="mb-3">Turma: <strong>{turma.nome}</strong></h6>
+                
+                {/* Estatísticas */}
+                <div className="card mb-3">
+                  <div className="card-header bg-light">
+                    <strong>📊 Estatísticas de Preenchimento</strong>
+                  </div>
+                  <div className="card-body">
+                    <div className="row">
+                      <div className="col-md-4 mb-3">
+                        <div className="text-center">
+                          <div className="h3 text-primary">{verificacaoConclusao.estatisticas.total_alunos}</div>
+                          <div className="text-muted">Alunos</div>
+                        </div>
+                      </div>
+                      <div className="col-md-4 mb-3">
+                        <div className="text-center">
+                          <div className="h3 text-info">{verificacaoConclusao.estatisticas.total_avaliacoes}</div>
+                          <div className="text-muted">Avaliações</div>
+                        </div>
+                      </div>
+                      <div className="col-md-4 mb-3">
+                        <div className="text-center">
+                          <div className={`h3 ${verificacaoConclusao.estatisticas.notas.percentual >= 100 ? 'text-success' : 'text-danger'}`}>
+                            {verificacaoConclusao.estatisticas.notas.percentual.toFixed(0)}%
+                          </div>
+                          <div className="text-muted">
+                            Notas ({verificacaoConclusao.estatisticas.notas.cadastradas}/{verificacaoConclusao.estatisticas.notas.esperadas})
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {verificacaoConclusao.estatisticas.frequencias.esperadas > 0 && (
+                      <div className="row mt-2">
+                        <div className="col-12">
+                          <div className="text-center">
+                            <div className={`h3 ${verificacaoConclusao.estatisticas.frequencias.percentual >= 90 ? 'text-success' : 'text-warning'}`}>
+                              {verificacaoConclusao.estatisticas.frequencias.percentual.toFixed(0)}%
+                            </div>
+                            <div className="text-muted">
+                              Frequências ({verificacaoConclusao.estatisticas.frequencias.cadastradas}/{verificacaoConclusao.estatisticas.frequencias.esperadas}) - 
+                              Estimados {verificacaoConclusao.estatisticas.frequencias.dias_letivos_estimados} dias letivos
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Mensagens */}
+                {verificacaoConclusao.pode_concluir ? (
+                  <div className="alert alert-success">
+                    <strong>✅ Turma pronta para ser concluída!</strong>
+                    <p className="mb-0 mt-2">
+                      Todos os requisitos foram atendidos. Ao concluir, a turma será marcada como finalizada 
+                      e não será mais possível registrar frequências ou lançar notas.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="alert alert-warning">
+                    <strong>⚠️ Requisitos não atendidos:</strong>
+                    <ul className="mb-0 mt-2">
+                      {verificacaoConclusao.motivos.map((motivo, idx) => (
+                        <li key={idx}>{motivo}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button 
+                  type="button" 
+                  className="btn btn-secondary"
+                  onClick={() => setShowConclusaoModal(false)}
+                  disabled={loadingConclusao}
+                >
+                  Cancelar
+                </button>
+                {verificacaoConclusao.pode_concluir && (
+                  <button 
+                    type="button" 
+                    className="btn btn-success"
+                    onClick={concluirTurma}
+                    disabled={loadingConclusao}
+                  >
+                    {loadingConclusao ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                        Concluindo...
+                      </>
+                    ) : (
+                      '🎓 Concluir Turma'
+                    )}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Turma, Autorizacao
+from .models import Turma, Autorizacao, Avaliacao, Nota
 from alunos.serializers import AlunoSerializer
 
 
@@ -14,7 +14,7 @@ class TurmaSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'nome', 'ano', 'turno', 'disciplina', 'professor', 'sala',
             'tipo', 'turma_base_id', 'alunos', 'total_alunos', 'horarios', 
-            'dias_letivos', 'status', 'criado_em', 'atualizado_em'
+            'dias_letivos', 'data_inicio', 'data_fim', 'status', 'criado_em', 'atualizado_em'
         ]
         read_only_fields = ['id', 'criado_em', 'atualizado_em']
 
@@ -45,7 +45,8 @@ class TurmaCreateSerializer(serializers.ModelSerializer):
         model = Turma
         fields = [
             'nome', 'ano', 'turno', 'disciplina', 'professor', 'sala',
-            'tipo', 'turma_base_id', 'alunos', 'horarios', 'dias_letivos', 'status'
+            'tipo', 'turma_base_id', 'alunos', 'horarios', 'dias_letivos', 
+            'data_inicio', 'data_fim', 'status'
         ]
     
     def validate_nome(self, value):
@@ -91,7 +92,8 @@ class TurmaUpdateSerializer(serializers.ModelSerializer):
         model = Turma
         fields = [
             'nome', 'ano', 'turno', 'disciplina', 'professor', 'sala',
-            'tipo', 'alunos', 'horarios', 'dias_letivos', 'status'
+            'tipo', 'alunos', 'horarios', 'dias_letivos', 
+            'data_inicio', 'data_fim', 'status'
         ]
     
     def validate_nome(self, value):
@@ -133,3 +135,145 @@ class AutorizacaoCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("O aluno não pertence a esta turma")
         
         return data
+
+
+class AvaliacaoSerializer(serializers.ModelSerializer):
+    """Serializer for Avaliacao model"""
+    turma_nome = serializers.CharField(source='turma.nome', read_only=True)
+    total_notas = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Avaliacao
+        fields = [
+            'id', 'turma', 'turma_nome', 'descricao', 'tipo', 'data', 
+            'peso', 'nota_maxima', 'observacoes', 'total_notas',
+            'criado_em', 'atualizado_em'
+        ]
+        read_only_fields = ['id', 'criado_em', 'atualizado_em']
+    
+    def get_total_notas(self, obj):
+        """Get total number of grades registered"""
+        return obj.notas.count()
+
+
+class AvaliacaoCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating Avaliacao"""
+    
+    class Meta:
+        model = Avaliacao
+        fields = ['turma', 'descricao', 'tipo', 'data', 'peso', 'nota_maxima', 'observacoes']
+
+
+class NotaSerializer(serializers.ModelSerializer):
+    """Serializer for Nota model"""
+    aluno_nome = serializers.CharField(source='aluno.nome', read_only=True)
+    avaliacao_descricao = serializers.CharField(source='avaliacao.descricao', read_only=True)
+    avaliacao_data = serializers.DateField(source='avaliacao.data', read_only=True)
+    avaliacao_tipo = serializers.CharField(source='avaliacao.tipo', read_only=True)
+    nota_maxima = serializers.DecimalField(source='avaliacao.nota_maxima', read_only=True, max_digits=5, decimal_places=2)
+    
+    class Meta:
+        model = Nota
+        fields = [
+            'id', 'avaliacao', 'avaliacao_descricao', 'avaliacao_data', 'avaliacao_tipo',
+            'aluno', 'aluno_nome', 'valor', 'nota_maxima', 'observacoes',
+            'criado_em', 'atualizado_em'
+        ]
+        read_only_fields = ['id', 'criado_em', 'atualizado_em']
+
+
+class NotaCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating/updating Nota"""
+    
+    class Meta:
+        model = Nota
+        fields = ['avaliacao', 'aluno', 'valor', 'observacoes']
+    
+    def validate(self, data):
+        """Validate grade value and student enrollment"""
+        avaliacao = data.get('avaliacao')
+        aluno = data.get('aluno')
+        valor = data.get('valor')
+        
+        # Check if student belongs to the turma
+        if not avaliacao.turma.alunos.filter(id=aluno.id).exists():
+            raise serializers.ValidationError("O aluno não pertence a esta turma")
+        
+        # Check if grade is within valid range
+        if valor < 0 or valor > avaliacao.nota_maxima:
+            raise serializers.ValidationError(f"A nota deve estar entre 0 e {avaliacao.nota_maxima}")
+        
+        return data
+
+
+class NotaBatchSerializer(serializers.Serializer):
+    """Serializer for batch creating/updating grades"""
+    avaliacao = serializers.PrimaryKeyRelatedField(queryset=Avaliacao.objects.all())
+    notas = serializers.ListField(
+        child=serializers.DictField(
+            child=serializers.CharField()
+        )
+    )
+    
+    def validate_notas(self, value):
+        """Validate grades list"""
+        if not value:
+            raise serializers.ValidationError("A lista de notas não pode estar vazia")
+        
+        required_fields = ['aluno_id', 'valor']
+        for nota in value:
+            for field in required_fields:
+                if field not in nota:
+                    raise serializers.ValidationError(f"Campo obrigatório ausente: {field}")
+        
+        return value
+    
+    def create(self, validated_data):
+        """Create or update multiple grades at once"""
+        from alunos.models import Aluno
+        from decimal import Decimal
+        
+        avaliacao = validated_data['avaliacao']
+        notas_data = validated_data['notas']
+        
+        notas_created = []
+        errors = []
+        
+        for nota_data in notas_data:
+            try:
+                aluno = Aluno.objects.get(id=nota_data['aluno_id'])
+                
+                # Check if student belongs to turma
+                if not avaliacao.turma.alunos.filter(id=aluno.id).exists():
+                    errors.append(f"Aluno {aluno.nome} não pertence à turma")
+                    continue
+                
+                valor = Decimal(str(nota_data['valor']))
+                
+                # Check if grade is within valid range
+                if valor < 0 or valor > avaliacao.nota_maxima:
+                    errors.append(f"Nota inválida para {aluno.nome}: deve estar entre 0 e {avaliacao.nota_maxima}")
+                    continue
+                
+                # Create or update grade
+                nota, created = Nota.objects.update_or_create(
+                    avaliacao=avaliacao,
+                    aluno=aluno,
+                    defaults={
+                        'valor': valor,
+                        'observacoes': nota_data.get('observacoes', '')
+                    }
+                )
+                notas_created.append(nota)
+                
+            except Aluno.DoesNotExist:
+                errors.append(f"Aluno com ID {nota_data['aluno_id']} não encontrado")
+            except Exception as e:
+                errors.append(f"Erro ao processar nota: {str(e)}")
+        
+        return {
+            'notas': notas_created,
+            'errors': errors,
+            'total_processadas': len(notas_created),
+            'total_erros': len(errors)
+        }

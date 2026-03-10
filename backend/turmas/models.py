@@ -52,6 +52,10 @@ class Turma(models.Model):
     horarios = models.JSONField('Horários', default=dict, blank=True)
     dias_letivos = models.JSONField('Dias Letivos', default=list, blank=True)
     
+    # Período letivo (para turmas-disciplina)
+    data_inicio = models.DateField('Data de Início', blank=True, null=True)
+    data_fim = models.DateField('Data de Término', blank=True, null=True)
+    
     status = models.CharField('Status', max_length=20, choices=STATUS_CHOICES, default='ativa')
     
     # Metadata
@@ -120,3 +124,76 @@ class Autorizacao(models.Model):
     
     def __str__(self):
         return f"{self.tipo} - {self.aluno.nome} - {self.data}"
+
+
+class Avaliacao(models.Model):
+    """Model for evaluations/assessments"""
+    
+    TIPO_CHOICES = [
+        ('prova', 'Prova'),
+        ('trabalho', 'Trabalho'),
+        ('atividade', 'Atividade'),
+        ('projeto', 'Projeto'),
+        ('seminario', 'Seminário'),
+        ('participacao', 'Participação'),
+        ('outro', 'Outro'),
+    ]
+    
+    turma = models.ForeignKey(
+        Turma,
+        on_delete=models.CASCADE,
+        related_name='avaliacoes',
+        verbose_name='Turma'
+    )
+    
+    descricao = models.CharField('Descrição', max_length=255)
+    tipo = models.CharField('Tipo', max_length=50, choices=TIPO_CHOICES, default='prova')
+    data = models.DateField('Data')
+    peso = models.DecimalField('Peso', max_digits=5, decimal_places=2, default=1.0)
+    nota_maxima = models.DecimalField('Nota Máxima', max_digits=5, decimal_places=2, default=10.0)
+    observacoes = models.TextField('Observações', blank=True, null=True)
+    
+    # Metadata
+    criado_em = models.DateTimeField('Criado em', default=timezone.now)
+    atualizado_em = models.DateTimeField('Atualizado em', auto_now=True)
+    
+    class Meta:
+        verbose_name = 'Avaliação'
+        verbose_name_plural = 'Avaliações'
+        ordering = ['-data', 'descricao']
+    
+    def __str__(self):
+        return f"{self.descricao} - {self.turma.nome} ({self.data})"
+
+
+class Nota(models.Model):
+    """Model for student grades"""
+    
+    avaliacao = models.ForeignKey(
+        Avaliacao,
+        on_delete=models.CASCADE,
+        related_name='notas',
+        verbose_name='Avaliação'
+    )
+    aluno = models.ForeignKey(
+        Aluno,
+        on_delete=models.CASCADE,
+        related_name='notas',
+        verbose_name='Aluno'
+    )
+    
+    valor = models.DecimalField('Nota', max_digits=5, decimal_places=2)
+    observacoes = models.TextField('Observações', blank=True, null=True)
+    
+    # Metadata
+    criado_em = models.DateTimeField('Criado em', default=timezone.now)
+    atualizado_em = models.DateTimeField('Atualizado em', auto_now=True)
+    
+    class Meta:
+        verbose_name = 'Nota'
+        verbose_name_plural = 'Notas'
+        ordering = ['aluno__nome']
+        unique_together = [['avaliacao', 'aluno']]
+    
+    def __str__(self):
+        return f"{self.aluno.nome} - {self.avaliacao.descricao} - {self.valor}"

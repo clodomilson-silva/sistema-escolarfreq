@@ -10,6 +10,9 @@ import TurmaDetalhes from "./pages/TurmaDetalhes";
 import TurmaEdit from "./pages/TurmaEdit";
 import TurmaDisciplinaForm from "./pages/TurmaDisciplinaForm";
 import FrequenciaDashboard from "./pages/FrequenciaDashboard";
+import AvaliacaoForm from "./pages/AvaliacaoForm";
+import NotasLancamento from "./pages/NotasLancamento";
+import BoletimAluno from "./pages/BoletimAluno";
 import LoginAuth from "./pages/LoginAuth";
 import RegistroUsuario from "./pages/RegistroUsuario";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -91,6 +94,24 @@ export default function AppRoutes() {
         <Route path="/turmas/:turmaId/frequencia" element={
           <ProtectedRoute>
             <FrequenciaDashboard />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/turmas/:turmaId/avaliacoes/nova" element={
+          <ProtectedRoute>
+            <AvaliacaoForm />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/turmas/:turmaId/notas" element={
+          <ProtectedRoute>
+            <NotasLancamento />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/alunos/:alunoId/boletim" element={
+          <ProtectedRoute>
+            <BoletimAluno />
           </ProtectedRoute>
         } />
       </Routes>

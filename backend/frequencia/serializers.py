@@ -58,9 +58,7 @@ class FrequenciaBulkCreateSerializer(serializers.Serializer):
     data = serializers.DateField()
     disciplina = serializers.CharField(max_length=100)
     frequencias = serializers.ListField(
-        child=serializers.DictField(
-            child=serializers.CharField()
-        )
+        child=serializers.DictField()
     )
     
     def validate_data(self, value):
@@ -72,13 +70,29 @@ class FrequenciaBulkCreateSerializer(serializers.Serializer):
     
     def validate_frequencias(self, value):
         """Validate frequencias list"""
-        for freq in value:
+        if not value:
+            raise serializers.ValidationError("Lista de frequências não pode estar vazia")
+            
+        for i, freq in enumerate(value):
+            # Validate required fields
             if 'aluno_id' not in freq:
-                raise serializers.ValidationError("aluno_id é obrigatório em cada frequência")
+                raise serializers.ValidationError(f"aluno_id é obrigatório na frequência {i+1}")
             if 'status' not in freq:
-                raise serializers.ValidationError("status é obrigatório em cada frequência")
+                raise serializers.ValidationError(f"status é obrigatório na frequência {i+1}")
+            
+            # Convert and validate aluno_id
+            try:
+                aluno_id = int(freq['aluno_id'])
+                freq['aluno_id'] = aluno_id  # Convert to int
+            except (ValueError, TypeError):
+                raise serializers.ValidationError(f"aluno_id inválido na frequência {i+1}: {freq['aluno_id']}")
+            
+            # Validate status
             if freq['status'] not in ['presente', 'ausente', 'justificado']:
-                raise serializers.ValidationError("status deve ser 'presente', 'ausente' ou 'justificado'")
+                raise serializers.ValidationError(
+                    f"status deve ser 'presente', 'ausente' ou 'justificado' na frequência {i+1}"
+                )
+        
         return value
 
 

@@ -13,9 +13,20 @@ interface Aluno {
   email: string;
 }
 
+interface Turma {
+  id: string;
+  nome: string;
+  disciplina: string;
+  tipo: 'base' | 'disciplina';
+}
+
 function AlunosList() {
   const [alunos, setAlunos] = useState<Aluno[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showBoletimModal, setShowBoletimModal] = useState(false);
+  const [alunoSelecionado, setAlunoSelecionado] = useState<Aluno | null>(null);
+  const [turmasAluno, setTurmasAluno] = useState<Turma[]>([]);
+  const [loadingTurmas, setLoadingTurmas] = useState(false);
   const navigate = useNavigate();
   const { isReady } = useAuth();
 
@@ -74,6 +85,54 @@ function AlunosList() {
         console.error("Erro ao excluir aluno:", error);
         alert("Erro ao excluir aluno!");
       }
+    }
+  };
+
+  const abrirModalBoletim = async (aluno: Aluno) => {
+    setAlunoSelecionado(aluno);
+    setShowBoletimModal(true);
+    setLoadingTurmas(true);
+    
+    try {
+      // Buscar todas as turmas e filtrar as que o aluno está matriculado
+      const response = await api.get('/turmas/');
+      const todasTurmas = response.data.data || response.data;
+      
+      // Filtrar turmas onde o aluno está matriculado
+      const turmasDoAluno = todasTurmas.filter((turma: any) => {
+        if (Array.isArray(turma.alunos)) {
+          // Se alunos é array de objetos
+          if (turma.alunos.length > 0 && typeof turma.alunos[0] === 'object') {
+            return turma.alunos.some((a: any) => a.id === aluno.id);
+          }
+          // Se alunos é array de IDs (strings)
+          return turma.alunos.includes(aluno.id);
+        }
+        return false;
+      });
+      
+      // Priorizar turmas tipo disciplina
+      const turmasDisciplina = turmasDoAluno.filter((t: any) => t.tipo === 'disciplina');
+      setTurmasAluno(turmasDisciplina.length > 0 ? turmasDisciplina : turmasDoAluno);
+    } catch (error) {
+      console.error('Erro ao buscar turmas do aluno:', error);
+      alert('Erro ao carregar turmas do aluno');
+    } finally {
+      setLoadingTurmas(false);
+    }
+  };
+
+  const verBoletim = (turmaId: string) => {
+    if (alunoSelecionado) {
+      navigate(`/alunos/${alunoSelecionado.id}/boletim?turma_id=${turmaId}`);
+    }
+  };
+
+  const imprimirBoletim = (turmaId: string) => {
+    if (alunoSelecionado) {
+      // Abre em nova aba e aciona impressão
+      const url = `/alunos/${alunoSelecionado.id}/boletim?turma_id=${turmaId}&print=true`;
+      window.open(url, '_blank');
     }
   };
 
@@ -149,6 +208,13 @@ function AlunosList() {
                                   👁️
                                 </button>
                                 <button
+                                  onClick={() => abrirModalBoletim(aluno)}
+                                  className="list-page-table-btn btn btn-outline-success btn-sm"
+                                  title="Ver Boletim"
+                                >
+                                  📊
+                                </button>
+                                <button
                                   onClick={() => navigate(`/alunos/editar/${aluno.id}`)}
                                   className="list-page-table-btn btn btn-outline-warning btn-sm"
                                   title="Editar"
@@ -175,6 +241,92 @@ function AlunosList() {
           </div>
         </div>
       </div>
+
+      {/* Modal de Seleção de Turma para Boletim */}
+      {showBoletimModal && (
+        <div 
+          className="modal fade show" 
+          style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}
+          onClick={() => setShowBoletimModal(false)}
+        >
+          <div 
+            className="modal-dialog modal-dialog-centered"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-content">
+              <div className="modal-header bg-primary text-white">
+                <h5 className="modal-title">📊 Boletim de {alunoSelecionado?.nome}</h5>
+                <button 
+                  type="button" 
+                  className="btn-close btn-close-white"
+                  onClick={() => setShowBoletimModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                {loadingTurmas ? (
+                  <div className="text-center py-4">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="visually-hidden">Carregando...</span>
+                    </div>
+                    <p className="mt-2">Carregando turmas...</p>
+                  </div>
+                ) : turmasAluno.length === 0 ? (
+                  <div className="alert alert-info">
+                    <i className="bi bi-info-circle"></i> Aluno não está matriculado em nenhuma turma.
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-muted mb-3">Selecione a turma/disciplina para visualizar o boletim:</p>
+                    <div className="list-group">
+                      {turmasAluno.map((turma) => (
+                        <div key={turma.id} className="list-group-item">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div>
+                              <h6 className="mb-1">{turma.nome}</h6>
+                              <small className="text-muted">Disciplina: {turma.disciplina}</small>
+                            </div>
+                            <div className="btn-group" role="group">
+                              <button
+                                className="btn btn-sm btn-outline-primary"
+                                onClick={() => {
+                                  verBoletim(turma.id);
+                                  setShowBoletimModal(false);
+                                }}
+                                title="Ver Boletim"
+                              >
+                                👁️ Ver
+                              </button>
+                              <button
+                                className="btn btn-sm btn-outline-success"
+                                onClick={() => {
+                                  imprimirBoletim(turma.id);
+                                  setShowBoletimModal(false);
+                                }}
+                                title="Imprimir/PDF"
+                              >
+                                🖨️ PDF
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button 
+                  type="button" 
+                  className="btn btn-secondary"
+                  onClick={() => setShowBoletimModal(false)}
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

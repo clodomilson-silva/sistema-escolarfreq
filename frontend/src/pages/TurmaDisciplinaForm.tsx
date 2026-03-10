@@ -16,7 +16,9 @@ const TurmaDisciplinaForm: React.FC = () => {
     disciplina: '',
     professor_nome: '',
     carga_horaria: '',
-    descricao: ''
+    descricao: '',
+    data_inicio: '',
+    data_fim: ''
   });
 
   useEffect(() => {
@@ -71,6 +73,8 @@ const TurmaDisciplinaForm: React.FC = () => {
         turma_base_id: parseInt(formData.turma_base_id),
         disciplina: formData.disciplina,
         professor: formData.professor_nome,
+        data_inicio: formData.data_inicio || null,
+        data_fim: formData.data_fim || null,
         status: 'ativa' as const
       };
 
@@ -200,6 +204,44 @@ const TurmaDisciplinaForm: React.FC = () => {
                     />
                     <div className="form-text">
                       Carga horária total da disciplina
+                    </div>
+                  </div>
+
+                  {/* Período Letivo */}
+                  <div className="row mb-4">
+                    <div className="col-md-6">
+                      <label htmlFor="data_inicio" className="form-label fw-bold">
+                        📅 Data de Início *
+                      </label>
+                      <input
+                        type="date"
+                        id="data_inicio"
+                        name="data_inicio"
+                        className="form-control form-control-lg"
+                        value={formData.data_inicio}
+                        onChange={handleChange}
+                        required
+                      />
+                      <div className="form-text">
+                        Data de início do semestre/período letivo
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <label htmlFor="data_fim" className="form-label fw-bold">
+                        📅 Data de Término *
+                      </label>
+                      <input
+                        type="date"
+                        id="data_fim"
+                        name="data_fim"
+                        className="form-control form-control-lg"
+                        value={formData.data_fim}
+                        onChange={handleChange}
+                        required
+                      />
+                      <div className="form-text">
+                        Data de término do semestre/período letivo
+                      </div>
                     </div>
                   </div>
 

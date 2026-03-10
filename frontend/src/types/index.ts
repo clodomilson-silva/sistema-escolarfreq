@@ -13,6 +13,8 @@ export interface Turma {
   total_alunos?: number;
   horarios?: Record<string, unknown>;
   dias_letivos?: string[];
+  data_inicio?: string | null; // Data de início do período letivo
+  data_fim?: string | null; // Data de término do período letivo
   status: 'ativa' | 'inativa' | 'concluida';
   criado_em?: string;
   atualizado_em?: string;
@@ -72,4 +74,82 @@ export interface EstatisticasDetalhadasAluno {
   sequencia_faltas: number; // dias consecutivos faltando
   ultima_presenca?: string;
   ultima_falta?: string;
+}}
+
+// Avaliação (Atividade/Prova)
+export interface Avaliacao {
+  id: string;
+  turma: string;
+  turma_nome?: string;
+  descricao: string;
+  tipo: 'prova' | 'trabalho' | 'atividade' | 'projeto' | 'seminario' | 'participacao' | 'outro';
+  data: string;
+  peso: number;
+  nota_maxima: number;
+  observacoes?: string;
+  total_notas?: number;
+  criado_em?: string;
+  atualizado_em?: string;
+}
+
+// Nota
+export interface Nota {
+  id: string;
+  avaliacao: string;
+  avaliacao_descricao?: string;
+  avaliacao_data?: string;
+  avaliacao_tipo?: string;
+  aluno: string;
+  aluno_nome?: string;
+  valor: number;
+  nota_maxima?: number;
+  observacoes?: string;
+  criado_em?: string;
+  atualizado_em?: string;
+}
+
+// Boletim do Aluno
+export interface BoletimDisciplina {
+  turma_id: string;
+  turma_nome: string;
+  disciplina: string;
+  professor?: string;
+  periodo_letivo: {
+    data_inicio?: string | null;
+    data_fim?: string | null;
+  };
+  notas: {
+    avaliacoes: Array<{
+      avaliacao: string;
+      tipo: string;
+      data: string;
+      valor: number;
+      nota_maxima: number;
+      peso: number;
+      observacoes?: string;
+    }>;
+    total_avaliacoes: number;
+    media: number;
+  };
+  frequencia: {
+    total_aulas: number;
+    presencas: number;
+    ausencias: number;
+    justificadas: number;
+    percentual_presenca: number;
+  };
+}
+
+export interface BoletimAluno {
+  aluno: {
+    id: string;
+    nome: string;
+    matricula: string;
+    email: string;
+  };
+  periodo: {
+    data_inicio?: string | null;
+    data_fim?: string | null;
+  };
+  disciplinas: BoletimDisciplina[];
 }

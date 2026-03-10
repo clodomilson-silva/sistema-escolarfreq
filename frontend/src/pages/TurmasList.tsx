@@ -21,8 +21,36 @@ interface Turma {
 function TurmasList() {
   const [turmas, setTurmas] = useState<Turma[]>([]);
   const [loading, setLoading] = useState(true);
+  const [debugData, setDebugData] = useState<any>(null);
   const navigate = useNavigate();
   const { isReady, admin } = useAuth();
+
+  console.log('========== TurmasList Renderizando ==========');
+  console.log('isReady:', isReady);
+  console.log('admin:', admin);
+  console.log('loading:', loading);
+  console.log('turmas:', turmas);
+  console.log('turmas é array?', Array.isArray(turmas));
+  console.log('turmas.length:', Array.isArray(turmas) ? turmas.length : 'NÃO É ARRAY!');
+
+  // Renderização de fallback se nada funcionar
+  if (!isReady && loading) {
+    console.log('⚠️ isReady é false e loading é true - mostrando indicador inicial');
+    return (
+      <div className="min-vh-100 bg-light">
+        <Navbar />
+        <div className="container py-4">
+          <div className="text-center">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Inicializando...</span>
+            </div>
+            <p className="mt-2">Inicializando sistema...</p>
+            <p className="text-muted">Verificando autenticação...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Função para mapear turnos do backend para exibição
   const formatarTurno = (turno: string) => {
@@ -37,23 +65,75 @@ function TurmasList() {
   };
 
   useEffect(() => {
+    console.log('useEffect executado - isReady:', isReady);
     if (isReady) {
+      console.log('isReady é true, carregando turmas...');
       carregarTurmas();
+    } else {
+      console.log('isReady é false, aguardando...');
+      // Timeout de segurança: após 3 segundos, carrega mesmo se isReady for false
+      const timeout = setTimeout(() => {
+        console.log('Timeout: forçando carregamento de turmas após 3s');
+        carregarTurmas();
+      }, 3000);
+      
+      return () => clearTimeout(timeout);
     }
   }, [isReady]);
 
   const carregarTurmas = async () => {
     try {
+      console.log('⏳ Iniciando carregamento de turmas...');
       setLoading(true);
-      console.log('Carregando turmas...');
+      console.log('📡 Fazendo requisição para /turmas/...');
       const response = await api.get("/turmas/");
-      console.log('Resposta da API turmas:', response.data);
+      console.log('✅ Resposta recebida:', response.data);
+      console.log('📦 response.data completo:', JSON.stringify(response.data, null, 2));
+      console.log('📦 Chaves de response.data:', Object.keys(response.data));
+      console.log('📦 Tipo de response.data:', typeof response.data);
+      console.log('📦 Tipo de response.data.data:', typeof response.data.data);
+      console.log('📦 É array?', Array.isArray(response.data.data));
+      
+      // Salvar dados de debug
+      setDebugData(response.data);
       
       // A API retorna { success: true, data: [...], total: number }
-      const turmas = response.data.data || response.data;
+      let turmas = [];
+      
+      if (response.data.data && Array.isArray(response.data.data)) {
+        console.log('✓ Usando response.data.data (formato normal)');
+        turmas = response.data.data;
+      } else if (Array.isArray(response.data)) {
+        console.log('✓ response.data é direto um array');
+        turmas = response.data;
+      } else if (response.data.data && typeof response.data.data === 'object') {
+        console.log('✓ response.data.data é objeto, convertendo para array');
+        turmas = Object.values(response.data.data);
+      } else if (typeof response.data === 'object' && !Array.isArray(response.data)) {
+        console.log('✓ response.data é objeto (não array), tentando Object.values()');
+        const valores = Object.values(response.data);
+        console.log('📦 Valores extraídos:', valores);
+        // Verificar se algum dos valores é um array
+        const arrayEncontrado = valores.find(v => Array.isArray(v));
+        if (arrayEncontrado) {
+          console.log('✓ Array encontrado nos valores!');
+          turmas = arrayEncontrado as any[];
+        } else {
+          console.log('⚠️ Nenhum array encontrado');
+          turmas = [];
+        }
+      } else {
+        console.warn('⚠️ Formato de resposta inesperado, usando array vazio');
+        turmas = [];
+      }
+      
+      console.log('📋 Turmas extraídas:', turmas);
+      console.log('📊 Quantidade de turmas:', turmas.length);
+      console.log('📊 É array agora?', Array.isArray(turmas));
       setTurmas(turmas);
+      console.log('✅ Estado de turmas atualizado');
     } catch (error) {
-      console.error("Erro ao buscar turmas:", error);
+      console.error("❌ Erro ao buscar turmas:", error);
       
       let mensagem = "Erro ao carregar turmas!";
       
@@ -78,7 +158,9 @@ function TurmasList() {
       
       alert(mensagem);
     } finally {
+      console.log('🏁 Finalizando carregamento - setLoading(false)');
       setLoading(false);
+      console.log('✅ Loading definido como false');
     }
   };
 
@@ -96,6 +178,7 @@ function TurmasList() {
   };
 
   if (loading) {
+    console.log('Renderizando estado de loading...');
     return (
       <div className="min-vh-100 bg-light">
         <Navbar />
@@ -105,12 +188,15 @@ function TurmasList() {
               <span className="visually-hidden">Carregando...</span>
             </div>
             <p className="mt-2">Carregando turmas...</p>
+            <p className="text-muted">isReady: {isReady ? 'true' : 'false'}</p>
           </div>
         </div>
       </div>
     );
   }
 
+  console.log('Renderizando lista de turmas...');
+  
   return (
     <div className="min-vh-100 bg-light">
       <Navbar />
@@ -137,6 +223,27 @@ function TurmasList() {
                   </Link>
                 )}
               </div>
+              
+              {/* Debug info */}
+              <div className="alert alert-info mt-3">
+                <strong>Debug:</strong> Turmas carregadas: {Array.isArray(turmas) ? turmas.length : 'NÃO É ARRAY'} | 
+                Tipo: {typeof turmas} | 
+                É Array: {Array.isArray(turmas) ? 'Sim' : 'Não'}
+                {debugData && (
+                  <>
+                    <br />
+                    <button 
+                      className="btn btn-sm btn-outline-primary mt-2"
+                      onClick={() => {
+                        console.log('Debug Data Completo:', debugData);
+                        alert('Dados no console! Pressione F12 para ver.');
+                      }}
+                    >
+                      Mostrar Dados Brutos no Console
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -145,14 +252,22 @@ function TurmasList() {
           <div className="col-12">
             <div className="list-page-card">
               <div className="card-body">
-                {turmas.length === 0 ? (
+                {!Array.isArray(turmas) || turmas.length === 0 ? (
                   <div className="list-page-empty">
                     <div className="list-page-empty-icon text-muted">🏫</div>
-                    <h4 className="list-page-empty-title">Nenhuma turma cadastrada</h4>
-                    <p className="list-page-empty-text">Comece criando a primeira turma para organizar os alunos!</p>
-                    <Link to="/turmas/nova" className="list-page-btn btn btn-success">
-                      Cadastrar Primeira Turma
-                    </Link>
+                    <h4 className="list-page-empty-title">
+                      {!Array.isArray(turmas) ? 'Erro ao carregar turmas' : 'Nenhuma turma cadastrada'}
+                    </h4>
+                    <p className="list-page-empty-text">
+                      {!Array.isArray(turmas) 
+                        ? 'Ocorreu um erro ao processar os dados. Tente recarregar a página.' 
+                        : 'Comece criando a primeira turma para organizar os alunos!'}
+                    </p>
+                    {Array.isArray(turmas) && (
+                      <Link to="/turmas/nova" className="list-page-btn btn btn-success">
+                        Cadastrar Primeira Turma
+                      </Link>
+                    )}
                   </div>
                 ) : (
                   <div className="table-responsive">
