@@ -35,7 +35,7 @@ export default function Navbar() {
           }}
         >
           <i className="bi bi-book" style={{ fontSize: '1.5rem', color: 'var(--primary-color)' }}></i>
-          <span>Sistema Escolar</span>
+          <span>PontoClass</span>
         </a>
         
         <button 

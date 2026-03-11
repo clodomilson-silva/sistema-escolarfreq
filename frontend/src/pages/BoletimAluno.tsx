@@ -108,7 +108,7 @@ const BoletimAluno = () => {
   };
 
   return (
-    <div className="container my-4">
+    <div className="container my-4 boletim-page">
       {/* Botão Voltar - Não imprime */}
       <div className="d-print-none mb-3">
         <button
@@ -200,7 +200,7 @@ const BoletimAluno = () => {
               <div className="mb-4 p-4 border rounded d-print-block">
                 <div className="text-center mb-4">
                   <h3 className="fw-bold">BOLETIM ESCOLAR</h3>
-                  <p className="text-muted mb-0">Sistema de Gestão Escolar</p>
+                  <p className="text-secondary mb-0">PontoClass</p>
                 </div>
                 
                 <div className="row">
@@ -262,13 +262,13 @@ const BoletimAluno = () => {
                     </h5>
                     
                     {disciplina.professor && (
-                      <p className="text-muted mb-3">
+                      <p className="text-secondary mb-3">
                         <strong>Professor(a):</strong> {disciplina.professor}
                       </p>
                     )}
 
                     {disciplina.periodo_letivo.data_inicio && disciplina.periodo_letivo.data_fim && (
-                      <p className="text-muted mb-3">
+                      <p className="text-secondary mb-3">
                         <strong>Período Letivo:</strong>{' '}
                         {new Date(disciplina.periodo_letivo.data_inicio).toLocaleDateString('pt-BR')} até{' '}
                         {new Date(disciplina.periodo_letivo.data_fim).toLocaleDateString('pt-BR')}
@@ -283,11 +283,11 @@ const BoletimAluno = () => {
                       </h6>
                       
                       {disciplina.notas.avaliacoes.length === 0 ? (
-                        <p className="text-muted">Nenhuma nota lançada</p>
+                        <p className="text-secondary">Nenhuma nota lançada</p>
                       ) : (
-                        <div className="table-responsive">
-                          <table className="table table-sm table-bordered">
-                            <thead className="table-light">
+                        <div className="table-responsive boletim-table-wrapper">
+                          <table className="table table-sm table-bordered boletim-table">
+                            <thead>
                               <tr>
                                 <th>Avaliação</th>
                                 <th>Tipo</th>
@@ -332,9 +332,9 @@ const BoletimAluno = () => {
                       
                       <div className="row g-2">
                         <div className="col-6 col-md-3">
-                          <div className="card bg-light">
+                          <div className="card boletim-kpi-card">
                             <div className="card-body p-2 text-center">
-                              <small className="text-muted d-block">Total Aulas</small>
+                              <small className="text-secondary d-block">Total Aulas</small>
                               <strong>{disciplina.frequencia.total_aulas}</strong>
                             </div>
                           </div>
@@ -342,7 +342,7 @@ const BoletimAluno = () => {
                         <div className="col-6 col-md-3">
                           <div className="card bg-success bg-opacity-10 border-success">
                             <div className="card-body p-2 text-center">
-                              <small className="text-muted d-block">Presenças</small>
+                              <small className="text-secondary d-block">Presenças</small>
                               <strong className="text-success">{disciplina.frequencia.presencas}</strong>
                             </div>
                           </div>
@@ -350,7 +350,7 @@ const BoletimAluno = () => {
                         <div className="col-6 col-md-3">
                           <div className="card bg-danger bg-opacity-10 border-danger">
                             <div className="card-body p-2 text-center">
-                              <small className="text-muted d-block">Ausências</small>
+                              <small className="text-secondary d-block">Ausências</small>
                               <strong className="text-danger">{disciplina.frequencia.ausencias}</strong>
                             </div>
                           </div>
@@ -358,7 +358,7 @@ const BoletimAluno = () => {
                         <div className="col-6 col-md-3">
                           <div className="card bg-info bg-opacity-10 border-info">
                             <div className="card-body p-2 text-center">
-                              <small className="text-muted d-block">% Presença</small>
+                              <small className="text-secondary d-block">% Presença</small>
                               <strong className={getStatusFrequencia(disciplina.frequencia.percentual_presenca).class}>
                                 {disciplina.frequencia.percentual_presenca.toFixed(1)}%
                               </strong>
@@ -372,7 +372,7 @@ const BoletimAluno = () => {
               )}
 
               {/* Legenda */}
-              <div className="mt-4 p-3 bg-light rounded d-print-block">
+              <div className="mt-4 p-3 rounded d-print-block boletim-legend-box">
                 <h6 className="fw-bold mb-2">Legenda:</h6>
                 <div className="row">
                   <div className="col-md-6">
@@ -395,7 +395,7 @@ const BoletimAluno = () => {
               </div>
 
               {/* Rodapé */}
-              <div className="mt-4 text-center text-muted d-print-block">
+              <div className="mt-4 text-center text-secondary d-print-block">
                 <small>
                   Documento gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
                 </small>

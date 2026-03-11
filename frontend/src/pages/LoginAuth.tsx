@@ -103,7 +103,7 @@ function LoginAuth() {
                       </div>
                       <div>
                         <h1 style={{ fontSize: '2rem', fontWeight: '700', margin: 0 }}>
-                          Sistema Escolar
+                          PontoClass
                         </h1>
                         <p style={{ margin: 0, opacity: 0.9, fontSize: '1rem' }}>
                           Gestão Educacional Moderna
@@ -222,7 +222,7 @@ function LoginAuth() {
                           <i className="bi bi-book" style={{ fontSize: '1.5rem', color: 'white' }}></i>
                         </div>
                         <h2 style={{ margin: 0, fontSize: '1.75rem', fontWeight: '700' }}>
-                          Sistema Escolar
+                          PontoClass
                         </h2>
                       </div>
                     </div>
@@ -373,7 +373,7 @@ function LoginAuth() {
                                 marginLeft: '0.5rem',
                                 fontSize: '0.85rem'
                               }}>
-                                admin@sistema-escolar.com
+                                admin@escola.com
                               </code>
                             </div>
                             <div>
@@ -386,7 +386,7 @@ function LoginAuth() {
                                 marginLeft: '0.5rem',
                                 fontSize: '0.85rem'
                               }}>
-                                Admin123!
+                                admin123
                               </code>
                             </div>
                           </div>

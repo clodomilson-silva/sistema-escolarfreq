@@ -37,7 +37,7 @@ function TurmasList() {
   if (!isReady && loading) {
     console.log('⚠️ isReady é false e loading é true - mostrando indicador inicial');
     return (
-      <div className="min-vh-100 bg-light">
+      <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
         <Navbar />
         <div className="container py-4">
           <div className="text-center">
@@ -45,7 +45,7 @@ function TurmasList() {
               <span className="visually-hidden">Inicializando...</span>
             </div>
             <p className="mt-2">Inicializando sistema...</p>
-            <p className="text-muted">Verificando autenticação...</p>
+            <p className="text-secondary">Verificando autenticação...</p>
           </div>
         </div>
       </div>
@@ -180,7 +180,7 @@ function TurmasList() {
   if (loading) {
     console.log('Renderizando estado de loading...');
     return (
-      <div className="min-vh-100 bg-light">
+      <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
         <Navbar />
         <div className="container py-4">
           <div className="text-center">
@@ -188,7 +188,7 @@ function TurmasList() {
               <span className="visually-hidden">Carregando...</span>
             </div>
             <p className="mt-2">Carregando turmas...</p>
-            <p className="text-muted">isReady: {isReady ? 'true' : 'false'}</p>
+            <p className="text-secondary">isReady: {isReady ? 'true' : 'false'}</p>
           </div>
         </div>
       </div>
@@ -198,7 +198,7 @@ function TurmasList() {
   console.log('Renderizando lista de turmas...');
   
   return (
-    <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
+    <div className="min-vh-100 turmas-list-page" style={{ background: 'var(--bg-primary)' }}>
       <Navbar />
       <div className="container py-4">
         <div className="page-header">
@@ -219,7 +219,7 @@ function TurmasList() {
               <h1 style={{ color: 'var(--text-primary)', fontSize: '2rem', margin: 0 }}>Lista de Turmas</h1>
               <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
                 {admin?.role === 'admin' 
-                  ? 'Gerencie turmas base e turmas-disciplina do sistema escolar'
+                  ? 'Gerencie turmas base e turmas-disciplina do PontoClass'
                   : 'Crie e gerencie suas turmas-disciplina'}
               </p>
             </div>
@@ -272,7 +272,7 @@ function TurmasList() {
                 {!Array.isArray(turmas) || turmas.length === 0 ? (
                   <div className="empty-state">
                     <div className="empty-state-icon">
-                      <i className="bi bi-grid-3x3-gap" style={{ fontSize: '4rem', color: 'var(--text-muted)' }}></i>
+                      <i className="bi bi-grid-3x3-gap" style={{ fontSize: '4rem', color: 'var(--text-secondary)' }}></i>
                     </div>
                     <h4 style={{ color: 'var(--text-primary)' }}>
                       {!Array.isArray(turmas) ? 'Erro ao carregar turmas' : 'Nenhuma turma cadastrada'}
@@ -290,7 +290,7 @@ function TurmasList() {
                   </div>
                 ) : (
                   <div className="table-responsive">
-                    <table className="table table-hover">
+                    <table className="table table-hover turmas-list-table">
                       <thead>
                         <tr>
                           <th>Nome da Turma</th>
@@ -308,7 +308,7 @@ function TurmasList() {
                           const ehDisciplina = turma.tipo === 'disciplina';
                           
                           return (
-                            <tr key={turma.id} style={ehDisciplina ? { background: 'rgba(13, 202, 240, 0.05)' } : {}}>
+                            <tr key={turma.id} style={ehDisciplina ? { background: 'rgba(13, 202, 240, 0.14)' } : {}}>
                               <td className="fw-semibold" style={{ color: 'var(--text-primary)' }}>
                                 {ehDisciplina && '└─ '}
                                 {turma.nome}
@@ -323,7 +323,7 @@ function TurmasList() {
                                 {turma.disciplina ? (
                                   <span className="badge bg-success">{turma.disciplina}</span>
                                 ) : (
-                                  <span style={{ color: 'var(--text-muted)' }}>—</span>
+                                  <span style={{ color: 'var(--text-secondary)' }}>—</span>
                                 )}
                               </td>
                               <td>
@@ -332,7 +332,7 @@ function TurmasList() {
                                     <i className="bi bi-person-badge me-1"></i>{turma.professor_nome}
                                   </small>
                                 ) : (
-                                  <span style={{ color: 'var(--text-muted)' }}>—</span>
+                                  <span style={{ color: 'var(--text-secondary)' }}>—</span>
                                 )}
                               </td>
                               <td>

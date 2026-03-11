@@ -9,6 +9,44 @@
   min-height: calc(100vh - 64px); /* Altura total menos a navbar */
 }
 
+/* Ajustes de contraste especificos da listagem de turmas */
+.turmas-list-page .card {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+
+.turmas-list-page .turmas-list-table {
+  color: var(--text-primary) !important;
+}
+
+.turmas-list-page .turmas-list-table thead th {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.turmas-list-page .turmas-list-table tbody td {
+  background: transparent;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.turmas-list-page .turmas-list-table tbody tr:hover {
+  background: var(--bg-card-hover) !important;
+}
+
+.turmas-list-page label,
+.turmas-list-page .form-label {
+  color: var(--text-primary) !important;
+}
+
+.turmas-list-page input::placeholder,
+.turmas-list-page textarea::placeholder,
+.turmas-list-page .form-control::placeholder {
+  color: var(--text-secondary) !important;
+  opacity: 1;
+}
+
 /* Em telas menores, usar altura mínima */
 @media (max-width: 991px) {
   .list-page-container {

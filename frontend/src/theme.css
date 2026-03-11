@@ -1,5 +1,5 @@
 /* ===================================
-   SISTEMA ESCOLAR - TEMA PROFISSIONAL
+  PONTOCLASS - TEMA PROFISSIONAL
    Dark Theme com Azul e Cinza
    =================================== */
 
@@ -23,8 +23,8 @@
   
   /* Cores de Texto */
   --text-primary: #e8eaed;
-  --text-secondary: #9aa0b4;
-  --text-muted: #6b7280;
+  --text-secondary: #b7bfd6;
+  --text-muted: #97a3bf;
   --text-on-primary: #ffffff;
   
   /* Bordas e Divisores */
@@ -437,6 +437,19 @@ body {
   color: var(--text-secondary) !important;
 }
 
+.text-dark,
+.text-black,
+.text-body {
+  color: var(--text-primary) !important;
+}
+
+.table-light,
+.table-light > th,
+.table-light > td {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
 .bg-light {
   background-color: var(--bg-tertiary) !important;
   color: var(--text-primary) !important;
@@ -567,6 +580,223 @@ body {
   justify-content: center;
   padding: 4rem 2rem;
   color: var(--text-secondary);
+}
+
+/* Turma detalhes: evita fundo claro em listagens de alunos */
+.turma-detalhes-page .turma-alunos-list,
+.turma-detalhes-page .turma-alunos-item {
+  background-color: transparent !important;
+}
+
+.turma-detalhes-page .turma-alunos-item {
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.turma-detalhes-page .turma-alunos-item h6 {
+  color: var(--text-primary) !important;
+}
+
+.turma-detalhes-page .turma-alunos-item:hover {
+  background-color: var(--bg-card-hover) !important;
+}
+
+/* Dashboard de frequencia: reforco de contraste na listagem */
+.frequencia-dashboard-page .frequencia-list-table,
+.frequencia-dashboard-page .frequencia-list-table td,
+.frequencia-dashboard-page .frequencia-list-table th {
+  color: var(--text-primary) !important;
+}
+
+.frequencia-dashboard-page .frequencia-list-card,
+.frequencia-dashboard-page .frequencia-list-wrapper,
+.frequencia-dashboard-page .frequencia-list-table {
+  background-color: var(--bg-card) !important;
+}
+
+.frequencia-dashboard-page .frequencia-list-table thead,
+.frequencia-dashboard-page .frequencia-list-table thead tr,
+.frequencia-dashboard-page .frequencia-list-table thead th {
+  background-color: var(--bg-secondary) !important;
+}
+
+.frequencia-dashboard-page .frequencia-list-table tbody tr {
+  background-color: var(--bg-card) !important;
+}
+
+.frequencia-dashboard-page .frequencia-list-table tbody td {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+
+.frequencia-dashboard-page .frequencia-list-table tbody tr:hover {
+  background: var(--bg-card-hover) !important;
+}
+
+.frequencia-dashboard-page .frequencia-list-table tbody tr:hover td {
+  background: var(--bg-card-hover) !important;
+}
+
+.frequencia-dashboard-page .frequencia-list-table thead th {
+  border-color: var(--border-color) !important;
+}
+
+/* Lancamento de notas: remove fundos claros e reforca contraste */
+.notas-lancamento-page .notas-lancamento-card,
+.notas-lancamento-page .notas-avaliacao-card,
+.notas-lancamento-page .notas-table-wrapper,
+.notas-lancamento-page .notas-stats-box {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+
+.notas-lancamento-page .notas-table,
+.notas-lancamento-page .notas-table td,
+.notas-lancamento-page .notas-table th {
+  color: var(--text-primary) !important;
+}
+
+.notas-lancamento-page .notas-table {
+  --bs-table-bg: var(--bg-card);
+  --bs-table-color: var(--text-primary);
+  --bs-table-border-color: var(--border-color);
+  --bs-table-striped-bg: var(--bg-card);
+  --bs-table-striped-color: var(--text-primary);
+  --bs-table-hover-bg: var(--bg-card-hover);
+  --bs-table-hover-color: var(--text-primary);
+}
+
+.notas-lancamento-page .notas-table thead,
+.notas-lancamento-page .notas-table thead tr,
+.notas-lancamento-page .notas-table thead th {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.notas-lancamento-page .notas-table tbody tr,
+.notas-lancamento-page .notas-table tbody td {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+
+.notas-lancamento-page .notas-table tbody tr td i,
+.notas-lancamento-page .notas-table tbody tr td small,
+.notas-lancamento-page .notas-table tbody tr td span {
+  color: var(--text-primary) !important;
+}
+
+.notas-lancamento-page .notas-table tbody tr:hover,
+.notas-lancamento-page .notas-table tbody tr:hover td {
+  background-color: var(--bg-card-hover) !important;
+}
+
+.notas-lancamento-page .form-label,
+.notas-lancamento-page strong,
+.notas-lancamento-page .card-body,
+.notas-lancamento-page .card-body small {
+  color: var(--text-primary) !important;
+}
+
+.notas-lancamento-page .form-control::placeholder,
+.notas-lancamento-page .form-select::placeholder,
+.notas-lancamento-page input::placeholder {
+  color: var(--text-secondary) !important;
+  opacity: 1;
+}
+
+/* Lista de alunos: remove fundo claro e aumenta contraste */
+.alunos-list-page .alunos-list-card,
+.alunos-list-page .alunos-list-table-wrapper,
+.alunos-list-page .alunos-list-table {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+
+.alunos-list-page .alunos-list-table {
+  --bs-table-bg: var(--bg-card);
+  --bs-table-color: var(--text-primary);
+  --bs-table-border-color: var(--border-color);
+  --bs-table-hover-bg: var(--bg-card-hover);
+  --bs-table-hover-color: var(--text-primary);
+}
+
+.alunos-list-page .alunos-list-table thead,
+.alunos-list-page .alunos-list-table thead tr,
+.alunos-list-page .alunos-list-table thead th {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.alunos-list-page .alunos-list-table tbody tr,
+.alunos-list-page .alunos-list-table tbody td {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.alunos-list-page .alunos-list-table tbody tr:hover,
+.alunos-list-page .alunos-list-table tbody tr:hover td {
+  background-color: var(--bg-card-hover) !important;
+}
+
+.alunos-list-page .alunos-list-table td,
+.alunos-list-page .alunos-list-table td i,
+.alunos-list-page .alunos-list-table td span,
+.alunos-list-page .alunos-list-table td small {
+  color: var(--text-primary) !important;
+}
+
+/* Boletim: contraste no tema escuro */
+.boletim-page .boletim-table-wrapper,
+.boletim-page .boletim-legend-box,
+.boletim-page .boletim-kpi-card {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+
+.boletim-page .boletim-table {
+  --bs-table-bg: var(--bg-card);
+  --bs-table-color: var(--text-primary);
+  --bs-table-border-color: var(--border-color);
+  --bs-table-hover-bg: var(--bg-card-hover);
+  --bs-table-hover-color: var(--text-primary);
+}
+
+.boletim-page .boletim-table thead,
+.boletim-page .boletim-table thead tr,
+.boletim-page .boletim-table thead th {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.boletim-page .boletim-table tbody tr,
+.boletim-page .boletim-table tbody td {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.boletim-page .boletim-table tbody tr.table-primary,
+.boletim-page .boletim-table tbody tr.table-primary td {
+  background-color: rgba(13, 110, 253, 0.22) !important;
+}
+
+.boletim-page,
+.boletim-page p,
+.boletim-page li,
+.boletim-page small,
+.boletim-page .card-body,
+.boletim-page .border,
+.boletim-page .border-bottom {
+  color: var(--text-primary);
+  border-color: var(--border-color) !important;
+}
+
+.boletim-page .text-secondary,
+.boletim-page .text-muted {
+  color: var(--text-secondary) !important;
 }
 
 /* ===================================

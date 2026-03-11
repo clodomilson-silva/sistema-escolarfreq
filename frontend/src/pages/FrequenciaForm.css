@@ -3,12 +3,45 @@
   overflow-y: auto;
 }
 
+.frequencia-modal .modal-content,
+.frequencia-modal .modal-body,
+.frequencia-modal .modal-footer {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.frequencia-modal .modal-header {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.frequencia-modal .frequencia-list .card,
+.frequencia-modal .frequencia-list .card-body {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.frequencia-modal .frequencia-list strong,
+.frequencia-modal .frequencia-list small,
+.frequencia-modal .form-label {
+  color: var(--text-primary) !important;
+}
+
+.frequencia-modal .frequencia-list small.text-secondary,
+.frequencia-modal .text-secondary {
+  color: var(--text-secondary) !important;
+}
+
 .frequencia-list .card {
   transition: all 0.2s ease;
 }
 
 .frequencia-list .card:hover {
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.35);
+  background-color: var(--bg-card-hover) !important;
 }
 
 .form-check-input:checked {

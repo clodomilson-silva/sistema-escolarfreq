@@ -321,7 +321,7 @@ function Home() {
                 margin: '0 auto'
               }}>
                 {admin?.role === 'admin' 
-                  ? 'Como administrador, você tem acesso completo ao sistema. Gerencie alunos, turmas base, professores e visualize todas as informações do sistema escolar.'
+                  ? 'Como administrador, você tem acesso completo ao sistema. Gerencie alunos, turmas base, professores e visualize todas as informações do PontoClass.'
                   : 'Como professor, você pode criar turmas-disciplina vinculadas às turmas base, registrar frequência dos alunos e lançar notas nas suas disciplinas.'}
               </p>
             </div>

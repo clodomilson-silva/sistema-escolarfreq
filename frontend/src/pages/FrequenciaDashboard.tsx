@@ -103,7 +103,7 @@ const FrequenciaDashboard: React.FC = () => {
               <div className="spinner-border text-primary mb-3" role="status">
                 <span className="visually-hidden">Carregando...</span>
               </div>
-              <p className="text-muted">Carregando dashboard de frequência...</p>
+              <p className="text-secondary">Carregando dashboard de frequência...</p>
             </div>
           </div>
         </div>
@@ -154,12 +154,12 @@ const FrequenciaDashboard: React.FC = () => {
   const percentualPresenca = alunos.length ? ((presentes / alunos.length) * 100).toFixed(1) : '0';
 
   return (
-    <div className="min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
+    <div className="min-vh-100 frequencia-dashboard-page" style={{ backgroundColor: 'var(--bg-primary)' }}>
       <Navbar />
       
       {/* Cabeçalho Principal */}
       <div className="bg-gradient" style={{ 
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+        background: 'linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%)', 
         padding: '2rem 0',
         boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
       }}>
@@ -171,18 +171,18 @@ const FrequenciaDashboard: React.FC = () => {
                 Dashboard de Frequência
               </h1>
               <div className="d-flex flex-wrap gap-3 align-items-center">
-                <span className="badge bg-white bg-opacity-25 px-3 py-2">
+                <span className="badge px-3 py-2" style={{ background: 'rgba(255, 255, 255, 0.2)', color: '#fff' }}>
                   <i className="bi bi-building me-1"></i>
                   <strong>Turma:</strong> {turma.nome}
                 </span>
-                <span className="badge bg-white bg-opacity-25 px-3 py-2">
+                <span className="badge px-3 py-2" style={{ background: 'rgba(255, 255, 255, 0.2)', color: '#fff' }}>
                   <i className="bi bi-calendar-event me-1"></i>
                   <strong>Ano:</strong> {turma.ano}
                 </span>
-                <span className="badge bg-white bg-opacity-25 px-3 py-2">
+                <span className="badge px-3 py-2" style={{ background: 'rgba(255, 255, 255, 0.2)', color: '#fff' }}>
                   <i className={`bi ${turnoInfo.icon} me-1`}></i> <strong>Turno:</strong> {turnoInfo.label}
                 </span>
-                <span className="badge bg-white bg-opacity-25 px-3 py-2">
+                <span className="badge px-3 py-2" style={{ background: 'rgba(255, 255, 255, 0.2)', color: '#fff' }}>
                   <i className="bi bi-people-fill me-1"></i>
                   <strong>{alunos.length}</strong> alunos
                 </span>
@@ -232,8 +232,8 @@ const FrequenciaDashboard: React.FC = () => {
                     <i className="bi bi-calendar3 text-primary fs-4"></i>
                   </div>
                   <div>
-                    <h6 className="text-muted mb-0 small">Selecionar Data</h6>
-                    <small className="text-muted">{formatarData(dataSelecionada)}</small>
+                    <h6 className="text-secondary mb-0 small">Selecionar Data</h6>
+                    <small className="text-secondary">{formatarData(dataSelecionada)}</small>
                   </div>
                 </div>
                 <input
@@ -254,9 +254,9 @@ const FrequenciaDashboard: React.FC = () => {
               <div className="card-body">
                 <div className="d-flex justify-content-between align-items-start">
                   <div>
-                    <h6 className="text-muted mb-2 text-uppercase small fw-semibold">Presentes</h6>
+                    <h6 className="text-secondary mb-2 text-uppercase small fw-semibold">Presentes</h6>
                     <h2 className="mb-0 fw-bold text-success">{presentes}</h2>
-                    <small className="text-muted">de {alunos.length} alunos</small>
+                    <small className="text-secondary">de {alunos.length} alunos</small>
                   </div>
                   <div className="rounded-circle bg-success bg-opacity-10 p-3">
                     <i className="bi bi-check-circle-fill text-success fs-4"></i>
@@ -279,9 +279,9 @@ const FrequenciaDashboard: React.FC = () => {
               <div className="card-body">
                 <div className="d-flex justify-content-between align-items-start">
                   <div>
-                    <h6 className="text-muted mb-2 text-uppercase small fw-semibold">Ausentes</h6>
+                    <h6 className="text-secondary mb-2 text-uppercase small fw-semibold">Ausentes</h6>
                     <h2 className="mb-0 fw-bold text-warning">{ausentes}</h2>
-                    <small className="text-muted">
+                    <small className="text-secondary">
                       {justificados > 0 && `(${justificados} justif.)`}
                     </small>
                   </div>
@@ -306,7 +306,7 @@ const FrequenciaDashboard: React.FC = () => {
               <div className="card-body">
                 <div className="d-flex justify-content-between align-items-start">
                   <div>
-                    <h6 className="text-muted mb-2 text-uppercase small fw-semibold">Taxa de Frequência</h6>
+                    <h6 className="text-secondary mb-2 text-uppercase small fw-semibold">Taxa de Frequência</h6>
                     <h2 className="mb-0 fw-bold text-primary">{percentualPresenca}%</h2>
                     <small className={`badge ${parseFloat(percentualPresenca) >= 75 ? 'bg-success' : 'bg-danger'} mt-1`}>
                       {parseFloat(percentualPresenca) >= 75 ? 'Dentro da meta' : 'Abaixo da meta'}
@@ -331,7 +331,7 @@ const FrequenciaDashboard: React.FC = () => {
         {/* Botões de Ação */}
         <div className="mb-4">
 
-            <div className="card border-0 shadow-sm">
+            <div className="card border-0 shadow-sm frequencia-list-card">
               <div className="card-body py-3">
                 <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
                   <div>
@@ -339,7 +339,7 @@ const FrequenciaDashboard: React.FC = () => {
                       <i className="bi bi-people-fill text-primary me-2"></i>
                       Lista de Alunos - {formatarData(dataSelecionada)}
                     </h5>
-                    <small className="text-muted">
+                    <small className="text-secondary">
                       {naoRegistrados > 0 
                         ? `${naoRegistrados} aluno${naoRegistrados > 1 ? 's' : ''} sem registro de frequência`
                         : 'Todos os alunos registrados'}
@@ -375,34 +375,37 @@ const FrequenciaDashboard: React.FC = () => {
                 {alunos.length === 0 ? (
                   <div className="text-center py-5">
                     <div className="mb-3">
-                      <i className="bi bi-people text-muted" style={{ fontSize: '4rem' }}></i>
+                      <i className="bi bi-people text-secondary" style={{ fontSize: '4rem' }}></i>
                     </div>
-                    <h5 className="text-muted mb-2">Nenhum aluno matriculado</h5>
-                    <p className="text-muted small">Adicione alunos à turma para começar o registro de frequência.</p>
+                    <h5 className="text-secondary mb-2">Nenhum aluno matriculado</h5>
+                    <p className="text-secondary small">Adicione alunos à turma para começar o registro de frequência.</p>
                     <Link to={`/turmas/${turmaId}`} className="btn btn-primary mt-2">
                       <i className="bi bi-plus-circle me-2"></i>
                       Gerenciar Alunos
                     </Link>
                   </div>
                 ) : (
-                  <div className="table-responsive">
-                    <table className="table table-hover align-middle mb-0">
-                      <thead style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
+                  <div className="table-responsive frequencia-list-wrapper">
+                    <table className="table table-hover align-middle mb-0 frequencia-list-table">
+                      <thead style={{ backgroundColor: 'var(--bg-secondary)', borderBottom: '2px solid var(--border-color)' }}>
                         <tr>
                           <th className="px-4 py-3" style={{ width: '5%' }}>
-                            <small className="text-muted fw-semibold">#</small>
+                            <small className="text-primary fw-semibold">#</small>
                           </th>
                           <th className="px-3 py-3" style={{ width: '30%' }}>
-                            <small className="text-muted fw-semibold">ALUNO</small>
+                            <small className="text-primary fw-semibold">ALUNO</small>
                           </th>
                           <th className="px-3 py-3 text-center" style={{ width: '15%' }}>
-                            <small className="text-muted fw-semibold">STATUS</small>
+                            <small className="text-primary fw-semibold">STATUS</small>
                           </th>
                           <th className="px-3 py-3" style={{ width: '25%' }}>
-                            <small className="text-muted fw-semibold">OBSERVAÇÕES</small>
+                            <small className="text-primary fw-semibold">OBSERVAÇÕES</small>
                           </th>
                           <th className="px-3 py-3 text-center" style={{ width: '25%' }}>
-                            <small className="text-muted fw-semibold">ESTATÍSTICAS GERAIS</small>
+                            <small className="text-primary fw-semibold">ESTATÍSTICAS GERAIS</small>
+                          </th>
+                          <th className="px-3 py-3 text-center" style={{ width: '10%' }}>
+                            <small className="text-primary fw-semibold">BOLETIM</small>
                           </th>
                         </tr>
                       </thead>
@@ -415,7 +418,7 @@ const FrequenciaDashboard: React.FC = () => {
                             <tr key={aluno.id} className="border-bottom">
                               <td className="px-4 py-3">
                                 <div className="d-flex align-items-center justify-content-center">
-                                  <span className="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1">
+                                  <span className="badge px-2 py-1" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}>
                                     {index + 1}
                                   </span>
                                 </div>
@@ -439,7 +442,7 @@ const FrequenciaDashboard: React.FC = () => {
                                     {aluno.nome.charAt(0).toUpperCase()}
                                   </div>
                                   <div>
-                                    <div className="fw-semibold text-dark mb-1">{aluno.nome}</div>
+                                    <div className="fw-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{aluno.nome}</div>
                                     <div className="d-flex gap-2 align-items-center">
                                       <span className="badge" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}>
                                         <i className="bi bi-person-badge me-1"></i>
@@ -479,7 +482,7 @@ const FrequenciaDashboard: React.FC = () => {
                                        'Ausente'}
                                     </span>
                                   ) : (
-                                    <span className="badge bg-secondary bg-opacity-10 text-secondary fs-6 px-3 py-2">
+                                    <span className="badge fs-6 px-3 py-2" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}>
                                       <i className="bi bi-dash-circle me-1"></i>
                                       Não registrado
                                     </span>
@@ -490,10 +493,10 @@ const FrequenciaDashboard: React.FC = () => {
                                 {freq?.observacoes ? (
                                   <div className="d-flex align-items-start">
                                     <i className="bi bi-chat-left-quote text-primary me-2 mt-1"></i>
-                                    <small className="text-muted">{freq.observacoes}</small>
+                                    <small className="text-secondary">{freq.observacoes}</small>
                                   </div>
                                 ) : (
-                                  <small className="text-muted fst-italic">—</small>
+                                  <small className="text-secondary fst-italic">—</small>
                                 )}
                               </td>
                               <td className="px-3 py-3">
@@ -501,22 +504,31 @@ const FrequenciaDashboard: React.FC = () => {
                                   <div className="d-flex justify-content-center gap-3">
                                     <div className="text-center">
                                       <div className="fw-bold text-success">{stats.presencas}</div>
-                                      <small className="text-muted">Presenças</small>
+                                      <small className="text-secondary">Presenças</small>
                                     </div>
                                     <div className="text-center">
                                       <div className="fw-bold text-warning">{stats.ausencias}</div>
-                                      <small className="text-muted">Faltas</small>
+                                      <small className="text-secondary">Faltas</small>
                                     </div>
                                     <div className="text-center">
                                       <div className="fw-bold text-info">{stats.justificadas}</div>
-                                      <small className="text-muted">Justif.</small>
+                                      <small className="text-secondary">Justif.</small>
                                     </div>
                                   </div>
                                 ) : (
                                   <div className="text-center">
-                                    <small className="text-muted">Sem dados</small>
+                                    <small className="text-secondary">Sem dados</small>
                                   </div>
                                 )}
+                              </td>
+                              <td className="px-3 py-3 text-center">
+                                <Link
+                                  to={`/alunos/${aluno.id}/boletim?turma_id=${turmaId}`}
+                                  className="btn btn-sm btn-outline-primary"
+                                  title="Abrir boletim do aluno"
+                                >
+                                  <i className="bi bi-file-earmark-text"></i>
+                                </Link>
                               </td>
                             </tr>
                           );
@@ -533,14 +545,14 @@ const FrequenciaDashboard: React.FC = () => {
           {alunos.length > 0 && Object.keys(estatisticas).length > 0 && (
             <div style={{ minWidth: 0 }}>
               <div className="card border-0 shadow-sm" style={{ position: 'sticky', top: '1rem' }}>
-                <div className="card-header bg-white border-bottom py-3 px-3">
+                <div className="card-header border-bottom py-3 px-3" style={{ backgroundColor: 'var(--bg-secondary)' }}>
                   <div className="d-flex align-items-center">
                     <div className="rounded-circle bg-info bg-opacity-10 p-2 me-2">
                       <i className="bi bi-bar-chart-fill text-info fs-5"></i>
                     </div>
                     <div>
                       <h6 className="mb-0 fw-bold">Análise Geral</h6>
-                      <small className="text-muted" style={{ fontSize: '0.75rem' }}>Desempenho da turma</small>
+                      <small className="text-secondary" style={{ fontSize: '0.75rem' }}>Desempenho da turma</small>
                     </div>
                   </div>
                 </div>
@@ -676,7 +688,7 @@ const FrequenciaDashboard: React.FC = () => {
                                     <h2 className="fw-bold mb-1">{excelentes}</h2>
                                     <p className="small mb-2 opacity-90">Excelente</p>
                                   </div>
-                                  <span className="badge bg-white text-success fw-semibold">≥ 90%</span>
+                                  <span className="badge fw-semibold" style={{ background: 'rgba(255,255,255,0.92)', color: '#0a7b4f' }}>≥ 90%</span>
                                 </div>
                               </div>
                             </div>
@@ -694,7 +706,7 @@ const FrequenciaDashboard: React.FC = () => {
                                     <h2 className="fw-bold mb-1">{bons}</h2>
                                     <p className="small mb-2 opacity-90">Bom</p>
                                   </div>
-                                  <span className="badge bg-white text-primary fw-semibold">75-89%</span>
+                                  <span className="badge fw-semibold" style={{ background: 'rgba(255,255,255,0.92)', color: '#1d4ed8' }}>75-89%</span>
                                 </div>
                               </div>
                             </div>
@@ -712,7 +724,7 @@ const FrequenciaDashboard: React.FC = () => {
                                     <h2 className="fw-bold mb-1">{regulares}</h2>
                                     <p className="small mb-2 opacity-90">Regular</p>
                                   </div>
-                                  <span className="badge bg-white text-warning fw-semibold">60-74%</span>
+                                  <span className="badge fw-semibold" style={{ background: 'rgba(255,255,255,0.92)', color: '#8a5a00' }}>60-74%</span>
                                 </div>
                               </div>
                             </div>
@@ -730,7 +742,7 @@ const FrequenciaDashboard: React.FC = () => {
                                     <h2 className="fw-bold mb-1">{criticos}</h2>
                                     <p className="small mb-2 opacity-90">Crítico</p>
                                   </div>
-                                  <span className="badge bg-white text-danger fw-semibold">{'< 60%'}</span>
+                                  <span className="badge fw-semibold" style={{ background: 'rgba(255,255,255,0.92)', color: '#b42318' }}>{'< 60%'}</span>
                                 </div>
                               </div>
                             </div>
@@ -748,7 +760,7 @@ const FrequenciaDashboard: React.FC = () => {
                                   <p className="mb-3 fs-6">
                                     <strong className="fs-5">{criticos}</strong> aluno{criticos > 1 ? 's' : ''} com frequência <strong>crítica</strong> (abaixo de 60%).
                                   </p>
-                                  <div className="bg-white bg-opacity-50 rounded p-3">
+                                  <div className="rounded p-3" style={{ background: 'rgba(255, 255, 255, 0.18)' }}>
                                     <p className="small mb-0">
                                       <i className="bi bi-lightbulb-fill me-2 text-warning"></i>
                                       <strong>Recomendação:</strong> Realizar intervenção pedagógica imediata, contatar responsáveis e investigar possíveis causas de ausência.

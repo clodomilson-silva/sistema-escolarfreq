@@ -215,7 +215,7 @@ function TurmaDetalhes() {
 
   if (loading) {
     return (
-      <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
+      <div className="min-vh-100 turma-detalhes-page" style={{ background: 'var(--bg-primary)' }}>
         <Navbar />
         <div className="container py-4">
           <div className="text-center">
@@ -231,7 +231,7 @@ function TurmaDetalhes() {
 
   if (!turma) {
     return (
-      <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
+      <div className="min-vh-100 turma-detalhes-page" style={{ background: 'var(--bg-primary)' }}>
         <Navbar />
         <div className="container py-4">
           <div className="alert alert-danger">
@@ -249,7 +249,7 @@ function TurmaDetalhes() {
   const turnoInfo = formatarTurno(turma.turno);
 
   return (
-    <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
+    <div className="min-vh-100 turma-detalhes-page" style={{ background: 'var(--bg-primary)' }}>
       <Navbar />
       <div className="container py-4">
         {/* Header */}
@@ -381,30 +381,39 @@ function TurmaDetalhes() {
                     </small>
                   </div>
                 ) : (
-                  <div className="list-group list-group-flush">
+                  <div className="list-group list-group-flush turma-alunos-list">
                     {alunosDaTurma.map((aluno) => (
-                      <div key={aluno.id} className="list-group-item d-flex justify-content-between align-items-center">
+                      <div key={aluno.id} className="list-group-item turma-alunos-item d-flex justify-content-between align-items-center">
                         <div>
                           <h6 className="mb-1">{aluno.nome}</h6>
-                          <small style={{ color: 'var(--text-muted)' }}>
+                          <small style={{ color: 'var(--text-secondary)' }}>
                             <i className="bi bi-clipboard me-1"></i>
                             {aluno.matricula} • 
                             <i className="bi bi-envelope ms-2 me-1"></i>
                             {aluno.email}
                           </small>
                         </div>
-                        <button
-                          onClick={() => removerAluno(aluno.id)}
-                          className="btn btn-outline-danger btn-sm"
-                          disabled={loadingAlunos}
-                          title="Remover da turma"
-                        >
-                          {loadingAlunos ? (
-                            <span className="spinner-border spinner-border-sm" role="status"></span>
-                          ) : (
-                            <i className="bi bi-trash"></i>
-                          )}
-                        </button>
+                        <div className="d-flex gap-2">
+                          <Link
+                            to={`/alunos/${aluno.id}/boletim?turma_id=${id}`}
+                            className="btn btn-outline-primary btn-sm"
+                            title="Abrir boletim do aluno"
+                          >
+                            <i className="bi bi-file-earmark-text"></i>
+                          </Link>
+                          <button
+                            onClick={() => removerAluno(aluno.id)}
+                            className="btn btn-outline-danger btn-sm"
+                            disabled={loadingAlunos}
+                            title="Remover da turma"
+                          >
+                            {loadingAlunos ? (
+                              <span className="spinner-border spinner-border-sm" role="status"></span>
+                            ) : (
+                              <i className="bi bi-trash"></i>
+                            )}
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -434,12 +443,12 @@ function TurmaDetalhes() {
                     </small>
                   </div>
                 ) : (
-                  <div className="list-group list-group-flush">
+                  <div className="list-group list-group-flush turma-alunos-list">
                     {alunosDisponiveis.map((aluno) => (
-                      <div key={aluno.id} className="list-group-item d-flex justify-content-between align-items-center">
+                      <div key={aluno.id} className="list-group-item turma-alunos-item d-flex justify-content-between align-items-center">
                         <div>
                           <h6 className="mb-1">{aluno.nome}</h6>
-                          <small style={{ color: 'var(--text-muted)' }}>
+                          <small style={{ color: 'var(--text-secondary)' }}>
                             <i className="bi bi-clipboard me-1"></i>
                             {aluno.matricula} • 
                             <i className="bi bi-envelope ms-2 me-1"></i>

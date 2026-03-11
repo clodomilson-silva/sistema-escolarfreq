@@ -137,7 +137,7 @@ function AlunosList() {
   };
 
   return (
-    <div className="min-vh-100" style={{ background: 'var(--bg-primary)' }}>
+    <div className="min-vh-100 alunos-list-page" style={{ background: 'var(--bg-primary)' }}>
       <Navbar />
       <div className="container py-4">
         <div className="page-header">
@@ -171,7 +171,7 @@ function AlunosList() {
 
         <div className="row mt-4">
           <div className="col-12">
-            <div className="card">
+            <div className="card alunos-list-card">
               <div className="card-body">
                 {loading ? (
                   <div className="loading-state">
@@ -192,8 +192,8 @@ function AlunosList() {
                     </Link>
                   </div>
                 ) : (
-                  <div className="table-responsive">
-                    <table className="table table-hover">
+                  <div className="table-responsive alunos-list-table-wrapper">
+                    <table className="table table-hover alunos-list-table">
                       <thead>
                         <tr>
                           <th>Nome</th>

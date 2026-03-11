@@ -6,7 +6,7 @@ import { AxiosError } from 'axios';
 interface Aluno {
   id: string;
   nome: string;
-  ra: string;
+  matricula: string;
 }
 
 interface FrequenciaFormProps {
@@ -186,7 +186,7 @@ export const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos,
   }
 
   return (
-    <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+    <div className="modal fade show d-block frequencia-modal" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
       <div className="modal-dialog modal-xl">
         <div className="modal-content">
           <div className="modal-header">
@@ -268,7 +268,7 @@ export const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos,
                           <div className="col-md-3">
                             <strong>{aluno.nome}</strong>
                             <br />
-                            <small className="text-muted">Matrícula: {aluno.matricula}</small>
+                            <small className="text-secondary">Matrícula: {aluno.matricula}</small>
                           </div>
                           
                           <div className="col-md-3">
@@ -339,8 +339,8 @@ export const FrequenciaForm: React.FC<FrequenciaFormProps> = ({ turmaId, alunos,
 
               {alunos.length === 0 && (
                 <div className="text-center py-4">
-                  <i className="bi bi-people display-4 text-muted"></i>
-                  <p className="text-muted mt-2">Nenhum aluno matriculado nesta turma.</p>
+                  <i className="bi bi-people display-4 text-secondary"></i>
+                  <p className="text-secondary mt-2">Nenhum aluno matriculado nesta turma.</p>
                 </div>
               )}
             </div>

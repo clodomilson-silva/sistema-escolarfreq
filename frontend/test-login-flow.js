@@ -12,8 +12,8 @@ const testarLogin = async () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        email: 'admin@sistema-escolar.com',
-        senha: 'Admin123!'
+        email: 'admin@escola.com',
+        senha: 'admin123'
       })
     });
     

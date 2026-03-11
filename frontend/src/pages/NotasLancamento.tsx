@@ -224,8 +224,8 @@ const NotasLancamento = () => {
   };
 
   return (
-    <div className="container my-4">
-      <div className="card shadow-sm">
+    <div className="container my-4 notas-lancamento-page">
+      <div className="card shadow-sm notas-lancamento-card">
         <div className="card-header bg-primary text-white">
           <div className="d-flex justify-content-between align-items-center">
             <div>
@@ -299,7 +299,7 @@ const NotasLancamento = () => {
           {avaliacaoSelecionada ? (
             <>
               {/* Card com informações da avaliação */}
-              <div className="card bg-light mb-4">
+              <div className="card notas-avaliacao-card mb-4">
                 <div className="card-body">
                   <div className="row">
                     <div className="col-md-3">
@@ -332,9 +332,9 @@ const NotasLancamento = () => {
               </div>
 
               {/* Tabela de lançamento de notas */}
-              <div className="table-responsive">
-                <table className="table table-striped table-hover">
-                  <thead className="table-dark">
+              <div className="table-responsive notas-table-wrapper">
+                <table className="table table-hover notas-table">
+                  <thead>
                     <tr>
                       <th style={{ width: '40%' }}>Aluno</th>
                       <th style={{ width: '15%' }}>Matrícula</th>
@@ -345,7 +345,7 @@ const NotasLancamento = () => {
                   <tbody>
                     {alunos.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="text-center text-muted">
+                        <td colSpan={4} className="text-center text-secondary">
                           Nenhum aluno matriculado nesta turma
                         </td>
                       </tr>
@@ -407,7 +407,7 @@ const NotasLancamento = () => {
               </div>
 
               {/* Estatísticas */}
-              <div className="mt-4 p-3 bg-light rounded">
+              <div className="mt-4 p-3 rounded notas-stats-box">
                 <h6 className="mb-2">
                   <i className="bi bi-graph-up me-2"></i>
                   Estatísticas
