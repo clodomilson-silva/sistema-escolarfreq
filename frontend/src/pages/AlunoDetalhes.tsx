@@ -9,9 +9,11 @@ interface Aluno {
   nome: string;
   email: string;
   matricula: string;
-  dataNascimento: string;
+  data_nascimento?: string;
   endereco?: string;
   telefone?: string;
+  responsavel?: string;
+  telefone_responsavel?: string;
   criado_em?: { _seconds: number; _nanoseconds: number } | string;
   atualizado_em?: { _seconds: number; _nanoseconds: number } | string;
 }
@@ -375,7 +377,7 @@ function AlunoDetalhes() {
                     <div className="mb-3">
                       <label className="form-label fw-semibold"><i className="bi bi-cake2 me-2"></i>Data de Nascimento:</label>
                       <div className="p-2 rounded" style={{ background: 'var(--bg-primary)' }}>
-                        {aluno.dataNascimento ? formatarData(aluno.dataNascimento) : "Não informado"}
+                        {aluno.data_nascimento ? formatarData(aluno.data_nascimento) : "Não informado"}
                       </div>
                     </div>
 
@@ -384,6 +386,24 @@ function AlunoDetalhes() {
                         <label className="form-label fw-semibold"><i className="bi bi-telephone me-2"></i>Telefone:</label>
                         <div className="p-2 rounded" style={{ background: 'var(--bg-primary)' }}>
                           {aluno.telefone}
+                        </div>
+                      </div>
+                    )}
+
+                    {aluno.responsavel && (
+                      <div className="mb-3">
+                        <label className="form-label fw-semibold"><i className="bi bi-person-heart me-2"></i>Responsável:</label>
+                        <div className="p-2 rounded" style={{ background: 'var(--bg-primary)' }}>
+                          {aluno.responsavel}
+                        </div>
+                      </div>
+                    )}
+
+                    {aluno.telefone_responsavel && (
+                      <div className="mb-3">
+                        <label className="form-label fw-semibold"><i className="bi bi-telephone-forward me-2"></i>Telefone do Responsável:</label>
+                        <div className="p-2 rounded" style={{ background: 'var(--bg-primary)' }}>
+                          {aluno.telefone_responsavel}
                         </div>
                       </div>
                     )}

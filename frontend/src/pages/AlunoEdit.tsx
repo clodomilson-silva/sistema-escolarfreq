@@ -11,6 +11,10 @@ function AlunoEdit() {
   const [matricula, setMatricula] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
   const [email, setEmail] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [endereco, setEndereco] = useState("");
+  const [responsavel, setResponsavel] = useState("");
+  const [telefoneResponsavel, setTelefoneResponsavel] = useState("");
 
   const [loading, setLoading] = useState(true);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
@@ -32,6 +36,10 @@ function AlunoEdit() {
             setMatricula(aluno.matricula || "");
             setDataNascimento(aluno.data_nascimento || "");
             setEmail(aluno.email || "");
+            setTelefone(aluno.telefone || "");
+            setEndereco(aluno.endereco || "");
+            setResponsavel(aluno.responsavel || "");
+            setTelefoneResponsavel(aluno.telefone_responsavel || "");
           } else {
             setErro("Aluno não encontrado");
           }
@@ -53,7 +61,7 @@ function AlunoEdit() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!nome || !matricula || !email) {
+    if (!nome || !email || !dataNascimento) {
       setErro("Por favor, preencha todos os campos obrigatórios");
       return;
     }
@@ -63,11 +71,14 @@ function AlunoEdit() {
     setSucesso("");
 
     try {
-      const response = await api.put(`/alunos/${id}`, {
+      const response = await api.put(`/alunos/${id}/`, {
         nome,
-        matricula,
         data_nascimento: dataNascimento,
-        email
+        email,
+        telefone,
+        endereco,
+        responsavel,
+        telefone_responsavel: telefoneResponsavel,
       });
 
       if (response.data.success) {
@@ -185,23 +196,22 @@ function AlunoEdit() {
 
                   <div className="mb-3">
                     <label htmlFor="matricula" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
-                      Matrícula: <span className="text-danger">*</span>
+                      Matrícula:
                     </label>
                     <input
                       type="text"
                       className="form-control"
                       id="matricula"
                       value={matricula}
-                      onChange={(e) => setMatricula(e.target.value)}
-                      required
-                      disabled={loadingSubmit}
+                      disabled
                       placeholder="Ex: 2024001"
                     />
+                    <small style={{ color: 'var(--text-muted)' }}>A matrícula é definida no cadastro e não pode ser alterada.</small>
                   </div>
 
                   <div className="mb-3">
                     <label htmlFor="dataNascimento" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
-                      Data de Nascimento:
+                      Data de Nascimento: <span className="text-danger">*</span>
                     </label>
                     <input
                       type="date"
@@ -209,6 +219,7 @@ function AlunoEdit() {
                       id="dataNascimento"
                       value={dataNascimento}
                       onChange={(e) => setDataNascimento(e.target.value)}
+                      required
                       disabled={loadingSubmit}
                     />
                   </div>
@@ -226,6 +237,66 @@ function AlunoEdit() {
                       required
                       disabled={loadingSubmit}
                       placeholder="exemplo@email.com"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="telefone" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                      Telefone:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="telefone"
+                      value={telefone}
+                      onChange={(e) => setTelefone(e.target.value)}
+                      disabled={loadingSubmit}
+                      placeholder="(00) 00000-0000"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="responsavel" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                      Responsável:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="responsavel"
+                      value={responsavel}
+                      onChange={(e) => setResponsavel(e.target.value)}
+                      disabled={loadingSubmit}
+                      placeholder="Nome do responsável"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="telefoneResponsavel" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                      Telefone do Responsável:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="telefoneResponsavel"
+                      value={telefoneResponsavel}
+                      onChange={(e) => setTelefoneResponsavel(e.target.value)}
+                      disabled={loadingSubmit}
+                      placeholder="(00) 00000-0000"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="endereco" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                      Endereço:
+                    </label>
+                    <textarea
+                      className="form-control"
+                      id="endereco"
+                      value={endereco}
+                      onChange={(e) => setEndereco(e.target.value)}
+                      disabled={loadingSubmit}
+                      rows={3}
+                      placeholder="Rua, número, bairro, cidade..."
                     />
                   </div>
 

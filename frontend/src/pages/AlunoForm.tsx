@@ -9,6 +9,10 @@ function AlunoForm() {
   const [matricula, setMatricula] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
   const [email, setEmail] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [endereco, setEndereco] = useState("");
+  const [responsavel, setResponsavel] = useState("");
+  const [telefoneResponsavel, setTelefoneResponsavel] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,6 +30,10 @@ function AlunoForm() {
         matricula,
         data_nascimento: dataNascimento,
         email,
+        telefone,
+        endereco,
+        responsavel,
+        telefone_responsavel: telefoneResponsavel,
       });
       
       const response = await api.post("/alunos/", {
@@ -33,6 +41,10 @@ function AlunoForm() {
         matricula,
         data_nascimento: dataNascimento,
         email,
+        telefone,
+        endereco,
+        responsavel,
+        telefone_responsavel: telefoneResponsavel,
       });
       
       console.log('Resposta da API:', response.data);
@@ -43,6 +55,10 @@ function AlunoForm() {
       setMatricula("");
       setDataNascimento("");
       setEmail("");
+      setTelefone("");
+      setEndereco("");
+      setResponsavel("");
+      setTelefoneResponsavel("");
       
       navigate("/alunos"); // Redireciona para a lista de alunos
     } catch (error: unknown) {
@@ -176,6 +192,62 @@ function AlunoForm() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       placeholder="exemplo@email.com"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="telefone" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                      Telefone:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="telefone"
+                      value={telefone}
+                      onChange={(e) => setTelefone(e.target.value)}
+                      placeholder="(00) 00000-0000"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="responsavel" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                      Responsável:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="responsavel"
+                      value={responsavel}
+                      onChange={(e) => setResponsavel(e.target.value)}
+                      placeholder="Nome do responsável"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="telefoneResponsavel" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                      Telefone do Responsável:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="telefoneResponsavel"
+                      value={telefoneResponsavel}
+                      onChange={(e) => setTelefoneResponsavel(e.target.value)}
+                      placeholder="(00) 00000-0000"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="endereco" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                      Endereço:
+                    </label>
+                    <textarea
+                      className="form-control"
+                      id="endereco"
+                      value={endereco}
+                      onChange={(e) => setEndereco(e.target.value)}
+                      rows={3}
+                      placeholder="Rua, número, bairro, cidade..."
                     />
                   </div>
 

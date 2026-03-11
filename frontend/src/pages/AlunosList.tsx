@@ -20,6 +20,12 @@ interface Turma {
   tipo: 'base' | 'disciplina';
 }
 
+type AlunoDaTurma = { id: string } | string;
+
+interface TurmaComAlunos extends Turma {
+  alunos?: AlunoDaTurma[];
+}
+
 function AlunosList() {
   const [alunos, setAlunos] = useState<Aluno[]>([]);
   const [loading, setLoading] = useState(true);
@@ -96,14 +102,14 @@ function AlunosList() {
     try {
       // Buscar todas as turmas e filtrar as que o aluno está matriculado
       const response = await api.get('/turmas/');
-      const todasTurmas = response.data.data || response.data;
+      const todasTurmas: TurmaComAlunos[] = response.data.data || response.data;
       
       // Filtrar turmas onde o aluno está matriculado
-      const turmasDoAluno = todasTurmas.filter((turma: any) => {
+      const turmasDoAluno = todasTurmas.filter((turma) => {
         if (Array.isArray(turma.alunos)) {
           // Se alunos é array de objetos
           if (turma.alunos.length > 0 && typeof turma.alunos[0] === 'object') {
-            return turma.alunos.some((a: any) => a.id === aluno.id);
+            return turma.alunos.some((a) => typeof a === 'object' && a.id === aluno.id);
           }
           // Se alunos é array de IDs (strings)
           return turma.alunos.includes(aluno.id);
@@ -112,7 +118,7 @@ function AlunosList() {
       });
       
       // Priorizar turmas tipo disciplina
-      const turmasDisciplina = turmasDoAluno.filter((t: any) => t.tipo === 'disciplina');
+      const turmasDisciplina = turmasDoAluno.filter((t) => t.tipo === 'disciplina');
       setTurmasAluno(turmasDisciplina.length > 0 ? turmasDisciplina : turmasDoAluno);
     } catch (error) {
       console.error('Erro ao buscar turmas do aluno:', error);
