@@ -13,7 +13,7 @@ class TurmaSerializer(serializers.ModelSerializer):
         model = Turma
         fields = [
             'id', 'nome', 'ano', 'turno', 'disciplina', 'professor', 'sala',
-            'tipo', 'turma_base_id', 'alunos', 'total_alunos', 'horarios', 
+            'tipo', 'nivel_ensino', 'turma_base_id', 'alunos', 'total_alunos', 'horarios', 
             'dias_letivos', 'data_inicio', 'data_fim', 'status', 'criado_em', 'atualizado_em'
         ]
         read_only_fields = ['id', 'criado_em', 'atualizado_em']
@@ -28,11 +28,82 @@ class TurmaListSerializer(serializers.ModelSerializer):
         model = Turma
         fields = [
             'id', 'nome', 'ano', 'turno', 'disciplina', 'professor', 'sala',
-            'tipo', 'turma_base_id', 'total_alunos', 'status', 'criado_em'
+            'tipo', 'nivel_ensino', 'turma_base_id', 'total_alunos', 'status', 'criado_em'
         ]
 
 
-class TurmaCreateSerializer(serializers.ModelSerializer):
+class TurmaRulesMixin:
+    """Shared validation rules for turma creation/update."""
+
+    NIVEIS_REGULARES = {'fundamental', 'medio'}
+    NIVEIS_CURSO = {'tecnico', 'profissionalizante'}
+
+    def _resolve_turma_base(self, data):
+        turma_base = data.get('turma_base')
+        if turma_base:
+            return turma_base
+
+        turma_base_id = data.get('turma_base_id')
+        if turma_base_id:
+            try:
+                return Turma.objects.get(id=turma_base_id)
+            except Turma.DoesNotExist:
+                raise serializers.ValidationError({'turma_base_id': 'Turma base não encontrada'})
+
+        if self.instance is not None and getattr(self.instance, 'turma_base', None):
+            return self.instance.turma_base
+
+        return None
+
+    def validate(self, data):
+        tipo = data.get('tipo', getattr(self.instance, 'tipo', 'base'))
+        nivel_ensino = data.get('nivel_ensino', getattr(self.instance, 'nivel_ensino', 'fundamental'))
+        data_inicio = data.get('data_inicio', getattr(self.instance, 'data_inicio', None))
+        data_fim = data.get('data_fim', getattr(self.instance, 'data_fim', None))
+
+        erros = {}
+
+        if data_inicio and data_fim and data_inicio > data_fim:
+            erros['data_fim'] = 'A data de termino deve ser maior ou igual a data de inicio.'
+
+        if tipo == 'base':
+            if not data_inicio:
+                erros['data_inicio'] = 'Informe a data de inicio da turma.'
+            if not data_fim:
+                erros['data_fim'] = 'Informe a data de termino da turma.'
+
+            # Em turmas regulares, julho e mes de ferias.
+            if nivel_ensino in self.NIVEIS_REGULARES:
+                if data_inicio and data_inicio.month == 7:
+                    erros['data_inicio'] = 'Para ensino fundamental/medio, a data de inicio nao pode ser em julho.'
+                if data_fim and data_fim.month == 7:
+                    erros['data_fim'] = 'Para ensino fundamental/medio, a data de termino nao pode ser em julho.'
+
+        if tipo == 'disciplina':
+            turma_base = self._resolve_turma_base(data)
+            if not turma_base:
+                erros['turma_base_id'] = 'Turma-disciplina exige uma turma base.'
+            else:
+                nivel_ensino = turma_base.nivel_ensino
+                data['nivel_ensino'] = nivel_ensino
+
+                if nivel_ensino in self.NIVEIS_CURSO:
+                    if not data_inicio:
+                        erros['data_inicio'] = 'Para cursos tecnicos/profissionalizantes, informe a data de inicio da disciplina.'
+                    if not data_fim:
+                        erros['data_fim'] = 'Para cursos tecnicos/profissionalizantes, informe a data de termino da disciplina.'
+                else:
+                    # Turmas-disciplina de ensino regular nao usam periodo proprio.
+                    data['data_inicio'] = None
+                    data['data_fim'] = None
+
+        if erros:
+            raise serializers.ValidationError(erros)
+
+        return data
+
+
+class TurmaCreateSerializer(TurmaRulesMixin, serializers.ModelSerializer):
     """Serializer for creating Turma"""
     alunos = serializers.PrimaryKeyRelatedField(
         many=True,
@@ -45,7 +116,7 @@ class TurmaCreateSerializer(serializers.ModelSerializer):
         model = Turma
         fields = [
             'nome', 'ano', 'turno', 'disciplina', 'professor', 'sala',
-            'tipo', 'turma_base_id', 'alunos', 'horarios', 'dias_letivos', 
+            'tipo', 'nivel_ensino', 'turma_base_id', 'alunos', 'horarios', 'dias_letivos', 
             'data_inicio', 'data_fim', 'status'
         ]
     
@@ -65,6 +136,8 @@ class TurmaCreateSerializer(serializers.ModelSerializer):
             try:
                 turma_base = Turma.objects.get(id=turma_base_id)
                 validated_data['turma_base'] = turma_base
+                if validated_data.get('tipo') == 'disciplina':
+                    validated_data['nivel_ensino'] = turma_base.nivel_ensino
                 # Se for turma-disciplina, copiar alunos da turma base
                 if not alunos and validated_data.get('tipo') == 'disciplina':
                     alunos = list(turma_base.alunos.all())
@@ -80,7 +153,7 @@ class TurmaCreateSerializer(serializers.ModelSerializer):
         return turma
 
 
-class TurmaUpdateSerializer(serializers.ModelSerializer):
+class TurmaUpdateSerializer(TurmaRulesMixin, serializers.ModelSerializer):
     """Serializer for updating Turma"""
     alunos = serializers.PrimaryKeyRelatedField(
         many=True,
@@ -92,7 +165,7 @@ class TurmaUpdateSerializer(serializers.ModelSerializer):
         model = Turma
         fields = [
             'nome', 'ano', 'turno', 'disciplina', 'professor', 'sala',
-            'tipo', 'alunos', 'horarios', 'dias_letivos', 
+            'tipo', 'nivel_ensino', 'alunos', 'horarios', 'dias_letivos', 
             'data_inicio', 'data_fim', 'status'
         ]
     

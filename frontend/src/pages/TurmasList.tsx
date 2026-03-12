@@ -11,7 +11,9 @@ interface Turma {
   ano: string;
   turno: string;
   tipo?: 'base' | 'disciplina';
+  nivel_ensino?: 'fundamental' | 'medio' | 'tecnico' | 'profissionalizante';
   disciplina?: string;
+  professor?: string;
   professor_nome?: string;
   turma_base_id?: string;
   criado_em?: string;
@@ -20,6 +22,7 @@ interface Turma {
 
 function TurmasList() {
   const [turmas, setTurmas] = useState<Turma[]>([]);
+  const [filtroNivelEnsino, setFiltroNivelEnsino] = useState<'todos' | 'fundamental' | 'medio' | 'tecnico' | 'profissionalizante'>('todos');
   const [loading, setLoading] = useState(true);
   const [debugData, setDebugData] = useState<any>(null);
   const navigate = useNavigate();
@@ -62,6 +65,17 @@ function TurmasList() {
     };
     
     return turnoMap[turno] || { label: turno, icon: 'bi-clock', color: 'bg-secondary' };
+  };
+
+  const formatarNivelEnsino = (nivel?: string) => {
+    const nivelMap: Record<string, { label: string; color: string }> = {
+      fundamental: { label: 'Fundamental', color: 'bg-primary' },
+      medio: { label: 'Medio', color: 'bg-secondary' },
+      tecnico: { label: 'Tecnico', color: 'bg-warning text-dark' },
+      profissionalizante: { label: 'Profissionalizante', color: 'bg-success' }
+    };
+
+    return nivelMap[nivel || ''] || { label: 'Nao informado', color: 'bg-light text-dark' };
   };
 
   useEffect(() => {
@@ -177,6 +191,13 @@ function TurmasList() {
     }
   };
 
+  const turmasFiltradas = turmas.filter((turma) => {
+    if (filtroNivelEnsino === 'todos') {
+      return true;
+    }
+    return turma.nivel_ensino === filtroNivelEnsino;
+  });
+
   if (loading) {
     console.log('Renderizando estado de loading...');
     return (
@@ -247,7 +268,8 @@ function TurmasList() {
           }}>
             <strong>Debug:</strong> Turmas carregadas: {Array.isArray(turmas) ? turmas.length : 'NÃO É ARRAY'} | 
             Tipo: {typeof turmas} | 
-            É Array: {Array.isArray(turmas) ? 'Sim' : 'Não'}
+            É Array: {Array.isArray(turmas) ? 'Sim' : 'Não'} |
+            Exibidas: {turmasFiltradas.length}
             {debugData && (
               <>
                 <br />
@@ -269,6 +291,24 @@ function TurmasList() {
           <div className="col-12">
             <div className="card">
               <div className="card-body">
+                <div className="row g-2 align-items-end mb-3">
+                  <div className="col-12 col-md-4">
+                    <label htmlFor="filtro-nivel-ensino" className="form-label mb-1">Filtrar por nivel de ensino</label>
+                    <select
+                      id="filtro-nivel-ensino"
+                      className="form-select"
+                      value={filtroNivelEnsino}
+                      onChange={(e) => setFiltroNivelEnsino(e.target.value as 'todos' | 'fundamental' | 'medio' | 'tecnico' | 'profissionalizante')}
+                    >
+                      <option value="todos">Todos</option>
+                      <option value="fundamental">Fundamental</option>
+                      <option value="medio">Medio</option>
+                      <option value="tecnico">Tecnico</option>
+                      <option value="profissionalizante">Profissionalizante</option>
+                    </select>
+                  </div>
+                </div>
+
                 {!Array.isArray(turmas) || turmas.length === 0 ? (
                   <div className="empty-state">
                     <div className="empty-state-icon">
@@ -288,6 +328,14 @@ function TurmasList() {
                       </Link>
                     )}
                   </div>
+                ) : turmasFiltradas.length === 0 ? (
+                  <div className="empty-state">
+                    <div className="empty-state-icon">
+                      <i className="bi bi-funnel" style={{ fontSize: '4rem', color: 'var(--text-secondary)' }}></i>
+                    </div>
+                    <h4 style={{ color: 'var(--text-primary)' }}>Nenhuma turma para o filtro selecionado</h4>
+                    <p style={{ color: 'var(--text-secondary)' }}>Ajuste o filtro de nivel de ensino para visualizar outras turmas.</p>
+                  </div>
                 ) : (
                   <div className="table-responsive">
                     <table className="table table-hover turmas-list-table">
@@ -296,6 +344,7 @@ function TurmasList() {
                           <th>Nome da Turma</th>
                           <th>Tipo</th>
                           <th>Disciplina</th>
+                          <th>Nivel de Ensino</th>
                           <th>Professor</th>
                           <th>Ano</th>
                           <th>Turno</th>
@@ -303,8 +352,9 @@ function TurmasList() {
                         </tr>
                       </thead>
                       <tbody>
-                        {turmas.map((turma) => {
+                        {turmasFiltradas.map((turma) => {
                           const turnoInfo = formatarTurno(turma.turno);
+                          const nivelEnsinoInfo = formatarNivelEnsino(turma.nivel_ensino);
                           const ehDisciplina = turma.tipo === 'disciplina';
                           
                           return (
@@ -327,9 +377,12 @@ function TurmasList() {
                                 )}
                               </td>
                               <td>
-                                {turma.professor_nome ? (
+                                <span className={`badge ${nivelEnsinoInfo.color}`}>{nivelEnsinoInfo.label}</span>
+                              </td>
+                              <td>
+                                {(turma.professor || turma.professor_nome) ? (
                                   <small style={{ color: 'var(--text-secondary)' }}>
-                                    <i className="bi bi-person-badge me-1"></i>{turma.professor_nome}
+                                    <i className="bi bi-person-badge me-1"></i>{turma.professor || turma.professor_nome}
                                   </small>
                                 ) : (
                                   <span style={{ color: 'var(--text-secondary)' }}>—</span>

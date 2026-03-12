@@ -8,6 +8,9 @@ function TurmaForm() {
   const [nome, setNome] = useState("");
   const [ano, setAno] = useState("");
   const [turno, setTurno] = useState("");
+  const [nivelEnsino, setNivelEnsino] = useState<'fundamental' | 'medio' | 'tecnico' | 'profissionalizante'>('fundamental');
+  const [dataInicio, setDataInicio] = useState("");
+  const [dataFim, setDataFim] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -15,9 +18,23 @@ function TurmaForm() {
     e.preventDefault();
     
     // Validação básica no frontend
-    if (!nome || !ano || !turno) {
+    if (!nome || !ano || !turno || !dataInicio || !dataFim) {
       alert("Por favor, preencha todos os campos obrigatórios!");
       return;
+    }
+
+    if (new Date(dataInicio) > new Date(dataFim)) {
+      alert("A data de término deve ser maior ou igual à data de início.");
+      return;
+    }
+
+    if (nivelEnsino === 'fundamental' || nivelEnsino === 'medio') {
+      const mesInicio = new Date(dataInicio).getMonth() + 1;
+      const mesFim = new Date(dataFim).getMonth() + 1;
+      if (mesInicio === 7 || mesFim === 7) {
+        alert("Para ensino fundamental e médio, julho é mês de férias e não pode ser usado como início ou término.");
+        return;
+      }
     }
 
     setLoading(true);
@@ -27,6 +44,11 @@ function TurmaForm() {
         nome,
         ano: ano,
         turno,
+        tipo: 'base',
+        nivel_ensino: nivelEnsino,
+        data_inicio: dataInicio,
+        data_fim: dataFim,
+        status: 'ativa'
       });
       
       console.log('Turma cadastrada:', response.data);
@@ -36,6 +58,9 @@ function TurmaForm() {
       setNome("");
       setAno("");
       setTurno("");
+      setNivelEnsino('fundamental');
+      setDataInicio("");
+      setDataFim("");
       
       navigate("/turmas");
     } catch (error) {
@@ -162,6 +187,62 @@ function TurmaForm() {
                       <option value="noturno">Noite (Noturno)</option>
                       <option value="integral">Integral</option>
                     </select>
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="nivel_ensino" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                      Tipo de Ensino: <span className="text-danger">*</span>
+                    </label>
+                    <select
+                      className="form-select"
+                      id="nivel_ensino"
+                      value={nivelEnsino}
+                      onChange={(e) => setNivelEnsino(e.target.value as 'fundamental' | 'medio' | 'tecnico' | 'profissionalizante')}
+                      required
+                      disabled={loading}
+                    >
+                      <option value="fundamental">Ensino Fundamental</option>
+                      <option value="medio">Ensino Medio</option>
+                      <option value="tecnico">Curso Tecnico</option>
+                      <option value="profissionalizante">Curso Profissionalizante</option>
+                    </select>
+                  </div>
+
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="data_inicio" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                        Data de Inicio: <span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        id="data_inicio"
+                        value={dataInicio}
+                        onChange={(e) => setDataInicio(e.target.value)}
+                        required
+                        disabled={loading}
+                      />
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="data_fim" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                        Data de Termino: <span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        id="data_fim"
+                        value={dataFim}
+                        onChange={(e) => setDataFim(e.target.value)}
+                        required
+                        disabled={loading}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="alert alert-info py-2">
+                    {nivelEnsino === 'fundamental' || nivelEnsino === 'medio'
+                      ? 'Ensino regular: defina o periodo letivo padrao. Julho e tratado como mes de ferias.'
+                      : 'Cursos tecnico/profissionalizante: informe apenas as datas de inicio e termino do curso.'}
                   </div>
 
                   <div className="d-flex gap-2 justify-content-end mt-4">

@@ -2,6 +2,17 @@ from rest_framework import serializers
 from .models import Frequencia
 
 
+def _obter_periodo_referencia_turma(turma):
+    """Return (data_inicio, data_fim) considering turma base fallback for turma-disciplina."""
+    if turma.data_inicio and turma.data_fim:
+        return turma.data_inicio, turma.data_fim
+
+    if turma.tipo == 'disciplina' and turma.turma_base and turma.turma_base.data_inicio and turma.turma_base.data_fim:
+        return turma.turma_base.data_inicio, turma.turma_base.data_fim
+
+    return None, None
+
+
 class FrequenciaSerializer(serializers.ModelSerializer):
     """Serializer for Frequencia model"""
     aluno_nome = serializers.CharField(source='aluno.nome', read_only=True)
@@ -29,9 +40,17 @@ class FrequenciaCreateSerializer(serializers.ModelSerializer):
         """Validate that aluno belongs to turma"""
         turma = data.get('turma')
         aluno = data.get('aluno')
+        data_registro = data.get('data')
         
         if not turma.alunos.filter(id=aluno.id).exists():
             raise serializers.ValidationError("O aluno não pertence a esta turma")
+
+        data_inicio, data_fim = _obter_periodo_referencia_turma(turma)
+        if data_inicio and data_fim and data_registro:
+            if data_registro < data_inicio or data_registro > data_fim:
+                raise serializers.ValidationError(
+                    f"A frequência deve estar entre {data_inicio.strftime('%d/%m/%Y')} e {data_fim.strftime('%d/%m/%Y')}"
+                )
         
         return data
     
@@ -94,6 +113,26 @@ class FrequenciaBulkCreateSerializer(serializers.Serializer):
                 )
         
         return value
+
+    def validate(self, data):
+        """Validate bulk attendance date against turma period."""
+        from turmas.models import Turma
+
+        turma = Turma.objects.filter(id=data['turma_id']).first()
+        if not turma:
+            return data
+
+        data_inicio, data_fim = _obter_periodo_referencia_turma(turma)
+        if data_inicio and data_fim:
+            if data['data'] < data_inicio or data['data'] > data_fim:
+                raise serializers.ValidationError({
+                    'data': (
+                        f"A frequência deve estar entre {data_inicio.strftime('%d/%m/%Y')} "
+                        f"e {data_fim.strftime('%d/%m/%Y')}"
+                    )
+                })
+
+        return data
 
 
 class EstatisticasAlunoSerializer(serializers.Serializer):

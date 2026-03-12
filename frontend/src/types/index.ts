@@ -4,6 +4,7 @@ export interface Turma {
   nome: string;
   ano: number;
   turno: 'matutino' | 'vespertino' | 'noturno' | 'integral';
+  nivel_ensino?: 'fundamental' | 'medio' | 'tecnico' | 'profissionalizante';
   disciplina: string;
   professor?: string;
   sala?: string;
@@ -74,7 +75,7 @@ export interface EstatisticasDetalhadasAluno {
   sequencia_faltas: number; // dias consecutivos faltando
   ultima_presenca?: string;
   ultima_falta?: string;
-}}
+}
 
 // Avaliação (Atividade/Prova)
 export interface Avaliacao {

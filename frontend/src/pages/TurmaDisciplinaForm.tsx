@@ -1,13 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import Navbar from '../components/Navbar';
 import { Turma } from '../types';
+import { useAuth } from '../hooks/useAuth';
+
+interface ProfessorOption {
+  id: string;
+  nome: string;
+  email: string;
+}
 
 const TurmaDisciplinaForm: React.FC = () => {
   const navigate = useNavigate();
+  const { admin } = useAuth();
   const [loading, setLoading] = useState(false);
   const [turmasBase, setTurmasBase] = useState<Turma[]>([]);
+  const [professores, setProfessores] = useState<ProfessorOption[]>([]);
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
 
@@ -21,9 +30,30 @@ const TurmaDisciplinaForm: React.FC = () => {
     data_fim: ''
   });
 
+  const turmaBaseSelecionada = useMemo(
+    () => turmasBase.find((t) => String(t.id) === String(formData.turma_base_id)),
+    [turmasBase, formData.turma_base_id]
+  );
+
+  const exigeDatasDisciplina =
+    turmaBaseSelecionada?.nivel_ensino === 'tecnico' ||
+    turmaBaseSelecionada?.nivel_ensino === 'profissionalizante';
+
+  useEffect(() => {
+    if (!exigeDatasDisciplina && (formData.data_inicio || formData.data_fim)) {
+      setFormData((prev) => ({ ...prev, data_inicio: '', data_fim: '' }));
+    }
+  }, [exigeDatasDisciplina, formData.data_inicio, formData.data_fim]);
+
   useEffect(() => {
     carregarTurmasBase();
   }, []);
+
+  useEffect(() => {
+    if (admin?.role === 'admin') {
+      carregarProfessores();
+    }
+  }, [admin?.role]);
 
   const carregarTurmasBase = async () => {
     try {
@@ -34,6 +64,28 @@ const TurmaDisciplinaForm: React.FC = () => {
     } catch (error) {
       console.error('Erro ao carregar turmas:', error);
       setErro('Erro ao carregar turmas base');
+    }
+  };
+
+  const carregarProfessores = async () => {
+    try {
+      const response = await api.get('/auth/users/');
+      const payload = response.data;
+      const users = Array.isArray(payload)
+        ? payload
+        : payload?.results || payload?.data || [];
+
+      const professoresFormatados = users
+        .filter((u: { role?: string }) => u.role === 'professor')
+        .map((u: { id: string; nome: string; email: string }) => ({
+          id: String(u.id),
+          nome: u.nome,
+          email: u.email
+        }));
+
+      setProfessores(professoresFormatados);
+    } catch (error) {
+      console.error('Erro ao carregar professores:', error);
     }
   };
 
@@ -64,17 +116,27 @@ const TurmaDisciplinaForm: React.FC = () => {
         throw new Error('Turma base não encontrada');
       }
 
+      if (exigeDatasDisciplina) {
+        if (!formData.data_inicio || !formData.data_fim) {
+          throw new Error('Para cursos tecnicos/profissionalizantes, informe data de inicio e termino da disciplina');
+        }
+        if (new Date(formData.data_inicio) > new Date(formData.data_fim)) {
+          throw new Error('A data de termino deve ser maior ou igual a data de inicio');
+        }
+      }
+
       // Criar turma-disciplina (alunos são copiados automaticamente no backend)
       const turmaDisciplina = {
         nome: `${turmaBase.nome} - ${formData.disciplina}`,
         ano: turmaBase.ano,
         turno: turmaBase.turno,
         tipo: 'disciplina' as const,
+        nivel_ensino: turmaBase.nivel_ensino,
         turma_base_id: parseInt(formData.turma_base_id),
         disciplina: formData.disciplina,
         professor: formData.professor_nome,
-        data_inicio: formData.data_inicio || null,
-        data_fim: formData.data_fim || null,
+        data_inicio: exigeDatasDisciplina ? formData.data_inicio : null,
+        data_fim: exigeDatasDisciplina ? formData.data_fim : null,
         status: 'ativa' as const
       };
 
@@ -140,13 +202,18 @@ const TurmaDisciplinaForm: React.FC = () => {
                       <option value="">Selecione a turma base...</option>
                       {turmasBase.map(turma => (
                         <option key={turma.id} value={turma.id}>
-                          {turma.nome} - {turma.ano} ({turma.turno}) - {turma.alunos?.length || 0} alunos
+                          {turma.nome} - {turma.ano} ({turma.turno}) - {turma.total_alunos ?? turma.alunos?.length ?? 0} alunos
                         </option>
                       ))}
                     </select>
                     <div className="form-text">
                       Selecione a turma principal da escola onde os alunos estão matriculados
                     </div>
+                    {turmaBaseSelecionada?.nivel_ensino && (
+                      <div className="form-text mt-1">
+                        Nivel de ensino da turma base: <strong>{turmaBaseSelecionada.nivel_ensino}</strong>
+                      </div>
+                    )}
                   </div>
 
                   {/* Disciplina */}
@@ -172,18 +239,37 @@ const TurmaDisciplinaForm: React.FC = () => {
                   {/* Professor */}
                   <div className="mb-4">
                     <label htmlFor="professor_nome" className="form-label fw-bold">
-                      Nome do Professor *
+                      Professor (opcional)
                     </label>
-                    <input
-                      type="text"
-                      id="professor_nome"
-                      name="professor_nome"
-                      className="form-control form-control-lg"
-                      value={formData.professor_nome}
-                      onChange={handleChange}
-                      placeholder="Seu nome completo"
-                      required
-                    />
+                    {admin?.role === 'admin' && professores.length > 0 ? (
+                      <select
+                        id="professor_nome"
+                        name="professor_nome"
+                        className="form-select form-select-lg"
+                        value={formData.professor_nome}
+                        onChange={handleChange}
+                      >
+                        <option value="">Selecione um professor...</option>
+                        {professores.map((prof) => (
+                          <option key={prof.id} value={prof.nome}>
+                            {prof.nome} ({prof.email})
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        id="professor_nome"
+                        name="professor_nome"
+                        className="form-control form-control-lg"
+                        value={formData.professor_nome}
+                        onChange={handleChange}
+                        placeholder="Nome do professor"
+                      />
+                    )}
+                    <div className="form-text">
+                      Pode cadastrar com ou sem professor, independente do tipo da turma.
+                    </div>
                   </div>
 
                   {/* Carga Horária */}
@@ -211,7 +297,7 @@ const TurmaDisciplinaForm: React.FC = () => {
                   <div className="row mb-4">
                     <div className="col-md-6">
                       <label htmlFor="data_inicio" className="form-label fw-bold">
-                        Data de Início *
+                        Data de Inicio {exigeDatasDisciplina ? '*' : '(opcional)'}
                       </label>
                       <input
                         type="date"
@@ -220,15 +306,18 @@ const TurmaDisciplinaForm: React.FC = () => {
                         className="form-control form-control-lg"
                         value={formData.data_inicio}
                         onChange={handleChange}
-                        required
+                        required={exigeDatasDisciplina}
+                        disabled={!exigeDatasDisciplina}
                       />
                       <div className="form-text">
-                        Data de início do semestre/período letivo
+                        {exigeDatasDisciplina
+                          ? 'Obrigatoria para turmas de cursos tecnicos/profissionalizantes.'
+                          : 'Para ensino fundamental/medio, turma-disciplina nao usa periodo proprio.'}
                       </div>
                     </div>
                     <div className="col-md-6">
                       <label htmlFor="data_fim" className="form-label fw-bold">
-                        Data de Término *
+                        Data de Termino {exigeDatasDisciplina ? '*' : '(opcional)'}
                       </label>
                       <input
                         type="date"
@@ -237,10 +326,13 @@ const TurmaDisciplinaForm: React.FC = () => {
                         className="form-control form-control-lg"
                         value={formData.data_fim}
                         onChange={handleChange}
-                        required
+                        required={exigeDatasDisciplina}
+                        disabled={!exigeDatasDisciplina}
                       />
                       <div className="form-text">
-                        Data de término do semestre/período letivo
+                        {exigeDatasDisciplina
+                          ? 'Informe o termino da disciplina/unidade curricular do curso.'
+                          : 'Este campo fica desabilitado para ensino fundamental/medio.'}
                       </div>
                     </div>
                   </div>

@@ -23,6 +23,13 @@ class Turma(models.Model):
         ('base', 'Turma Base'),
         ('disciplina', 'Turma-Disciplina'),
     ]
+
+    NIVEL_ENSINO_CHOICES = [
+        ('fundamental', 'Ensino Fundamental'),
+        ('medio', 'Ensino Medio'),
+        ('tecnico', 'Curso Tecnico'),
+        ('profissionalizante', 'Curso Profissionalizante'),
+    ]
     
     nome = models.CharField('Nome', max_length=100, unique=True)
     ano = models.IntegerField('Ano')
@@ -33,6 +40,12 @@ class Turma(models.Model):
     
     # Tipo de turma e relação com turma base
     tipo = models.CharField('Tipo', max_length=20, choices=TIPO_CHOICES, default='base')
+    nivel_ensino = models.CharField(
+        'Nivel de Ensino',
+        max_length=20,
+        choices=NIVEL_ENSINO_CHOICES,
+        default='fundamental'
+    )
     turma_base = models.ForeignKey(
         'self',
         on_delete=models.CASCADE,

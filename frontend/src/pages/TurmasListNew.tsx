@@ -10,12 +10,25 @@ interface Turma {
   nome: string;
   ano: number;
   turno: string;
+  nivel_ensino?: 'fundamental' | 'medio' | 'tecnico' | 'profissionalizante';
   criado_em?: string;
   atualizado_em?: string;
 }
 
+const formatarNivelEnsino = (nivel?: string) => {
+  const niveis: Record<string, string> = {
+    fundamental: 'Fundamental',
+    medio: 'Medio',
+    tecnico: 'Tecnico',
+    profissionalizante: 'Profissionalizante'
+  };
+
+  return niveis[nivel || ''] || 'Nao informado';
+};
+
 function TurmasList() {
   const [turmas, setTurmas] = useState<Turma[]>([]);
+  const [filtroNivelEnsino, setFiltroNivelEnsino] = useState<'todos' | 'fundamental' | 'medio' | 'tecnico' | 'profissionalizante'>('todos');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { isReady } = useAuth();
@@ -79,6 +92,13 @@ function TurmasList() {
     }
   };
 
+  const turmasFiltradas = turmas.filter((turma) => {
+    if (filtroNivelEnsino === 'todos') {
+      return true;
+    }
+    return turma.nivel_ensino === filtroNivelEnsino;
+  });
+
   if (loading) {
     return (
       <div className="min-vh-100 bg-light">
@@ -120,6 +140,24 @@ function TurmasList() {
           <div className="col-12">
             <div className="list-page-card">
               <div className="card-body">
+                <div className="row g-2 align-items-end mb-3">
+                  <div className="col-12 col-md-4">
+                    <label htmlFor="filtro-nivel-ensino" className="form-label mb-1">Filtrar por nivel de ensino</label>
+                    <select
+                      id="filtro-nivel-ensino"
+                      className="form-select"
+                      value={filtroNivelEnsino}
+                      onChange={(e) => setFiltroNivelEnsino(e.target.value as 'todos' | 'fundamental' | 'medio' | 'tecnico' | 'profissionalizante')}
+                    >
+                      <option value="todos">Todos</option>
+                      <option value="fundamental">Fundamental</option>
+                      <option value="medio">Medio</option>
+                      <option value="tecnico">Tecnico</option>
+                      <option value="profissionalizante">Profissionalizante</option>
+                    </select>
+                  </div>
+                </div>
+
                 {turmas.length === 0 ? (
                   <div className="list-page-empty">
                     <div className="list-page-empty-icon text-muted">🏫</div>
@@ -129,6 +167,12 @@ function TurmasList() {
                       Cadastrar Primeira Turma
                     </Link>
                   </div>
+                ) : turmasFiltradas.length === 0 ? (
+                  <div className="list-page-empty">
+                    <div className="list-page-empty-icon text-muted">🔎</div>
+                    <h4 className="list-page-empty-title">Nenhuma turma para o filtro selecionado</h4>
+                    <p className="list-page-empty-text">Selecione outro nivel de ensino para visualizar mais turmas.</p>
+                  </div>
                 ) : (
                   <div className="table-responsive">
                     <table className="list-page-table table table-hover">
@@ -136,17 +180,21 @@ function TurmasList() {
                         <tr>
                           <th>Nome da Turma</th>
                           <th>Ano</th>
+                          <th>Nivel de Ensino</th>
                           <th>Turno</th>
                           <th>Data Criação</th>
                           <th className="text-center">Ações</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {turmas.map((turma) => (
+                        {turmasFiltradas.map((turma) => (
                           <tr key={turma.id}>
                             <td className="fw-semibold">{turma.nome}</td>
                             <td>
                               <span className="list-page-badge badge bg-primary">{turma.ano}º Ano</span>
+                            </td>
+                            <td>
+                              <span className="list-page-badge badge bg-secondary">{formatarNivelEnsino(turma.nivel_ensino)}</span>
                             </td>
                             <td>
                               <span className={`list-page-badge badge ${

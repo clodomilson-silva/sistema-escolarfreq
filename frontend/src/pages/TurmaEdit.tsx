@@ -8,8 +8,16 @@ import "./FormPages.css";
 interface Turma {
   id: string;
   nome: string;
-  ano: string;
+  ano: string | number;
   turno: string;
+  tipo?: 'base' | 'disciplina';
+  nivel_ensino?: 'fundamental' | 'medio' | 'tecnico' | 'profissionalizante';
+  disciplina?: string;
+  professor?: string | null;
+  sala?: string | null;
+  status?: 'ativa' | 'inativa' | 'concluida';
+  data_inicio?: string | null;
+  data_fim?: string | null;
 }
 
 function TurmaEdit() {
@@ -17,7 +25,11 @@ function TurmaEdit() {
     id: '',
     nome: '',
     ano: '',
-    turno: 'matutino'
+    turno: 'matutino',
+    tipo: 'base',
+    nivel_ensino: 'fundamental',
+    data_inicio: '',
+    data_fim: ''
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -25,6 +37,11 @@ function TurmaEdit() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { isReady } = useAuth();
+  const isTurmaBase = (turma.tipo || 'base') === 'base';
+  const exigeDatasDisciplina =
+    turma.tipo === 'disciplina' &&
+    (turma.nivel_ensino === 'tecnico' || turma.nivel_ensino === 'profissionalizante');
+  const exigeDatas = isTurmaBase || exigeDatasDisciplina;
 
   useEffect(() => {
     const carregarTurmaData = async () => {
@@ -36,7 +53,13 @@ function TurmaEdit() {
         console.log('Resposta da API:', response.data);
         
         if (response.data.success) {
-          setTurma(response.data.data);
+          const turmaData = response.data.data;
+          setTurma({
+            ...turmaData,
+            ano: String(turmaData.ano ?? ''),
+            data_inicio: turmaData.data_inicio || '',
+            data_fim: turmaData.data_fim || ''
+          });
         } else {
           console.error('Erro na resposta:', response.data.message);
           alert('Erro ao carregar turma: ' + response.data.message);
@@ -87,17 +110,36 @@ function TurmaEdit() {
 
   const validarFormulario = () => {
     const novosErros: { [key: string]: string } = {};
+    const anoTexto = String(turma.ano ?? '').trim();
 
     if (!turma.nome.trim()) {
       novosErros.nome = 'Nome da turma é obrigatório';
     }
 
-    if (!turma.ano || !turma.ano.trim()) {
+    if (!anoTexto) {
       novosErros.ano = 'Número da turma é obrigatório';
+    } else if (!/^\d+$/.test(anoTexto)) {
+      novosErros.ano = 'Ano deve conter apenas números';
     }
 
     if (!turma.turno) {
       novosErros.turno = 'Turno é obrigatório';
+    }
+
+    if (!turma.nivel_ensino) {
+      novosErros.nivel_ensino = 'Tipo de ensino é obrigatório';
+    }
+
+    if (exigeDatas && !turma.data_inicio) {
+      novosErros.data_inicio = 'Data de início é obrigatória';
+    }
+
+    if (exigeDatas && !turma.data_fim) {
+      novosErros.data_fim = 'Data de término é obrigatória';
+    }
+
+    if (exigeDatas && turma.data_inicio && turma.data_fim && new Date(turma.data_inicio) > new Date(turma.data_fim)) {
+      novosErros.data_fim = 'Data de término deve ser maior ou igual à data de início';
     }
 
     setErrors(novosErros);
@@ -117,8 +159,16 @@ function TurmaEdit() {
 
       const dadosParaEnviar = {
         nome: turma.nome.trim(),
-        ano: turma.ano,
-        turno: turma.turno
+        ano: Number(String(turma.ano).trim()),
+        turno: turma.turno,
+        disciplina: turma.disciplina || 'Geral',
+        professor: turma.professor || null,
+        sala: turma.sala || null,
+        tipo: turma.tipo || 'base',
+        nivel_ensino: turma.nivel_ensino || 'fundamental',
+        status: turma.status || 'ativa',
+        data_inicio: exigeDatas ? (turma.data_inicio || null) : null,
+        data_fim: exigeDatas ? (turma.data_fim || null) : null
       };
 
       const response = await api.put(`/turmas/${id}/`, dadosParaEnviar);
@@ -137,7 +187,14 @@ function TurmaEdit() {
       let mensagem = 'Erro ao atualizar turma!';
       
       if (error instanceof Error && 'response' in error && error.response && typeof error.response === 'object') {
-        const response = error.response as { data?: { details?: Array<{ field: string; message: string }>; message?: string } };
+        const response = error.response as {
+          data?: {
+            details?: Array<{ field: string; message: string }>;
+            detail?: Record<string, string[] | string>;
+            message?: string;
+            error?: string;
+          }
+        };
         
         if (response.data?.details) {
           // Erro de validação do backend
@@ -150,8 +207,21 @@ function TurmaEdit() {
           
           setErrors(novosErros);
           return;
+        } else if (response.data?.detail && typeof response.data.detail === 'object') {
+          const novosErros: { [key: string]: string } = {};
+          Object.entries(response.data.detail).forEach(([campo, valor]) => {
+            if (Array.isArray(valor)) {
+              novosErros[campo] = valor.join(' ');
+            } else {
+              novosErros[campo] = String(valor);
+            }
+          });
+          setErrors(novosErros);
+          return;
         } else if (response.data?.message) {
           mensagem = response.data.message;
+        } else if (response.data?.error) {
+          mensagem = response.data.error;
         }
       } else if (error instanceof Error && error.message) {
         mensagem = error.message;
@@ -286,7 +356,7 @@ function TurmaEdit() {
                     )}
                   </div>
 
-                  <div className="mb-4">
+                  <div className="mb-3">
                     <label htmlFor="turno" className="form-label text-white">
                       Turno: <span className="text-danger">*</span>
                     </label>
@@ -315,6 +385,114 @@ function TurmaEdit() {
                         {errors.turno}
                       </div>
                     )}
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="nivel_ensino" className="form-label text-white">
+                      Tipo de Ensino: <span className="text-danger">*</span>
+                    </label>
+                    <select
+                      className={`form-select ${errors.nivel_ensino ? 'is-invalid' : ''}`}
+                      id="nivel_ensino"
+                      name="nivel_ensino"
+                      value={turma.nivel_ensino || 'fundamental'}
+                      onChange={handleChange}
+                      required
+                      disabled={saving}
+                      style={{
+                        background: 'var(--bg-primary)',
+                        border: '1px solid var(--border-color)',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
+                      <option value="fundamental">Ensino Fundamental</option>
+                      <option value="medio">Ensino Medio</option>
+                      <option value="tecnico">Curso Tecnico</option>
+                      <option value="profissionalizante">Curso Profissionalizante</option>
+                    </select>
+                    {errors.nivel_ensino && (
+                      <div className="invalid-feedback">
+                        {errors.nivel_ensino}
+                      </div>
+                    )}
+                  </div>
+
+                  {turma.tipo === 'disciplina' && (
+                    <div className="mb-3">
+                      <label htmlFor="professor" className="form-label text-white">
+                        Professor (opcional)
+                      </label>
+                      <input
+                        type="text"
+                        className={`form-control ${errors.professor ? 'is-invalid' : ''}`}
+                        id="professor"
+                        name="professor"
+                        value={turma.professor || ''}
+                        onChange={handleChange}
+                        disabled={saving}
+                        placeholder="Nome do professor"
+                        style={{
+                          background: 'var(--bg-primary)',
+                          border: '1px solid var(--border-color)',
+                          color: 'var(--text-primary)'
+                        }}
+                      />
+                      {errors.professor && (
+                        <div className="invalid-feedback">{errors.professor}</div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="row mb-4">
+                    <div className="col-md-6 mb-3 mb-md-0">
+                      <label htmlFor="data_inicio" className="form-label text-white">
+                        Data de Inicio: {exigeDatas ? <span className="text-danger">*</span> : <span>(opcional)</span>}
+                      </label>
+                      <input
+                        type="date"
+                        className={`form-control ${errors.data_inicio ? 'is-invalid' : ''}`}
+                        id="data_inicio"
+                        name="data_inicio"
+                        value={turma.data_inicio || ''}
+                        onChange={handleChange}
+                        required={exigeDatas}
+                        disabled={saving || !exigeDatas}
+                        style={{
+                          background: 'var(--bg-primary)',
+                          border: '1px solid var(--border-color)',
+                          color: 'var(--text-primary)'
+                        }}
+                      />
+                      {errors.data_inicio && (
+                        <div className="invalid-feedback">{errors.data_inicio}</div>
+                      )}
+                      {!exigeDatas && (
+                        <small className="text-secondary">Para turma-disciplina de ensino fundamental/medio, as datas usam o periodo da turma base.</small>
+                      )}
+                    </div>
+                    <div className="col-md-6">
+                      <label htmlFor="data_fim" className="form-label text-white">
+                        Data de Termino: {exigeDatas ? <span className="text-danger">*</span> : <span>(opcional)</span>}
+                      </label>
+                      <input
+                        type="date"
+                        className={`form-control ${errors.data_fim ? 'is-invalid' : ''}`}
+                        id="data_fim"
+                        name="data_fim"
+                        value={turma.data_fim || ''}
+                        onChange={handleChange}
+                        required={exigeDatas}
+                        disabled={saving || !exigeDatas}
+                        style={{
+                          background: 'var(--bg-primary)',
+                          border: '1px solid var(--border-color)',
+                          color: 'var(--text-primary)'
+                        }}
+                      />
+                      {errors.data_fim && (
+                        <div className="invalid-feedback">{errors.data_fim}</div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="d-flex gap-2 justify-content-end">
