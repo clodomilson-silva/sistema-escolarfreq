@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import axios from '../services/api';
-import type { BoletimAluno, BoletimDisciplina } from '../types';
+import type { BoletimAluno } from '../types';
 import './FormPages.css';
 
 const BoletimAluno = () => {
@@ -12,8 +12,6 @@ const BoletimAluno = () => {
   const printParam = searchParams.get('print');
   
   const [boletim, setBoletim] = useState<BoletimAluno | null>(null);
-  const [dataInicio, setDataInicio] = useState<string>('');
-  const [dataFim, setDataFim] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -38,31 +36,10 @@ const BoletimAluno = () => {
     setError('');
     
     try {
-      let url = `/alunos/${alunoId}/boletim/`;
-      const params: string[] = [];
-      
-      if (dataInicio) params.push(`data_inicio=${dataInicio}`);
-      if (dataFim) params.push(`data_fim=${dataFim}`);
-      
-      if (params.length > 0) {
-        url += `?${params.join('&')}`;
-      }
-      
-      const response = await axios.get(url);
+      const query = turmaIdParam ? `?turma_id=${turmaIdParam}` : '';
+      const response = await axios.get(`/alunos/${alunoId}/boletim/${query}`);
       if (response.data.success) {
-        let boletimData = response.data.data;
-        
-        // Se turma_id foi especificada, filtrar apenas essa turma
-        if (turmaIdParam) {
-          boletimData = {
-            ...boletimData,
-            disciplinas: boletimData.disciplinas.filter(
-              (d: BoletimDisciplina) => d.turma_id === turmaIdParam
-            )
-          };
-        }
-        
-        setBoletim(boletimData);
+        setBoletim(response.data.data);
       }
     } catch (err) {
       console.error('Erro ao buscar boletim:', err);
@@ -73,19 +50,29 @@ const BoletimAluno = () => {
     }
   };
 
-  const handleFiltrar = () => {
-    fetchBoletim();
-  };
-
   const handleImprimir = () => {
     window.print();
   };
 
+  const possuiNotasParciais = () => {
+    if (!boletim) return false;
+
+    return boletim.disciplinas.some(
+      (disc) => disc.notas.total_notas_lancadas < disc.notas.total_avaliacoes
+    );
+  };
+
   const calcularMediaGeral = () => {
     if (!boletim || boletim.disciplinas.length === 0) return 0;
-    
-    const somaMedias = boletim.disciplinas.reduce((acc, disc) => acc + disc.notas.media, 0);
-    return (somaMedias / boletim.disciplinas.length).toFixed(2);
+
+    const disciplinasComNota = boletim.disciplinas.filter(
+      (disc) => disc.notas.total_notas_lancadas > 0
+    );
+
+    if (disciplinasComNota.length === 0) return '0.00';
+
+    const somaMedias = disciplinasComNota.reduce((acc, disc) => acc + disc.notas.media, 0);
+    return (somaMedias / disciplinasComNota.length).toFixed(2);
   };
 
   const calcularFrequenciaGeral = () => {
@@ -138,55 +125,6 @@ const BoletimAluno = () => {
         </div>
         
         <div className="card-body">
-          {/* Filtros - Não imprime */}
-          <div className="row mb-4 d-print-none">
-            <div className="col-md-4">
-              <label htmlFor="dataInicio" className="form-label">
-                <i className="bi bi-calendar-event me-2"></i>
-                Data Início
-              </label>
-              <input
-                type="date"
-                id="dataInicio"
-                className="form-control"
-                value={dataInicio}
-                onChange={(e) => setDataInicio(e.target.value)}
-              />
-            </div>
-            <div className="col-md-4">
-              <label htmlFor="dataFim" className="form-label">
-                <i className="bi bi-calendar-event me-2"></i>
-                Data Fim
-              </label>
-              <input
-                type="date"
-                id="dataFim"
-                className="form-control"
-                value={dataFim}
-                onChange={(e) => setDataFim(e.target.value)}
-              />
-            </div>
-            <div className="col-md-4 d-flex align-items-end">
-              <button
-                className="btn btn-primary w-100"
-                onClick={handleFiltrar}
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                    Carregando...
-                  </>
-                ) : (
-                  <>
-                    <i className="bi bi-funnel me-2"></i>
-                    Filtrar
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-
           {error && (
             <div className="alert alert-danger d-print-none" role="alert">
               <i className="bi bi-exclamation-triangle me-2"></i>
@@ -232,8 +170,13 @@ const BoletimAluno = () => {
                 <div className="col-md-6">
                   <div className="card bg-primary text-white shadow-sm">
                     <div className="card-body text-center">
-                      <h6 className="card-title mb-0">Média Geral</h6>
+                      <h6 className="card-title mb-0">
+                        {possuiNotasParciais() ? 'Média Geral Parcial' : 'Média Geral'}
+                      </h6>
                       <h2 className="fw-bold mt-2">{calcularMediaGeral()}</h2>
+                      {possuiNotasParciais() && (
+                        <small className="d-block mt-1">Resultado sujeito a novas notas</small>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -305,21 +248,45 @@ const BoletimAluno = () => {
                                     <span className="badge bg-secondary">{avaliacao.tipo}</span>
                                   </td>
                                   <td>{new Date(avaliacao.data).toLocaleDateString('pt-BR')}</td>
-                                  <td className="text-center fw-bold">{avaliacao.valor.toFixed(2)}</td>
+                                  <td className="text-center fw-bold">
+                                    {avaliacao.valor !== null ? (
+                                      avaliacao.valor.toFixed(2)
+                                    ) : (
+                                      <span className="text-secondary">Não lançada</span>
+                                    )}
+                                  </td>
                                   <td className="text-center">{avaliacao.nota_maxima.toFixed(2)}</td>
                                   <td className="text-center">{avaliacao.peso.toFixed(1)}</td>
                                 </tr>
                               ))}
                               <tr className="table-primary">
-                                <td colSpan={3} className="text-end fw-bold">Média da Disciplina:</td>
+                                <td colSpan={3} className="text-end fw-bold">
+                                  {disciplina.notas.total_notas_lancadas < disciplina.notas.total_avaliacoes
+                                    ? 'Média Parcial da Disciplina:'
+                                    : 'Média da Disciplina:'}
+                                </td>
                                 <td className="text-center fw-bold">{disciplina.notas.media.toFixed(2)}</td>
-                                <td colSpan={2} className={`text-center fw-bold ${getStatusNota(disciplina.notas.media).class}`}>
-                                  {getStatusNota(disciplina.notas.media).label}
+                                <td
+                                  colSpan={2}
+                                  className={`text-center fw-bold ${
+                                    disciplina.notas.total_notas_lancadas < disciplina.notas.total_avaliacoes
+                                      ? 'text-warning'
+                                      : getStatusNota(disciplina.notas.media).class
+                                  }`}
+                                >
+                                  {disciplina.notas.total_notas_lancadas < disciplina.notas.total_avaliacoes
+                                    ? 'Em andamento'
+                                    : getStatusNota(disciplina.notas.media).label}
                                 </td>
                               </tr>
                             </tbody>
                           </table>
                         </div>
+                      )}
+                      {disciplina.notas.total_notas_lancadas < disciplina.notas.total_avaliacoes && (
+                        <small className="text-secondary">
+                          {disciplina.notas.total_notas_lancadas} de {disciplina.notas.total_avaliacoes} atividade(s) com nota lançada.
+                        </small>
                       )}
                     </div>
 

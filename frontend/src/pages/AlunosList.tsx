@@ -20,12 +20,6 @@ interface Turma {
   tipo: 'base' | 'disciplina';
 }
 
-type AlunoDaTurma = { id: string } | string;
-
-interface TurmaComAlunos extends Turma {
-  alunos?: AlunoDaTurma[];
-}
-
 function AlunosList() {
   const [alunos, setAlunos] = useState<Aluno[]>([]);
   const [loading, setLoading] = useState(true);
@@ -100,26 +94,27 @@ function AlunosList() {
     setLoadingTurmas(true);
     
     try {
-      // Buscar todas as turmas e filtrar as que o aluno está matriculado
-      const response = await api.get('/turmas/');
-      const todasTurmas: TurmaComAlunos[] = response.data.data || response.data;
-      
-      // Filtrar turmas onde o aluno está matriculado
-      const turmasDoAluno = todasTurmas.filter((turma) => {
-        if (Array.isArray(turma.alunos)) {
-          // Se alunos é array de objetos
-          if (turma.alunos.length > 0 && typeof turma.alunos[0] === 'object') {
-            return turma.alunos.some((a) => typeof a === 'object' && a.id === aluno.id);
-          }
-          // Se alunos é array de IDs (strings)
-          return turma.alunos.includes(aluno.id);
-        }
-        return false;
-      });
-      
-      // Priorizar turmas tipo disciplina
-      const turmasDisciplina = turmasDoAluno.filter((t) => t.tipo === 'disciplina');
-      setTurmasAluno(turmasDisciplina.length > 0 ? turmasDisciplina : turmasDoAluno);
+      // Buscar turmas-disciplina direto do boletim individual (fonte de verdade do vínculo)
+      const response = await api.get(`/alunos/${aluno.id}/boletim/`);
+      const disciplinas = response.data?.data?.disciplinas || [];
+
+      const turmasDisciplina: Turma[] = disciplinas.map((disc: {
+        turma_id: string | number;
+        turma_nome: string;
+        disciplina: string;
+      }) => ({
+        id: String(disc.turma_id),
+        nome: disc.turma_nome,
+        disciplina: disc.disciplina,
+        tipo: 'disciplina'
+      }));
+
+      // Evita duplicidades por turma_id
+      const turmasUnicas = turmasDisciplina.filter(
+        (turma, index, self) => self.findIndex((t) => t.id === turma.id) === index
+      );
+
+      setTurmasAluno(turmasUnicas);
     } catch (error) {
       console.error('Erro ao buscar turmas do aluno:', error);
       alert('Erro ao carregar turmas do aluno');
@@ -309,7 +304,7 @@ function AlunosList() {
                     border: '1px solid rgba(13, 110, 253, 0.2)',
                     color: 'var(--info-color)'
                   }}>
-                    <i className="bi bi-info-circle me-2"></i>Aluno não está matriculado em nenhuma turma.
+                    <i className="bi bi-info-circle me-2"></i>Aluno não está matriculado em nenhuma turma-disciplina.
                   </div>
                 ) : (
                   <>

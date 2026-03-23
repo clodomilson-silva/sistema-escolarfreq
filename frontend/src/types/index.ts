@@ -124,12 +124,13 @@ export interface BoletimDisciplina {
       avaliacao: string;
       tipo: string;
       data: string;
-      valor: number;
+      valor: number | null;
       nota_maxima: number;
       peso: number;
       observacoes?: string;
     }>;
     total_avaliacoes: number;
+    total_notas_lancadas: number;
     media: number;
   };
   frequencia: {

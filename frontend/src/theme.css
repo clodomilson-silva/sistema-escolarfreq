@@ -747,6 +747,32 @@ body {
   color: var(--text-primary) !important;
 }
 
+.alunos-list-page .btn-outline-secondary {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.alunos-list-page .btn-outline-secondary:hover,
+.alunos-list-page .btn-outline-secondary:focus {
+  background-color: var(--bg-card-hover) !important;
+  color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.turmas-list-page .btn-outline-secondary {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.turmas-list-page .btn-outline-secondary:hover,
+.turmas-list-page .btn-outline-secondary:focus {
+  background-color: var(--bg-card-hover) !important;
+  color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
 /* Boletim: contraste no tema escuro */
 .boletim-page .boletim-table-wrapper,
 .boletim-page .boletim-legend-box,

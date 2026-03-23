@@ -156,22 +156,28 @@ class AlunoViewSet(viewsets.ModelViewSet):
     def boletim(self, request, pk=None):
         """
         Gerar boletim do aluno com notas e frequências
-        GET /api/alunos/{id}/boletim/?data_inicio=YYYY-MM-DD&data_fim=YYYY-MM-DD
+        GET /api/alunos/{id}/boletim/?turma_id={turma_disciplina_id}
         """
-        from turmas.models import Turma, Nota
+        from turmas.models import Turma, Avaliacao, Nota
         from frequencia.models import Frequencia
-        from django.db.models import Avg, Count, Q
         from decimal import Decimal
         
         aluno = self.get_object()
-        data_inicio = request.query_params.get('data_inicio')
-        data_fim = request.query_params.get('data_fim')
+        turma_id = request.query_params.get('turma_id')
         
-        # Buscar todas as turmas-disciplina do aluno
-        turmas_disciplina = Turma.objects.filter(
-            alunos=aluno,
-            tipo='disciplina'
-        ).select_related('turma_base')
+        # Buscar turmas-disciplina vinculadas ao aluno
+        turmas_disciplina = Turma.objects.filter(tipo='disciplina', alunos=aluno)
+
+        # Se turma_id for informado, validar vínculo do aluno com a turma-disciplina
+        if turma_id:
+            turmas_disciplina = turmas_disciplina.filter(id=turma_id)
+            if not turmas_disciplina.exists():
+                return Response({
+                    'success': False,
+                    'error': 'Aluno não está vinculado à turma-disciplina informada.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+        turmas_disciplina = turmas_disciplina.select_related('turma_base')
         
         boletim_data = {
             'aluno': {
@@ -181,56 +187,58 @@ class AlunoViewSet(viewsets.ModelViewSet):
                 'email': aluno.email
             },
             'periodo': {
-                'data_inicio': data_inicio,
-                'data_fim': data_fim
+                'data_inicio': None,
+                'data_fim': None
             },
             'disciplinas': []
         }
         
         for turma_disc in turmas_disciplina:
-            # Filtrar notas da turma-disciplina
+            # Buscar todas as atividades cadastradas para a turma-disciplina
+            avaliacoes_query = Avaliacao.objects.filter(turma=turma_disc)
+
+            avaliacoes_query = avaliacoes_query.order_by('data', 'descricao')
+
+            # Buscar notas do aluno para as atividades da turma
             notas_query = Nota.objects.filter(
                 aluno=aluno,
-                avaliacao__turma=turma_disc
+                avaliacao__in=avaliacoes_query
             ).select_related('avaliacao')
-            
-            # Filtrar por período se fornecido
-            if data_inicio:
-                notas_query = notas_query.filter(avaliacao__data__gte=data_inicio)
-            if data_fim:
-                notas_query = notas_query.filter(avaliacao__data__lte=data_fim)
+
+            notas_por_avaliacao = {
+                nota.avaliacao_id: nota for nota in notas_query
+            }
             
             # Calcular média ponderada
             notas_list = []
             soma_valores = Decimal('0')
             soma_pesos = Decimal('0')
             
-            for nota in notas_query:
+            for avaliacao in avaliacoes_query:
+                nota = notas_por_avaliacao.get(avaliacao.id)
                 notas_list.append({
-                    'avaliacao': nota.avaliacao.descricao,
-                    'tipo': nota.avaliacao.tipo,
-                    'data': nota.avaliacao.data,
-                    'valor': float(nota.valor),
-                    'nota_maxima': float(nota.avaliacao.nota_maxima),
-                    'peso': float(nota.avaliacao.peso),
-                    'observacoes': nota.observacoes
+                    'avaliacao': avaliacao.descricao,
+                    'tipo': avaliacao.tipo,
+                    'data': avaliacao.data,
+                    'valor': float(nota.valor) if nota else None,
+                    'nota_maxima': float(avaliacao.nota_maxima),
+                    'peso': float(avaliacao.peso),
+                    'observacoes': nota.observacoes if nota else None
                 })
-                soma_valores += nota.valor * nota.avaliacao.peso
-                soma_pesos += nota.avaliacao.peso
+
+                # Média considera apenas avaliações que já possuem nota lançada
+                if nota:
+                    soma_valores += nota.valor * avaliacao.peso
+                    soma_pesos += avaliacao.peso
             
             media = float(soma_valores / soma_pesos) if soma_pesos > 0 else 0.0
+            total_notas_lancadas = sum(1 for item in notas_list if item['valor'] is not None)
             
             # Filtrar frequências da turma-disciplina
             freq_query = Frequencia.objects.filter(
                 aluno=aluno,
                 turma=turma_disc
             )
-            
-            # Filtrar por período se fornecido
-            if data_inicio:
-                freq_query = freq_query.filter(data__gte=data_inicio)
-            if data_fim:
-                freq_query = freq_query.filter(data__lte=data_fim)
             
             # Estatísticas de frequência
             total_aulas = freq_query.count()
@@ -252,6 +260,7 @@ class AlunoViewSet(viewsets.ModelViewSet):
                 'notas': {
                     'avaliacoes': notas_list,
                     'total_avaliacoes': len(notas_list),
+                    'total_notas_lancadas': total_notas_lancadas,
                     'media': round(media, 2)
                 },
                 'frequencia': {
