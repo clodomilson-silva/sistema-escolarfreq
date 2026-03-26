@@ -571,7 +571,7 @@ function TurmaDetalhes() {
           alunos={alunosDaTurma.map(aluno => ({
             id: aluno.id,
             nome: aluno.nome,
-            ra: aluno.matricula
+            matricula: aluno.matricula
           }))}
           onClose={() => setShowFrequenciaForm(false)}
         />

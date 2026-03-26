@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { frequenciaAPI } from '../services/api';
+import type { FrequenciaData, EstatisticasFrequencia } from '../services/api';
 import api from '../services/api';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../hooks/useAuth';
 import { FrequenciaForm } from './FrequenciaForm';
-import EstatisticasAluno from '../components/EstatisticasAluno';
-import { Turma, Aluno, FrequenciaData, EstatisticasFrequencia } from '../types';
+import { Turma, Aluno } from '../types';
 
 const FrequenciaDashboard: React.FC = () => {
   const { turmaId } = useParams<{ turmaId: string }>();

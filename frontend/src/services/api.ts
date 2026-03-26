@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+
 const api = axios.create({
-  baseURL: (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000") + "/api", // Backend Django
+  baseURL: `${apiBaseUrl}/api`,
   headers: {
     "Content-Type": "application/json",
   },
