@@ -13,6 +13,11 @@ interface Turma {
   tipo?: 'base' | 'disciplina';
   disciplina?: string;
   professor?: string;
+  professor_dados?: {
+    nome: string;
+    matricula?: string | null;
+    email?: string;
+  } | null;
   data_inicio?: string | null;
   data_fim?: string | null;
   status: 'ativa' | 'inativa' | 'concluida';
@@ -350,6 +355,21 @@ function TurmaDetalhes() {
                             Disciplina:
                           </strong> {turma.disciplina}
                           <span className="badge bg-primary ms-2">Turma-Disciplina</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {(turma.professor_dados?.nome || turma.professor) && (
+                  <div className="row mt-3">
+                    <div className="col-12">
+                      <div className="alert alert-secondary mb-0 d-flex align-items-center" role="alert">
+                        <i className="bi bi-person-badge me-2 fs-4"></i>
+                        <div>
+                          <strong>Professor:</strong> {turma.professor_dados?.nome || turma.professor}
+                          {turma.professor_dados?.matricula ? ` - Matricula ${turma.professor_dados.matricula}` : ''}
+                          {turma.professor_dados?.email ? ` (${turma.professor_dados.email})` : ''}
                         </div>
                       </div>
                     </div>

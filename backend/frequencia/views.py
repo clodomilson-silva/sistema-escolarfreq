@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
+from core.permissions import IsAdminOrProfessorWriteReadOnlyAuthenticated
 from .models import Frequencia
 from alunos.models import Aluno
 from turmas.models import Turma
@@ -28,7 +29,7 @@ class FrequenciaViewSet(viewsets.ModelViewSet):
     destroy: DELETE /api/frequencia/{id}/
     """
     queryset = Frequencia.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminOrProfessorWriteReadOnlyAuthenticated]
     
     def get_serializer_class(self):
         if self.action == 'create':
@@ -39,7 +40,17 @@ class FrequenciaViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filter queryset based on query parameters"""
-        queryset = Frequencia.objects.all()
+        user = self.request.user
+
+        if user.is_superuser or getattr(user, 'is_admin', False):
+            queryset = Frequencia.objects.all()
+        elif getattr(user, 'is_professor', False):
+            queryset = Frequencia.objects.filter(turma__professor_usuario=user)
+        elif getattr(user, 'is_aluno', False):
+            aluno = Aluno.objects.filter(email=user.email).first()
+            queryset = Frequencia.objects.filter(aluno=aluno) if aluno else Frequencia.objects.none()
+        else:
+            queryset = Frequencia.objects.none()
         
         # Filter by turma
         turma_id = self.request.query_params.get('turma_id', None)
@@ -95,6 +106,14 @@ class FrequenciaViewSet(viewsets.ModelViewSet):
         """Create a new frequencia with custom response format"""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        if getattr(request.user, 'is_professor', False):
+            turma = serializer.validated_data.get('turma')
+            if turma and turma.professor_usuario_id != request.user.id:
+                return Response({
+                    'success': False,
+                    'error': 'Professor só pode registrar frequência das próprias turmas'
+                }, status=status.HTTP_403_FORBIDDEN)
         
         # Check if frequencia already exists
         turma = serializer.validated_data['turma']
@@ -202,6 +221,11 @@ class FrequenciaViewSet(viewsets.ModelViewSet):
         
         # Get turma
         turma = get_object_or_404(Turma, id=turma_id)
+        if getattr(request.user, 'is_professor', False) and turma.professor_usuario_id != request.user.id:
+            return Response({
+                'success': False,
+                'error': 'Professor só pode registrar frequência em lote das próprias turmas'
+            }, status=status.HTTP_403_FORBIDDEN)
         print(f"✅ Turma encontrada: {turma.nome}")
         print(f"Alunos na turma: {list(turma.alunos.values_list('id', flat=True))}")
         

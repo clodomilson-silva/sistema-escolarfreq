@@ -6,15 +6,15 @@ from .models import Turma, Autorizacao, Avaliacao, Nota
 class TurmaAdmin(admin.ModelAdmin):
     """Admin for Turma model"""
     
-    list_display = ['nome', 'ano', 'turno', 'disciplina', 'status', 'total_alunos', 'criado_em']
+    list_display = ['nome', 'ano', 'turno', 'disciplina', 'professor_usuario', 'status', 'total_alunos', 'criado_em']
     list_filter = ['ano', 'turno', 'status']
-    search_fields = ['nome', 'disciplina', 'professor']
+    search_fields = ['nome', 'disciplina', 'professor', 'professor_usuario__nome', 'professor_usuario__matricula']
     filter_horizontal = ['alunos']
     ordering = ['nome']
     
     fieldsets = (
         ('Informações Básicas', {
-            'fields': ('nome', 'ano', 'turno', 'disciplina', 'professor', 'sala')
+            'fields': ('nome', 'ano', 'turno', 'disciplina', 'professor_usuario', 'professor', 'sala')
         }),
         ('Tipo de Turma', {
             'fields': ('tipo', 'turma_base')

@@ -6,7 +6,7 @@ interface Admin {
   id: string;
   nome: string;
   email: string;
-  role: 'admin' | 'professor';
+  role: 'admin' | 'supervisor' | 'professor' | 'aluno';
   disciplinas?: string[];
   ativo: boolean;
   criado_em: string;
@@ -16,7 +16,7 @@ interface Admin {
 interface AuthContextType {
   admin: Admin | null;
   token: string | null;
-  login: (email: string, senha: string) => Promise<void>;
+  login: (email: string, senha: string) => Promise<Admin>;
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;
@@ -137,7 +137,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         await new Promise(resolve => setTimeout(resolve, 100));
         
         console.log('Estado de login atualizado com sucesso!');
+        return userData;
       }
+
+      throw new Error('Falha ao autenticar usuário');
     } catch (error: unknown) {
       console.error('Erro no login:', error);
       

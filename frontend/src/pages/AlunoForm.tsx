@@ -9,6 +9,7 @@ function AlunoForm() {
   const [matricula, setMatricula] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
   const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
   const [telefone, setTelefone] = useState("");
   const [endereco, setEndereco] = useState("");
   const [responsavel, setResponsavel] = useState("");
@@ -19,8 +20,13 @@ function AlunoForm() {
     e.preventDefault();
     
     // Validação básica no frontend
-    if (!nome || !matricula || !dataNascimento || !email) {
+    if (!nome || !matricula || !dataNascimento || !email || !senha) {
       alert("Por favor, preencha todos os campos obrigatórios!");
+      return;
+    }
+
+    if (senha.length < 6) {
+      alert("A senha do aluno deve ter pelo menos 6 caracteres.");
       return;
     }
     
@@ -30,6 +36,7 @@ function AlunoForm() {
         matricula,
         data_nascimento: dataNascimento,
         email,
+        senha,
         telefone,
         endereco,
         responsavel,
@@ -41,6 +48,7 @@ function AlunoForm() {
         matricula,
         data_nascimento: dataNascimento,
         email,
+        senha,
         telefone,
         endereco,
         responsavel,
@@ -55,6 +63,7 @@ function AlunoForm() {
       setMatricula("");
       setDataNascimento("");
       setEmail("");
+      setSenha("");
       setTelefone("");
       setEndereco("");
       setResponsavel("");
@@ -192,6 +201,22 @@ function AlunoForm() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       placeholder="exemplo@email.com"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="senha" className="form-label" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                      Senha de Acesso do Aluno: <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="senha"
+                      value={senha}
+                      onChange={(e) => setSenha(e.target.value)}
+                      required
+                      minLength={6}
+                      placeholder="Minimo de 6 caracteres"
                     />
                   </div>
 

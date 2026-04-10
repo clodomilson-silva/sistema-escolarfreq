@@ -50,7 +50,9 @@ function Home() {
             <span style={{ color: 'var(--text-secondary)' }}>
               {admin?.role === 'admin' 
                 ? 'Gerencie alunos, turmas e todo o sistema de forma eficiente.'
-                : 'Gerencie suas turmas-disciplina e registre frequência dos alunos.'}
+                : admin?.role === 'professor'
+                  ? 'Gerencie suas turmas-disciplina e registre frequência dos alunos.'
+                  : 'Acompanhe suas turmas, notas e atividades.'}
             </span>
           </div>
           
@@ -204,7 +206,7 @@ function Home() {
                 fontWeight: '600',
                 marginBottom: '0.75rem'
               }}>
-                {admin?.role === 'admin' ? 'Gerenciar Turmas' : 'Minhas Turmas-Disciplina'}
+                {admin?.role === 'admin' ? 'Gerenciar Turmas' : admin?.role === 'professor' ? 'Minhas Turmas-Disciplina' : 'Minhas Turmas'}
               </h3>
               
               <p style={{
@@ -215,7 +217,9 @@ function Home() {
               }}>
                 {admin?.role === 'admin' 
                   ? 'Criar e organizar turmas base e turmas-disciplina para o ano letivo'
-                  : 'Criar turmas-disciplina vinculadas e registrar frequência dos alunos'}
+                  : admin?.role === 'professor'
+                    ? 'Visualizar suas turmas e registrar frequência, atividades e notas.'
+                    : 'Visualize suas turmas, notas e atividades sem permissão de edição.'}
               </p>
               
               <div className="d-flex gap-2 flex-wrap">
@@ -255,6 +259,16 @@ function Home() {
                     border: '1px solid var(--border-color)'
                   }}>
                     <i className="bi bi-book me-1"></i> Disciplinas
+                  </span>
+                )}
+                {admin?.role === 'aluno' && (
+                  <span className="badge" style={{
+                    backgroundColor: 'var(--bg-tertiary)',
+                    color: 'var(--warning-color)',
+                    padding: '0.4rem 0.75rem',
+                    border: '1px solid var(--border-color)'
+                  }}>
+                    <i className="bi bi-eye me-1"></i> Apenas visualizacao
                   </span>
                 )}
               </div>
@@ -310,7 +324,7 @@ function Home() {
                 fontWeight: '600',
                 marginBottom: '1rem'
               }}>
-                {admin?.role === 'admin' ? 'Controle Total do Sistema' : 'Área do Professor'}
+                {admin?.role === 'admin' ? 'Controle Total do Sistema' : admin?.role === 'professor' ? 'Área do Professor' : 'Área do Aluno'}
               </h4>
               
               <p style={{
@@ -322,7 +336,9 @@ function Home() {
               }}>
                 {admin?.role === 'admin' 
                   ? 'Como administrador, você tem acesso completo ao sistema. Gerencie alunos, turmas base, professores e visualize todas as informações do PontoClass.'
-                  : 'Como professor, você pode criar turmas-disciplina vinculadas às turmas base, registrar frequência dos alunos e lançar notas nas suas disciplinas.'}
+                  : admin?.role === 'professor'
+                    ? 'Como professor, você pode visualizar suas turmas e registrar frequência, avaliações e notas nas suas disciplinas.'
+                    : 'Como aluno, você pode consultar suas turmas, acompanhar notas e atividades sem permissão de edição.'}
               </p>
             </div>
           </div>

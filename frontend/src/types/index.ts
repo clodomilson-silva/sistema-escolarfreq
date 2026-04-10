@@ -7,6 +7,14 @@ export interface Turma {
   nivel_ensino?: 'fundamental' | 'medio' | 'tecnico' | 'profissionalizante';
   disciplina: string;
   professor?: string;
+  professor_id?: string | number | null;
+  professor_dados?: {
+    id: string | number;
+    nome: string;
+    email?: string;
+    matricula?: string | null;
+    telefone?: string | null;
+  } | null;
   sala?: string;
   tipo?: 'base' | 'disciplina';
   turma_base_id?: string | null;

@@ -6,7 +6,8 @@ from .views import (
     register_view,
     me_view,
     verify_token_view,
-    UserListView
+    UserListView,
+    manage_professor_view
 )
 
 urlpatterns = [
@@ -22,4 +23,5 @@ urlpatterns = [
     
     # User management
     path('users/', UserListView.as_view(), name='user-list'),
+    path('users/<int:user_id>/', manage_professor_view, name='user-manage'),
 ]

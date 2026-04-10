@@ -14,10 +14,18 @@ interface Turma {
   nivel_ensino?: 'fundamental' | 'medio' | 'tecnico' | 'profissionalizante';
   disciplina?: string;
   professor?: string | null;
+  professor_id?: string | number | null;
   sala?: string | null;
   status?: 'ativa' | 'inativa' | 'concluida';
   data_inicio?: string | null;
   data_fim?: string | null;
+}
+
+interface ProfessorOption {
+  id: string;
+  nome: string;
+  email: string;
+  matricula?: string | null;
 }
 
 function TurmaEdit() {
@@ -33,6 +41,7 @@ function TurmaEdit() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [professores, setProfessores] = useState<ProfessorOption[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -49,20 +58,37 @@ function TurmaEdit() {
         setLoading(true);
         console.log('Carregando turma:', id);
         
-        const response = await api.get(`/turmas/${id}/`);
-        console.log('Resposta da API:', response.data);
+        const [turmaResponse, professoresResponse] = await Promise.all([
+          api.get(`/turmas/${id}/`),
+          api.get('/auth/users/')
+        ]);
+
+        console.log('Resposta da API:', turmaResponse.data);
+
+        const payload = professoresResponse.data;
+        const users = Array.isArray(payload) ? payload : payload?.results || payload?.data || [];
+        const listaProfessores = users
+          .filter((u: { role?: string }) => u.role === 'professor')
+          .map((u: { id: string; nome: string; email: string; matricula?: string | null }) => ({
+            id: String(u.id),
+            nome: u.nome,
+            email: u.email,
+            matricula: u.matricula || null
+          }));
+        setProfessores(listaProfessores);
         
-        if (response.data.success) {
-          const turmaData = response.data.data;
+        if (turmaResponse.data.success) {
+          const turmaData = turmaResponse.data.data;
           setTurma({
             ...turmaData,
             ano: String(turmaData.ano ?? ''),
+            professor_id: turmaData.professor_id ? String(turmaData.professor_id) : '',
             data_inicio: turmaData.data_inicio || '',
             data_fim: turmaData.data_fim || ''
           });
         } else {
-          console.error('Erro na resposta:', response.data.message);
-          alert('Erro ao carregar turma: ' + response.data.message);
+          console.error('Erro na resposta:', turmaResponse.data.message);
+          alert('Erro ao carregar turma: ' + turmaResponse.data.message);
           navigate('/turmas');
         }
       } catch (error: unknown) {
@@ -162,6 +188,7 @@ function TurmaEdit() {
         ano: Number(String(turma.ano).trim()),
         turno: turma.turno,
         disciplina: turma.disciplina || 'Geral',
+        professor_id: turma.professor_id ? Number(turma.professor_id) : null,
         professor: turma.professor || null,
         sala: turma.sala || null,
         tipo: turma.tipo || 'base',
@@ -417,31 +444,34 @@ function TurmaEdit() {
                     )}
                   </div>
 
-                  {turma.tipo === 'disciplina' && (
-                    <div className="mb-3">
-                      <label htmlFor="professor" className="form-label text-white">
-                        Professor (opcional)
-                      </label>
-                      <input
-                        type="text"
-                        className={`form-control ${errors.professor ? 'is-invalid' : ''}`}
-                        id="professor"
-                        name="professor"
-                        value={turma.professor || ''}
-                        onChange={handleChange}
-                        disabled={saving}
-                        placeholder="Nome do professor"
-                        style={{
-                          background: 'var(--bg-primary)',
-                          border: '1px solid var(--border-color)',
-                          color: 'var(--text-primary)'
-                        }}
-                      />
-                      {errors.professor && (
-                        <div className="invalid-feedback">{errors.professor}</div>
-                      )}
-                    </div>
-                  )}
+                  <div className="mb-3">
+                    <label htmlFor="professor_id" className="form-label text-white">
+                      Professor (opcional)
+                    </label>
+                    <select
+                      className={`form-select ${errors.professor ? 'is-invalid' : ''}`}
+                      id="professor_id"
+                      name="professor_id"
+                      value={String(turma.professor_id || '')}
+                      onChange={handleChange}
+                      disabled={saving}
+                      style={{
+                        background: 'var(--bg-primary)',
+                        border: '1px solid var(--border-color)',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
+                      <option value="">Sem professor vinculado</option>
+                      {professores.map((prof) => (
+                        <option key={prof.id} value={prof.id}>
+                          {prof.nome} ({prof.email}){prof.matricula ? ` - Matricula ${prof.matricula}` : ''}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.professor && (
+                      <div className="invalid-feedback">{errors.professor}</div>
+                    )}
+                  </div>
 
                   <div className="row mb-4">
                     <div className="col-md-6 mb-3 mb-md-0">

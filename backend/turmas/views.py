@@ -3,6 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
+from core.permissions import IsAdminOrReadOnlyAuthenticated, IsAdminOrProfessorWriteReadOnlyAuthenticated
+from alunos.models import Aluno
 from .models import Turma, Autorizacao, Avaliacao, Nota
 from .serializers import (
     TurmaSerializer,
@@ -31,7 +33,7 @@ class TurmaViewSet(viewsets.ModelViewSet):
     destroy: DELETE /api/turmas/{id}/
     """
     queryset = Turma.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminOrReadOnlyAuthenticated]
     
     def get_serializer_class(self):
         if self.action == 'list':
@@ -44,7 +46,17 @@ class TurmaViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filter queryset based on query parameters"""
-        queryset = Turma.objects.all()
+        user = self.request.user
+
+        if user.is_superuser or getattr(user, 'is_admin', False):
+            queryset = Turma.objects.all()
+        elif getattr(user, 'is_professor', False):
+            queryset = Turma.objects.filter(professor_usuario=user)
+        elif getattr(user, 'is_aluno', False):
+            aluno = Aluno.objects.filter(email=user.email).first()
+            queryset = Turma.objects.filter(alunos=aluno) if aluno else Turma.objects.none()
+        else:
+            queryset = Turma.objects.none()
         
         # Filter by ano
         ano = self.request.query_params.get('ano', None)
@@ -378,7 +390,7 @@ class AutorizacaoViewSet(viewsets.ModelViewSet):
     destroy: DELETE /api/turmas/autorizacoes/{id}/
     """
     queryset = Autorizacao.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminOrProfessorWriteReadOnlyAuthenticated]
     
     def get_serializer_class(self):
         if self.action == 'create':
@@ -387,7 +399,17 @@ class AutorizacaoViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filter queryset based on query parameters"""
-        queryset = Autorizacao.objects.all()
+        user = self.request.user
+
+        if user.is_superuser or getattr(user, 'is_admin', False):
+            queryset = Autorizacao.objects.all()
+        elif getattr(user, 'is_professor', False):
+            queryset = Autorizacao.objects.filter(turma__professor_usuario=user)
+        elif getattr(user, 'is_aluno', False):
+            aluno = Aluno.objects.filter(email=user.email).first()
+            queryset = Autorizacao.objects.filter(aluno=aluno) if aluno else Autorizacao.objects.none()
+        else:
+            queryset = Autorizacao.objects.none()
         
         # Filter by turma
         turma_id = self.request.query_params.get('turma_id', None)
@@ -438,6 +460,15 @@ class AutorizacaoViewSet(viewsets.ModelViewSet):
         """Create a new autorizacao with custom response format"""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        if getattr(request.user, 'is_professor', False):
+            turma = serializer.validated_data.get('turma')
+            if turma and turma.professor_usuario_id != request.user.id:
+                return Response({
+                    'success': False,
+                    'error': 'Professor só pode registrar autorizações das próprias turmas'
+                }, status=status.HTTP_403_FORBIDDEN)
+
         self.perform_create(serializer)
         
         return Response({
@@ -483,7 +514,7 @@ class AvaliacaoViewSet(viewsets.ModelViewSet):
     destroy: DELETE /api/turmas/avaliacoes/{id}/
     """
     queryset = Avaliacao.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminOrProfessorWriteReadOnlyAuthenticated]
     
     def get_serializer_class(self):
         if self.action == 'create':
@@ -492,7 +523,17 @@ class AvaliacaoViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filter queryset based on query parameters"""
-        queryset = Avaliacao.objects.all()
+        user = self.request.user
+
+        if user.is_superuser or getattr(user, 'is_admin', False):
+            queryset = Avaliacao.objects.all()
+        elif getattr(user, 'is_professor', False):
+            queryset = Avaliacao.objects.filter(turma__professor_usuario=user)
+        elif getattr(user, 'is_aluno', False):
+            aluno = Aluno.objects.filter(email=user.email).first()
+            queryset = Avaliacao.objects.filter(turma__alunos=aluno).distinct() if aluno else Avaliacao.objects.none()
+        else:
+            queryset = Avaliacao.objects.none()
         
         # Filter by turma
         turma_id = self.request.query_params.get('turma_id', None)
@@ -541,6 +582,15 @@ class AvaliacaoViewSet(viewsets.ModelViewSet):
         """Create a new avaliacao with custom response format"""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        if getattr(request.user, 'is_professor', False):
+            turma = serializer.validated_data.get('turma')
+            if turma and turma.professor_usuario_id != request.user.id:
+                return Response({
+                    'success': False,
+                    'error': 'Professor só pode criar avaliações nas próprias turmas'
+                }, status=status.HTTP_403_FORBIDDEN)
+
         self.perform_create(serializer)
         
         return Response({
@@ -600,7 +650,7 @@ class NotaViewSet(viewsets.ModelViewSet):
     destroy: DELETE /api/turmas/notas/{id}/
     """
     queryset = Nota.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminOrProfessorWriteReadOnlyAuthenticated]
     
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
@@ -611,7 +661,17 @@ class NotaViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filter queryset based on query parameters"""
-        queryset = Nota.objects.all()
+        user = self.request.user
+
+        if user.is_superuser or getattr(user, 'is_admin', False):
+            queryset = Nota.objects.all()
+        elif getattr(user, 'is_professor', False):
+            queryset = Nota.objects.filter(avaliacao__turma__professor_usuario=user)
+        elif getattr(user, 'is_aluno', False):
+            aluno = Aluno.objects.filter(email=user.email).first()
+            queryset = Nota.objects.filter(aluno=aluno) if aluno else Nota.objects.none()
+        else:
+            queryset = Nota.objects.none()
         
         # Filter by avaliacao
         avaliacao_id = self.request.query_params.get('avaliacao_id', None)
@@ -657,6 +717,15 @@ class NotaViewSet(viewsets.ModelViewSet):
         """Create a new nota with custom response format"""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        if getattr(request.user, 'is_professor', False):
+            avaliacao = serializer.validated_data.get('avaliacao')
+            if avaliacao and avaliacao.turma.professor_usuario_id != request.user.id:
+                return Response({
+                    'success': False,
+                    'error': 'Professor só pode lançar notas nas próprias turmas'
+                }, status=status.HTTP_403_FORBIDDEN)
+
         self.perform_create(serializer)
         
         return Response({
@@ -694,6 +763,15 @@ class NotaViewSet(viewsets.ModelViewSet):
         """Create or update multiple notas at once"""
         serializer = NotaBatchSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        if getattr(request.user, 'is_professor', False):
+            avaliacao = serializer.validated_data.get('avaliacao')
+            if avaliacao and avaliacao.turma.professor_usuario_id != request.user.id:
+                return Response({
+                    'success': False,
+                    'error': 'Professor só pode lançar notas em lote nas próprias turmas'
+                }, status=status.HTTP_403_FORBIDDEN)
+
         result = serializer.save()
         
         return Response({

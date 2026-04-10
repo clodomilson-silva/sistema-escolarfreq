@@ -7,14 +7,14 @@ from .models import User
 class UserAdmin(BaseUserAdmin):
     """Admin for custom user model"""
     
-    list_display = ['email', 'nome', 'role', 'is_active', 'date_joined']
+    list_display = ['email', 'nome', 'matricula', 'role', 'is_active', 'date_joined']
     list_filter = ['role', 'is_active', 'is_staff']
-    search_fields = ['email', 'nome']
+    search_fields = ['email', 'nome', 'matricula']
     ordering = ['-date_joined']
     
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Informações Pessoais', {'fields': ('nome', 'role', 'disciplinas')}),
+        ('Informações Pessoais', {'fields': ('nome', 'matricula', 'telefone', 'data_nascimento', 'endereco', 'role', 'disciplinas')}),
         ('Permissões', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Datas', {'fields': ('last_login', 'date_joined')}),
     )
@@ -22,6 +22,6 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'nome', 'role', 'password1', 'password2', 'is_active'),
+            'fields': ('email', 'nome', 'matricula', 'role', 'password1', 'password2', 'is_active'),
         }),
     )

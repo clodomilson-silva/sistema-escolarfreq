@@ -15,6 +15,10 @@ interface Turma {
   disciplina?: string;
   professor?: string;
   professor_nome?: string;
+  professor_dados?: {
+    nome: string;
+    matricula?: string | null;
+  } | null;
   turma_base_id?: string;
   criado_em?: string;
   atualizado_em?: string;
@@ -249,13 +253,15 @@ function TurmasList() {
             <Link to="/home" className="btn btn-outline-secondary">
               <i className="bi bi-house-door me-2"></i>Voltar para Home
             </Link>
-            <Link to="/turmas/disciplina/nova" className="btn btn-info">
-              <i className="bi bi-journal-check me-2"></i>Criar Turma-Disciplina
-            </Link>
             {admin?.role === 'admin' && (
-              <Link to="/turmas/nova" className="btn btn-success">
-                <i className="bi bi-plus-circle me-2"></i>Cadastrar Turma Base
-              </Link>
+              <>
+                <Link to="/turmas/disciplina/nova" className="btn btn-info">
+                  <i className="bi bi-journal-check me-2"></i>Criar Turma-Disciplina
+                </Link>
+                <Link to="/turmas/nova" className="btn btn-success">
+                  <i className="bi bi-plus-circle me-2"></i>Cadastrar Turma Base
+                </Link>
+              </>
             )}
           </div>
               
@@ -380,9 +386,11 @@ function TurmasList() {
                                 <span className={`badge ${nivelEnsinoInfo.color}`}>{nivelEnsinoInfo.label}</span>
                               </td>
                               <td>
-                                {(turma.professor || turma.professor_nome) ? (
+                                {(turma.professor_dados?.nome || turma.professor || turma.professor_nome) ? (
                                   <small style={{ color: 'var(--text-secondary)' }}>
-                                    <i className="bi bi-person-badge me-1"></i>{turma.professor || turma.professor_nome}
+                                    <i className="bi bi-person-badge me-1"></i>
+                                    {turma.professor_dados?.nome || turma.professor || turma.professor_nome}
+                                    {turma.professor_dados?.matricula ? ` (Matricula ${turma.professor_dados.matricula})` : ''}
                                   </small>
                                 ) : (
                                   <span style={{ color: 'var(--text-secondary)' }}>—</span>
@@ -405,13 +413,15 @@ function TurmasList() {
                                   >
                                     <i className="bi bi-eye"></i>
                                   </button>
-                                  <button
-                                    onClick={() => navigate(`/turmas/${turma.id}/frequencia`)}
-                                    className="btn btn-sm btn-outline-success"
-                                    title="Frequência"
-                                  >
-                                    <i className="bi bi-calendar-check"></i>
-                                  </button>
+                                  {(admin?.role === 'admin' || admin?.role === 'professor') && (
+                                    <button
+                                      onClick={() => navigate(`/turmas/${turma.id}/frequencia`)}
+                                      className="btn btn-sm btn-outline-success"
+                                      title="Frequência"
+                                    >
+                                      <i className="bi bi-calendar-check"></i>
+                                    </button>
+                                  )}
                                   {admin?.role === 'admin' && (
                                     <>
                                       <button

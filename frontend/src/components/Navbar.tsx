@@ -16,6 +16,7 @@ export default function Navbar() {
   };
 
   const isActive = (path: string) => location.pathname === path;
+  const ehPainelGestor = admin?.role === 'admin' || admin?.role === 'supervisor';
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark" style={{
@@ -67,7 +68,7 @@ export default function Navbar() {
                 <span>Dashboard</span>
               </a>
             </li>
-            {admin?.role === 'admin' && (
+            {ehPainelGestor && (
               <li className="nav-item">
                 <a 
                   className="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded" 
@@ -81,6 +82,23 @@ export default function Navbar() {
                 >
                   <i className="bi bi-people"></i>
                   <span>Alunos</span>
+                </a>
+              </li>
+            )}
+            {ehPainelGestor && (
+              <li className="nav-item">
+                <a
+                  className="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded"
+                  href="/professores"
+                  style={{
+                    color: isActive('/professores') ? 'var(--primary-color)' : 'var(--text-secondary)',
+                    backgroundColor: isActive('/professores') ? 'rgba(13, 110, 253, 0.1)' : 'transparent',
+                    fontWeight: isActive('/professores') ? '500' : '400',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <i className="bi bi-person-workspace"></i>
+                  <span>Equipe</span>
                 </a>
               </li>
             )}
@@ -115,7 +133,13 @@ export default function Navbar() {
                 }}
               >
                 <i className={`bi ${admin?.role === 'admin' ? 'bi-shield-check' : 'bi-person-badge'}`}></i>
-                {admin?.role === 'admin' ? 'Administrador' : 'Professor'}
+                {admin?.role === 'admin'
+                  ? 'Gestor'
+                  : admin?.role === 'supervisor'
+                    ? 'Supervisor'
+                    : admin?.role === 'professor'
+                      ? 'Professor'
+                      : 'Aluno'}
               </span>
             </div>
             

@@ -9,6 +9,7 @@ interface ProfessorOption {
   id: string;
   nome: string;
   email: string;
+  matricula?: string | null;
 }
 
 const TurmaDisciplinaForm: React.FC = () => {
@@ -23,7 +24,7 @@ const TurmaDisciplinaForm: React.FC = () => {
   const [formData, setFormData] = useState({
     turma_base_id: '',
     disciplina: '',
-    professor_nome: '',
+    professor_id: '',
     carga_horaria: '',
     descricao: '',
     data_inicio: '',
@@ -77,10 +78,11 @@ const TurmaDisciplinaForm: React.FC = () => {
 
       const professoresFormatados = users
         .filter((u: { role?: string }) => u.role === 'professor')
-        .map((u: { id: string; nome: string; email: string }) => ({
+        .map((u: { id: string; nome: string; email: string; matricula?: string | null }) => ({
           id: String(u.id),
           nome: u.nome,
-          email: u.email
+          email: u.email,
+          matricula: u.matricula || null
         }));
 
       setProfessores(professoresFormatados);
@@ -134,7 +136,7 @@ const TurmaDisciplinaForm: React.FC = () => {
         nivel_ensino: turmaBase.nivel_ensino,
         turma_base_id: parseInt(formData.turma_base_id),
         disciplina: formData.disciplina,
-        professor: formData.professor_nome,
+        professor_id: formData.professor_id ? parseInt(formData.professor_id) : null,
         data_inicio: exigeDatasDisciplina ? formData.data_inicio : null,
         data_fim: exigeDatasDisciplina ? formData.data_fim : null,
         status: 'ativa' as const
@@ -238,34 +240,28 @@ const TurmaDisciplinaForm: React.FC = () => {
 
                   {/* Professor */}
                   <div className="mb-4">
-                    <label htmlFor="professor_nome" className="form-label fw-bold">
+                    <label htmlFor="professor_id" className="form-label fw-bold">
                       Professor (opcional)
                     </label>
                     {admin?.role === 'admin' && professores.length > 0 ? (
                       <select
-                        id="professor_nome"
-                        name="professor_nome"
+                        id="professor_id"
+                        name="professor_id"
                         className="form-select form-select-lg"
-                        value={formData.professor_nome}
+                        value={formData.professor_id}
                         onChange={handleChange}
                       >
                         <option value="">Selecione um professor...</option>
                         {professores.map((prof) => (
-                          <option key={prof.id} value={prof.nome}>
-                            {prof.nome} ({prof.email})
+                          <option key={prof.id} value={prof.id}>
+                            {prof.nome} ({prof.email}){prof.matricula ? ` - Matricula ${prof.matricula}` : ''}
                           </option>
                         ))}
                       </select>
                     ) : (
-                      <input
-                        type="text"
-                        id="professor_nome"
-                        name="professor_nome"
-                        className="form-control form-control-lg"
-                        value={formData.professor_nome}
-                        onChange={handleChange}
-                        placeholder="Nome do professor"
-                      />
+                      <div className="alert alert-secondary mb-0">
+                        Professor sera vinculado via cadastro. A selecao esta disponivel para administradores.
+                      </div>
                     )}
                     <div className="form-text">
                       Pode cadastrar com ou sem professor, independente do tipo da turma.

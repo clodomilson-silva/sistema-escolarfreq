@@ -9,15 +9,16 @@ function LoginAuth() {
   const [erro, setErro] = useState("");
   const [showInfo, setShowInfo] = useState(false);
   
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, admin } = useAuth();
   const navigate = useNavigate();
 
   // Se já está autenticado, redirecionar imediatamente
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/home", { replace: true });
+      const rotaDestino = admin?.role === 'admin' || admin?.role === 'supervisor' ? '/home' : '/turmas';
+      navigate(rotaDestino, { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, admin, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,9 +33,10 @@ function LoginAuth() {
 
     try {
       console.log('Tentando fazer login...');
-      await login(email, senha);
+      const user = await login(email, senha);
       console.log('Login bem-sucedido, redirecionando...');
-      window.location.href = "/home";
+      const rotaDestino = user.role === 'admin' || user.role === 'supervisor' ? '/home' : '/turmas';
+      navigate(rotaDestino, { replace: true });
     } catch (error: unknown) {
       console.error('Erro no login:', error);
       if (error instanceof Error) {
@@ -313,19 +315,7 @@ function LoginAuth() {
 
                     <div className="text-center">
                       <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-                        Não tem uma conta?{' '}
-                        <button 
-                          type="button"
-                          onClick={() => navigate('/registro')} 
-                          className="btn btn-link p-0" 
-                          style={{
-                            color: 'var(--primary-color)',
-                            fontWeight: '600',
-                            textDecoration: 'none'
-                          }}
-                        >
-                          Cadastre-se aqui
-                        </button>
+                        Cadastro de usuarios desabilitado por seguranca. Solicite acesso ao administrador do sistema.
                       </p>
                     </div>
 

@@ -37,11 +37,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     ROLE_CHOICES = [
         ('admin', 'Administrador'),
+        ('supervisor', 'Supervisor'),
         ('professor', 'Professor'),
+        ('aluno', 'Aluno'),
     ]
     
     email = models.EmailField('Email', unique=True)
     nome = models.CharField('Nome', max_length=255)
+    matricula = models.CharField('Matricula', max_length=50, unique=True, null=True, blank=True)
+    telefone = models.CharField('Telefone', max_length=20, blank=True, null=True)
+    data_nascimento = models.DateField('Data de Nascimento', blank=True, null=True)
+    endereco = models.TextField('Endereco', blank=True, null=True)
     role = models.CharField('Função', max_length=20, choices=ROLE_CHOICES, default='professor')
     disciplinas = models.JSONField('Disciplinas', default=list, blank=True)
     
@@ -68,10 +74,20 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     @property
     def is_admin(self):
-        """Check if user is admin"""
-        return self.role == 'admin'
+        """Check if user is gestor/supervisor"""
+        return self.role in ['admin', 'supervisor']
+
+    @property
+    def is_supervisor(self):
+        """Check if user is supervisor"""
+        return self.role == 'supervisor'
     
     @property
     def is_professor(self):
         """Check if user is professor"""
         return self.role == 'professor'
+
+    @property
+    def is_aluno(self):
+        """Check if user is aluno"""
+        return self.role == 'aluno'

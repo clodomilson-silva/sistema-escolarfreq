@@ -14,7 +14,7 @@ import AvaliacaoForm from "./pages/AvaliacaoForm";
 import NotasLancamento from "./pages/NotasLancamento";
 import BoletimAluno from "./pages/BoletimAluno";
 import LoginAuth from "./pages/LoginAuth";
-import RegistroUsuario from "./pages/RegistroUsuario";
+import ProfessoresList from "./pages/ProfessoresList";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function AppRoutes() {
@@ -23,9 +23,6 @@ export default function AppRoutes() {
       <Routes>
         {/* Rota de login */}
         <Route path="/login" element={<LoginAuth />} />
-        
-        {/* Rota de registro */}
-        <Route path="/registro" element={<RegistroUsuario />} />
         
         {/* Redirect da raiz para login */}
         <Route path="/" element={<Navigate to="/login" replace />} />
@@ -38,25 +35,31 @@ export default function AppRoutes() {
         } />
         
         <Route path="/alunos" element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'supervisor']}>
             <AlunosList />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/professores" element={
+          <ProtectedRoute allowedRoles={['admin', 'supervisor']}>
+            <ProfessoresList />
           </ProtectedRoute>
         } />
         
         <Route path="/alunos/novo" element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'supervisor']}>
             <AlunoForm />
           </ProtectedRoute>
         } />
         
         <Route path="/alunos/:id" element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'supervisor']}>
             <AlunoDetalhes />
           </ProtectedRoute>
         } />
         
         <Route path="/alunos/editar/:id" element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'supervisor']}>
             <AlunoEdit />
           </ProtectedRoute>
         } />
@@ -68,13 +71,13 @@ export default function AppRoutes() {
         } />
         
         <Route path="/turmas/nova" element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'supervisor']}>
             <TurmaForm />
           </ProtectedRoute>
         } />
         
         <Route path="/turmas/disciplina/nova" element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'supervisor']}>
             <TurmaDisciplinaForm />
           </ProtectedRoute>
         } />
@@ -86,25 +89,25 @@ export default function AppRoutes() {
         } />
         
         <Route path="/turmas/editar/:id" element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'supervisor']}>
             <TurmaEdit />
           </ProtectedRoute>
         } />
         
         <Route path="/turmas/:turmaId/frequencia" element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'supervisor', 'professor']}>
             <FrequenciaDashboard />
           </ProtectedRoute>
         } />
         
         <Route path="/turmas/:turmaId/avaliacoes/nova" element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'supervisor', 'professor']}>
             <AvaliacaoForm />
           </ProtectedRoute>
         } />
         
         <Route path="/turmas/:turmaId/notas" element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'supervisor', 'professor']}>
             <NotasLancamento />
           </ProtectedRoute>
         } />

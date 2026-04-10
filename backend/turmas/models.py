@@ -1,6 +1,9 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 from alunos.models import Aluno
+
+User = get_user_model()
 
 
 class Turma(models.Model):
@@ -36,6 +39,15 @@ class Turma(models.Model):
     turno = models.CharField('Turno', max_length=20, choices=TURNO_CHOICES)
     disciplina = models.CharField('Disciplina', max_length=100, blank=True, default='Geral')
     professor = models.CharField('Professor', max_length=255, blank=True, null=True)
+    professor_usuario = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        related_name='turmas_alocadas',
+        blank=True,
+        null=True,
+        limit_choices_to={'role': 'professor'},
+        verbose_name='Professor (Cadastro)'
+    )
     sala = models.CharField('Sala', max_length=50, blank=True, null=True)
     
     # Tipo de turma e relação com turma base

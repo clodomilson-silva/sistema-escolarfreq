@@ -1,10 +1,13 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
+from django.contrib.auth import get_user_model
+from core.permissions import IsAdminOrReadOnlyAuthenticated
 from .models import Aluno
 from .serializers import AlunoSerializer, AlunoCreateSerializer, AlunoUpdateSerializer
+
+User = get_user_model()
 
 
 class AlunoViewSet(viewsets.ModelViewSet):
@@ -19,7 +22,7 @@ class AlunoViewSet(viewsets.ModelViewSet):
     destroy: DELETE /api/alunos/{id}/
     """
     queryset = Aluno.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminOrReadOnlyAuthenticated]
     
     def get_serializer_class(self):
         if self.action == 'create':
@@ -30,7 +33,16 @@ class AlunoViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filter queryset based on query parameters"""
-        queryset = Aluno.objects.all()
+        user = self.request.user
+
+        if user.is_superuser or getattr(user, 'is_admin', False):
+            queryset = Aluno.objects.all()
+        elif getattr(user, 'is_professor', False):
+            queryset = Aluno.objects.filter(turma_alunos__professor_usuario=user).distinct()
+        elif getattr(user, 'is_aluno', False):
+            queryset = Aluno.objects.filter(email=user.email)
+        else:
+            queryset = Aluno.objects.none()
         
         # Filter by name
         nome = self.request.query_params.get('nome', None)
@@ -102,6 +114,7 @@ class AlunoViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         """Delete an aluno with custom response format"""
         instance = self.get_object()
+        User.objects.filter(email=instance.email, role='aluno').delete()
         self.perform_destroy(instance)
         
         return Response({
@@ -163,6 +176,22 @@ class AlunoViewSet(viewsets.ModelViewSet):
         from decimal import Decimal
         
         aluno = self.get_object()
+        user = request.user
+
+        if getattr(user, 'is_aluno', False) and aluno.email != user.email:
+            return Response({
+                'success': False,
+                'error': 'Aluno só pode visualizar o próprio boletim'
+            }, status=status.HTTP_403_FORBIDDEN)
+
+        if getattr(user, 'is_professor', False):
+            possui_vinculo = aluno.turma_alunos.filter(professor_usuario=user).exists()
+            if not possui_vinculo:
+                return Response({
+                    'success': False,
+                    'error': 'Professor sem acesso ao boletim deste aluno'
+                }, status=status.HTTP_403_FORBIDDEN)
+
         turma_id = request.query_params.get('turma_id')
         
         # Buscar turmas-disciplina vinculadas ao aluno

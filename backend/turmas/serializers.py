@@ -1,6 +1,9 @@
 from rest_framework import serializers
+from django.contrib.auth import get_user_model
 from .models import Turma, Autorizacao, Avaliacao, Nota
 from alunos.serializers import AlunoSerializer
+
+User = get_user_model()
 
 
 class TurmaSerializer(serializers.ModelSerializer):
@@ -8,28 +11,55 @@ class TurmaSerializer(serializers.ModelSerializer):
     total_alunos = serializers.ReadOnlyField()
     alunos = AlunoSerializer(many=True, read_only=True)
     turma_base_id = serializers.IntegerField(source='turma_base.id', read_only=True, allow_null=True)
+    professor_id = serializers.IntegerField(source='professor_usuario.id', read_only=True, allow_null=True)
+    professor_dados = serializers.SerializerMethodField()
     
     class Meta:
         model = Turma
         fields = [
             'id', 'nome', 'ano', 'turno', 'disciplina', 'professor', 'sala',
-            'tipo', 'nivel_ensino', 'turma_base_id', 'alunos', 'total_alunos', 'horarios', 
+            'professor_id', 'professor_dados', 'tipo', 'nivel_ensino', 'turma_base_id', 'alunos', 'total_alunos', 'horarios', 
             'dias_letivos', 'data_inicio', 'data_fim', 'status', 'criado_em', 'atualizado_em'
         ]
         read_only_fields = ['id', 'criado_em', 'atualizado_em']
+
+    def get_professor_dados(self, obj):
+        if not obj.professor_usuario:
+            return None
+
+        return {
+            'id': obj.professor_usuario.id,
+            'nome': obj.professor_usuario.nome,
+            'email': obj.professor_usuario.email,
+            'matricula': obj.professor_usuario.matricula,
+            'telefone': obj.professor_usuario.telefone,
+        }
 
 
 class TurmaListSerializer(serializers.ModelSerializer):
     """Simplified serializer for listing turmas"""
     total_alunos = serializers.ReadOnlyField()
     turma_base_id = serializers.IntegerField(source='turma_base.id', read_only=True, allow_null=True)
+    professor_id = serializers.IntegerField(source='professor_usuario.id', read_only=True, allow_null=True)
+    professor_dados = serializers.SerializerMethodField()
     
     class Meta:
         model = Turma
         fields = [
             'id', 'nome', 'ano', 'turno', 'disciplina', 'professor', 'sala',
-            'tipo', 'nivel_ensino', 'turma_base_id', 'total_alunos', 'status', 'criado_em'
+            'professor_id', 'professor_dados', 'tipo', 'nivel_ensino', 'turma_base_id', 'total_alunos', 'status', 'criado_em'
         ]
+
+    def get_professor_dados(self, obj):
+        if not obj.professor_usuario:
+            return None
+
+        return {
+            'id': obj.professor_usuario.id,
+            'nome': obj.professor_usuario.nome,
+            'email': obj.professor_usuario.email,
+            'matricula': obj.professor_usuario.matricula,
+        }
 
 
 class TurmaRulesMixin:
@@ -111,12 +141,18 @@ class TurmaCreateSerializer(TurmaRulesMixin, serializers.ModelSerializer):
         required=False
     )
     turma_base_id = serializers.IntegerField(required=False, allow_null=True)
+    professor_id = serializers.PrimaryKeyRelatedField(
+        source='professor_usuario',
+        queryset=User.objects.filter(role='professor', is_active=True),
+        required=False,
+        allow_null=True
+    )
     
     class Meta:
         model = Turma
         fields = [
             'nome', 'ano', 'turno', 'disciplina', 'professor', 'sala',
-            'tipo', 'nivel_ensino', 'turma_base_id', 'alunos', 'horarios', 'dias_letivos', 
+            'professor_id', 'tipo', 'nivel_ensino', 'turma_base_id', 'alunos', 'horarios', 'dias_letivos', 
             'data_inicio', 'data_fim', 'status'
         ]
     
@@ -143,6 +179,10 @@ class TurmaCreateSerializer(TurmaRulesMixin, serializers.ModelSerializer):
                     alunos = list(turma_base.alunos.all())
             except Turma.DoesNotExist:
                 raise serializers.ValidationError({"turma_base_id": "Turma base não encontrada"})
+
+        professor_usuario = validated_data.get('professor_usuario')
+        if professor_usuario and not validated_data.get('professor'):
+            validated_data['professor'] = professor_usuario.nome
         
         turma = Turma.objects.create(**validated_data)
         
@@ -160,12 +200,18 @@ class TurmaUpdateSerializer(TurmaRulesMixin, serializers.ModelSerializer):
         queryset=__import__('alunos.models', fromlist=['Aluno']).Aluno.objects.all(),
         required=False
     )
+    professor_id = serializers.PrimaryKeyRelatedField(
+        source='professor_usuario',
+        queryset=User.objects.filter(role='professor', is_active=True),
+        required=False,
+        allow_null=True
+    )
     
     class Meta:
         model = Turma
         fields = [
             'nome', 'ano', 'turno', 'disciplina', 'professor', 'sala',
-            'tipo', 'nivel_ensino', 'alunos', 'horarios', 'dias_letivos', 
+            'professor_id', 'tipo', 'nivel_ensino', 'alunos', 'horarios', 'dias_letivos', 
             'data_inicio', 'data_fim', 'status'
         ]
     
@@ -175,6 +221,12 @@ class TurmaUpdateSerializer(TurmaRulesMixin, serializers.ModelSerializer):
         if Turma.objects.filter(nome=value).exclude(id=instance.id).exists():
             raise serializers.ValidationError("Já existe uma turma com este nome")
         return value
+
+    def update(self, instance, validated_data):
+        professor_usuario = validated_data.get('professor_usuario', instance.professor_usuario)
+        if professor_usuario and not validated_data.get('professor'):
+            validated_data['professor'] = professor_usuario.nome
+        return super().update(instance, validated_data)
 
 
 class AutorizacaoSerializer(serializers.ModelSerializer):
